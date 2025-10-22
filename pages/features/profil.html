@@ -55,7 +55,7 @@
     </div>
 
     <!-- Main Content -->
-    <div class="p-6 pb-24">
+    <div class="p-6 pb-20">
         
         <!-- User Profile Card -->
         <div class="bg-white rounded-2xl p-6 shadow-md mb-6">
@@ -114,13 +114,23 @@
             </div>
         </div>
 
+        <!-- Account Management -->
+        <div class="bg-white rounded-2xl p-6 shadow-md mb-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">🧪 Testing Account</h3>
+            <div class="space-y-3">
+                <button id="loadRandomAccountBtn" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">
+                    👤 Load Testing Account
+                </button>
+                <button id="refreshProfileBtn" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">
+                    🔄 Refresh Data
+                </button>
+            </div>
+        </div>
+
         <!-- Actions -->
         <div class="bg-white rounded-2xl p-6 shadow-md">
             <h3 class="text-lg font-bold text-gray-800 mb-4">⚙️ Aksi</h3>
             <div class="space-y-3">
-                <button id="refreshProfileBtn" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">
-                    🔄 Refresh Profil
-                </button>
                 <button id="deleteAccountBtn" class="w-full bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">
                     🗑️ Hapus Akun
                 </button>
@@ -129,7 +139,7 @@
     </div>
 
     <!-- Bottom Navigation -->
-    <div id="bottom-nav" class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-gray-200 p-3 z-50">
+    <div id="bottom-nav" class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 p-3 z-40 shadow-lg">
         <div class="flex justify-around items-center max-w-lg mx-auto">
             <a href="../index.html" data-page="home" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -167,15 +177,39 @@
 
     <!-- Scripts -->
     <script type="module">
-        import authInstance from '../assets/js/auth.js';
-        import { auth } from '../config/firebase-init.js';
+        import authInstance from '../../assets/js/auth.js';
+        import { auth } from '../../config/firebase-init.js';
         import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-        import { showNotification } from '../config/config.js';
+        import { showNotification } from '../../config/config.js';
+        import { getTestingAccountWithData, updateTestingAccountStats, getTestingAccountDataSummary } from '../../assets/js/core/testing-account-service.js';
 
         // Get elements
         const logoutBtn = document.getElementById('logoutBtn');
         const refreshProfileBtn = document.getElementById('refreshProfileBtn');
         const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+        const loadRandomAccountBtn = document.getElementById('loadRandomAccountBtn');
+
+        // Current user data
+        let currentUserData = null;
+
+        // Load testing account with real data
+        async function loadTestingAccount() {
+            try {
+                const testingAccount = await getTestingAccountWithData();
+                currentUserData = testingAccount;
+                updateUserProfile(testingAccount);
+                
+                const dataSummary = getTestingAccountDataSummary(testingAccount);
+                if (dataSummary.hasData) {
+                    showNotification(`✅ Akun testing: ${testingAccount.displayName} - ${dataSummary.message}`, 'success');
+                } else {
+                    showNotification(`ℹ️ Akun testing: ${testingAccount.displayName} - ${dataSummary.message}`, 'info');
+                }
+            } catch (error) {
+                console.error('Error loading testing account:', error);
+                showNotification('❌ Gagal memuat akun testing', 'error');
+            }
+        }
 
         // Update user profile display
         function updateUserProfile(userData) {
@@ -186,16 +220,18 @@
                 document.getElementById('userRole').textContent = userData.role || 'user';
                 
                 // Detailed info
-                document.getElementById('userId').textContent = userData.uid || 'N/A';
+                document.getElementById('userId').textContent = userData.id || userData.uid || 'N/A';
                 document.getElementById('userEmailDetail').textContent = userData.email || 'N/A';
                 document.getElementById('userDisplayName').textContent = userData.displayName || 'N/A';
                 document.getElementById('userRoleDetail').textContent = userData.role || 'N/A';
-                document.getElementById('userJoinDate').textContent = userData.createdAt ? 
-                    new Date(userData.createdAt.toDate()).toLocaleDateString('id-ID') : 'N/A';
+                document.getElementById('userJoinDate').textContent = userData.joinDate ? 
+                    new Date(userData.joinDate).toLocaleDateString('id-ID') : 'N/A';
 
                 // Avatar
                 const avatar = document.getElementById('userAvatar');
-                if (userData.photoURL) {
+                if (userData.avatar) {
+                    avatar.textContent = userData.avatar;
+                } else if (userData.photoURL) {
                     avatar.innerHTML = `<img src="${userData.photoURL}" alt="Profile" class="w-full h-full rounded-full object-cover">`;
                 } else {
                     const initials = userData.displayName ?
@@ -204,11 +240,17 @@
                     avatar.textContent = initials.length <= 2 ? initials : '👤';
                 }
 
-                // Stats
+                // Stats - Show real data if available
                 if (userData.stats) {
-                    document.getElementById('forumPosts').textContent = userData.stats.forumPosts || 0;
-                    document.getElementById('quizCompleted').textContent = userData.stats.quizCompleted || 0;
+                    document.getElementById('forumPosts').textContent = userData.stats.activitiesCount || userData.stats.forumPosts || 0;
+                    document.getElementById('quizCompleted').textContent = userData.stats.inputHistoryCount || userData.stats.quizCompleted || 0;
                     document.getElementById('activeDays').textContent = userData.stats.activeDays || 0;
+                }
+                
+                // Show real data summary if available
+                if (userData.realData && userData.realData.dataSummary) {
+                    const summary = userData.realData.dataSummary;
+                    console.log('📊 Real data summary:', summary);
                 }
             }
         }
@@ -225,11 +267,23 @@
             }
         });
 
+        // Load testing account handler
+        loadRandomAccountBtn.addEventListener('click', () => {
+            loadTestingAccount();
+        });
+
         // Refresh profile handler
-        refreshProfileBtn.addEventListener('click', () => {
-            const userData = authInstance.getCurrentUser();
-            updateUserProfile(userData);
-            showNotification('Profil diperbarui!', 'success');
+        refreshProfileBtn.addEventListener('click', async () => {
+            if (currentUserData) {
+                // Update with latest data
+                const updatedAccount = await updateTestingAccountStats(currentUserData);
+                currentUserData = updatedAccount;
+                updateUserProfile(updatedAccount);
+                showNotification('Profil diperbarui dengan data terbaru!', 'success');
+            } else {
+                // Load fresh testing account
+                await loadTestingAccount();
+            }
         });
 
         // Delete account handler
@@ -241,14 +295,18 @@
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', () => {
-            // Check authentication status
+            // Load testing account by default
+            loadTestingAccount();
+            
+            // Check authentication status (optional for testing)
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
-                    const userData = authInstance.getCurrentUser();
-                    updateUserProfile(userData);
+                    // If user is authenticated, you can choose to use real data or keep mock data
+                    // const userData = authInstance.getCurrentUser();
+                    // updateUserProfile(userData);
                 } else {
-                    // Redirect to login if not authenticated
-                    window.location.href = '../login.html';
+                    // For testing, we'll keep using mock accounts instead of redirecting
+                    // window.location.href = '../login.html';
                 }
             });
         });

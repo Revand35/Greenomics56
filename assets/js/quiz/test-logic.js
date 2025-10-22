@@ -229,20 +229,26 @@ function switchMode(mode) {
 
 // Initialize quiz
 function initializeQuiz() {
-    currentAspectIndex = 0;
-    currentQuestionIndex = 0;
-    currentQuestionNumber = 1;
-    answers = {};
-    scores = {};
-    quizStartTime = Date.now();
-    
-    aspects.forEach(aspect => {
-        answers[aspect] = [];
-        scores[aspect] = [];
-    });
-    
-    showCurrentQuestion();
-    updateProgressDisplay();
+    try {
+        console.log('🔄 Initializing quiz...');
+        currentAspectIndex = 0;
+        currentQuestionIndex = 0;
+        currentQuestionNumber = 1;
+        answers = {};
+        scores = {};
+        quizStartTime = Date.now();
+        
+        aspects.forEach(aspect => {
+            answers[aspect] = [];
+            scores[aspect] = [];
+        });
+        
+        showCurrentQuestion();
+        updateProgressDisplay();
+        console.log('✅ Quiz initialized successfully');
+    } catch (error) {
+        console.error('❌ Error initializing quiz:', error);
+    }
 }
 
 // Setup quiz event listeners
@@ -271,19 +277,33 @@ function showCurrentQuestion() {
     const question = questions[aspect][currentQuestionIndex];
     const displayName = aspectDisplayNames[aspect] || capitalize(aspect);
     
-    document.getElementById('question-title').textContent = `Pertanyaan ${displayName}`;
-    document.getElementById('question-text').textContent = question;
-    document.getElementById('aspect-name').textContent = displayName;
-    document.getElementById('current-aspect-display').textContent = displayName;
-    document.getElementById('question-number').textContent = currentQuestionNumber;
+    // Update question elements with null checks
+    const questionTitle = document.getElementById('question-title');
+    if (questionTitle) questionTitle.textContent = `Pertanyaan ${displayName}`;
+    
+    const questionText = document.getElementById('question-text');
+    if (questionText) questionText.textContent = question;
+    
+    const aspectName = document.getElementById('aspect-name');
+    if (aspectName) aspectName.textContent = displayName;
+    
+    const currentAspectDisplay = document.getElementById('current-aspect-display');
+    if (currentAspectDisplay) currentAspectDisplay.textContent = displayName;
+    
+    const questionNumber = document.getElementById('question-number');
+    if (questionNumber) questionNumber.textContent = currentQuestionNumber;
     
     const prevBtn = document.getElementById('prev-question-btn');
-    prevBtn.style.display = currentQuestionNumber > 1 ? 'inline-flex' : 'none';
-    prevBtn.onclick = moveToPreviousQuestion;
+    if (prevBtn) {
+        prevBtn.style.display = currentQuestionNumber > 1 ? 'inline-flex' : 'none';
+        prevBtn.onclick = moveToPreviousQuestion;
+    }
 
     const answerInput = document.getElementById('answer-input');
-    answerInput.value = (answers[aspect] && answers[aspect][currentQuestionIndex]) || '';
-    answerInput.focus();
+    if (answerInput) {
+        answerInput.value = (answers[aspect] && answers[aspect][currentQuestionIndex]) || '';
+        answerInput.focus();
+    }
     
     updateCharCount();
     updateProgressDisplay();
@@ -291,17 +311,42 @@ function showCurrentQuestion() {
 
 // Update progress display
 function updateProgressDisplay() {
-    document.getElementById('progress-text').textContent = `Soal ${currentQuestionNumber} dari ${totalQuestions}`;
-    const progress = (currentQuestionNumber / totalQuestions) * 100;
-    document.getElementById('progress-bar').style.width = `${progress}%`;
-    document.getElementById('progress-percentage').textContent = `${progress.toFixed(1)}%`;
+    const progressText = document.getElementById('progress-text');
+    const progressBar = document.getElementById('progress-bar');
+    const progressPercentage = document.getElementById('progress-percentage');
+    
+    if (progressText) {
+        progressText.textContent = `Soal ${currentQuestionNumber} dari ${totalQuestions}`;
+    }
+    
+    if (progressBar) {
+        const progress = (currentQuestionNumber / totalQuestions) * 100;
+        progressBar.style.width = `${progress}%`;
+    }
+    
+    if (progressPercentage) {
+        const progress = (currentQuestionNumber / totalQuestions) * 100;
+        progressPercentage.textContent = `${progress.toFixed(1)}%`;
+    }
 }
 
 // Update character count
 function updateCharCount() {
-    const count = document.getElementById('answer-input').value.length;
-    document.getElementById('char-count').textContent = count;
-    document.getElementById('submit-answer-btn').disabled = count < 10;
+    const answerInput = document.getElementById('answer-input');
+    const charCount = document.getElementById('char-count');
+    const submitBtn = document.getElementById('submit-answer-btn');
+    
+    if (answerInput) {
+        const count = answerInput.value.length;
+        
+        if (charCount) {
+            charCount.textContent = count;
+        }
+        
+        if (submitBtn) {
+            submitBtn.disabled = count < 10;
+        }
+    }
 }
 
 // Submit answer

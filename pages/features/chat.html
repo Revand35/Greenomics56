@@ -150,7 +150,7 @@
 </head>
 <body class="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-100">
 
-    <div id="app-container" class="pb-24">
+    <div id="app-container" class="pb-20">
         <div class="flex flex-col h-screen">
             <div class="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 text-white p-6 rounded-b-3xl shadow-xl flex-shrink-0 z-10">
                 <div class="flex items-center justify-between">
@@ -389,7 +389,7 @@
             </div>
         </div> 
     </div> 
-    <div id="bottom-nav" class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-gray-200 p-4 z-40">
+    <div id="bottom-nav" class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 p-3 z-40 shadow-lg">
         <div class="flex justify-around items-center max-w-lg mx-auto">
             <a href="../../index.html" class="nav-button flex flex-col items-center space-y-1 text-gray-500 hover:text-green-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span class="text-xs font-medium">Dashboard</span></a>
             <a href="chat.html" class="nav-button active flex flex-col items-center space-y-1 text-gray-500 hover:text-green-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423z" /></svg><span class="text-xs font-medium">AI Assistant</span></a>
@@ -417,6 +417,7 @@
     
     // Quick question function for green accounting
     function askQuickQuestion(question) {
+        console.log('🔍 askQuickQuestion called with:', question);
         const chatInput = document.getElementById('chat-input');
         if (chatInput) {
             chatInput.value = question;
@@ -424,10 +425,18 @@
             // Trigger send button click
             const sendBtn = document.getElementById('send-chat-btn');
             if (sendBtn) {
+                console.log('🔄 Triggering send button click');
                 sendBtn.click();
+            } else {
+                console.error('❌ Send button not found');
             }
+        } else {
+            console.error('❌ Chat input not found');
         }
     }
+    
+    // Make function globally available
+    window.askQuickQuestion = askQuickQuestion;
     
     // Mode switching functions
     function switchToChatMode() {
@@ -448,32 +457,226 @@
         document.getElementById('chat-mode-btn').classList.add('text-white', 'hover:bg-white/10');
     }
     
+    // Add message to chat function
+    function addMessageToChat(message, sender, isLoading = false) {
+        const chatMessages = document.getElementById('chat-messages');
+        if (!chatMessages) {
+            console.error('❌ Chat messages container not found');
+            return null;
+        }
+        
+        const messageId = 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        
+        const messageEl = document.createElement('div');
+        messageEl.id = messageId;
+        messageEl.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'} mb-4`;
+        
+        const messageContent = document.createElement('div');
+        messageContent.className = `max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
+            sender === 'user' 
+                ? 'bg-green-500 text-white' 
+                : 'bg-gray-100 text-gray-800'
+        }`;
+        
+        if (isLoading) {
+            messageContent.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <div class="dot-flashing"></div>
+                    <span>${message}</span>
+                </div>
+            `;
+        } else {
+            messageContent.textContent = message;
+        }
+        
+        messageEl.appendChild(messageContent);
+        chatMessages.appendChild(messageEl);
+        
+        // Scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        return messageId;
+    }
+    
+    // Fallback response function for testing
+    function getFallbackResponse(message) {
+        const responses = [
+            "Halo! Saya adalah AI Assistant Green Accounting. Bagaimana saya bisa membantu Anda dengan analisis limbah dan green accounting?",
+            "Terima kasih atas pertanyaan Anda. Saya siap membantu menganalisis data limbah dan memberikan saran green accounting untuk UMKM Anda.",
+            "Saya dapat membantu Anda dengan:\n- Analisis nilai ekonomi limbah\n- Saran produk daur ulang\n- Kalkulasi profit dari pengolahan limbah\n- Strategi green accounting\n\nApa yang ingin Anda ketahui?",
+            "Untuk mendapatkan analisis yang lebih akurat, silakan input data aktivitas lingkungan terlebih dahulu di halaman 'Input Data'.",
+            "Saya siap membantu Anda dengan konsultasi green accounting. Silakan ajukan pertanyaan spesifik tentang limbah atau sustainability."
+        ];
+        
+        return responses[Math.floor(Math.random() * responses.length)];
+    }
+    
+    // Send message function
+    async function sendMessage() {
+        console.log('📤 sendMessage called');
+        const input = document.getElementById('chat-input');
+        if (!input) {
+            console.error('❌ Chat input not found');
+            return;
+        }
+        
+        const message = input.value.trim();
+        if (!message) {
+            console.log('⚠️ No message to send');
+            return;
+        }
+        
+        console.log('📤 Sending message:', message);
+        
+        // Clear input
+        input.value = '';
+        input.style.height = '48px';
+        
+        // Add message to chat
+        addMessageToChat(message, 'user');
+        
+        // Show loading
+        const loadingId = addMessageToChat('Thinking...', 'assistant', true);
+        
+        try {
+            // Call the chat interaction
+            if (window.handleChatInteraction) {
+                console.log('🔄 Calling window.handleChatInteraction...');
+                const response = await window.handleChatInteraction(message);
+                console.log('✅ Response received:', response);
+                
+                // Remove loading message
+                const loadingEl = document.getElementById(loadingId);
+                if (loadingEl) {
+                    loadingEl.remove();
+                }
+                
+                // Add response
+                addMessageToChat(response, 'assistant');
+            } else {
+                console.error('❌ handleChatInteraction not found, trying direct call');
+                
+                // Try direct call to chat logic
+                try {
+                    console.log('🔄 Importing chat logic directly...');
+                    const { handleChatInteraction } = await import('../../assets/js/chat/chat-logic.js');
+                    console.log('✅ Chat logic imported, calling handleChatInteraction...');
+                    const response = await handleChatInteraction(message);
+                    console.log('✅ Response received via direct import:', response);
+                    
+                    // Remove loading message
+                    const loadingEl = document.getElementById(loadingId);
+                    if (loadingEl) {
+                        loadingEl.remove();
+                    }
+                    
+                    // Add response
+                    addMessageToChat(response, 'assistant');
+                } catch (importError) {
+                    console.error('❌ Error importing chat logic:', importError);
+                    console.log('🔄 Using fallback response');
+                    
+                    // Use fallback response
+                    const response = getFallbackResponse(message);
+                    
+                    // Remove loading message
+                    const loadingEl = document.getElementById(loadingId);
+                    if (loadingEl) {
+                        loadingEl.remove();
+                    }
+                    
+                    // Add fallback response
+                    addMessageToChat(response, 'assistant');
+                }
+            }
+        } catch (error) {
+            console.error('❌ Error sending message:', error);
+            console.log('🔄 Using fallback response due to error');
+            
+            // Use fallback response
+            const response = getFallbackResponse(message);
+            
+            // Remove loading message
+            const loadingEl = document.getElementById(loadingId);
+            if (loadingEl) {
+                loadingEl.remove();
+            }
+            
+            // Add fallback response
+            addMessageToChat(response, 'assistant');
+        }
+    }
+    
     document.addEventListener('DOMContentLoaded', () => {
         console.log('🚀 Initializing chat page...');
         
         // Setup chat listeners
-        setupChatListeners();
+        if (typeof setupChatListeners === 'function') {
+            setupChatListeners();
+        } else {
+            console.log('⚠️ setupChatListeners not available, using manual setup');
+        }
         
         // Debug: Check if send button exists and add manual listener
         const sendBtn = document.getElementById('send-chat-btn');
+        const chatInput = document.getElementById('chat-input');
+        
+        console.log('🔍 Send button:', sendBtn);
+        console.log('🔍 Chat input:', chatInput);
+        
         if (sendBtn) {
             console.log('✅ Send button found, adding manual listener');
-            sendBtn.addEventListener('click', (e) => {
+            
+            // Remove any existing listeners first
+            sendBtn.replaceWith(sendBtn.cloneNode(true));
+            const newSendBtn = document.getElementById('send-chat-btn');
+            
+            newSendBtn.addEventListener('click', async (e) => {
                 console.log('🔄 Send button clicked!');
+                console.log('🔍 Event details:', e);
                 e.preventDefault();
+                e.stopPropagation();
+                
                 const input = document.getElementById('chat-input');
+                console.log('🔍 Input element:', input);
+                console.log('🔍 Input value:', input?.value);
+                
                 if (input && input.value.trim()) {
                     console.log('📤 Sending message:', input.value);
-                    // Trigger the send function
-                    if (window.handleSendClick) {
-                        window.handleSendClick();
-                    } else {
-                        console.error('❌ handleSendClick function not found');
+                    // Call the send function directly
+                    try {
+                        await sendMessage();
+                        console.log('✅ Message sent successfully');
+                    } catch (error) {
+                        console.error('❌ Error in sendMessage:', error);
+                    }
+                } else {
+                    console.log('⚠️ No message to send');
+                    // Show a brief message
+                    const originalText = newSendBtn.innerHTML;
+                    newSendBtn.innerHTML = '⚠️';
+                    setTimeout(() => {
+                        newSendBtn.innerHTML = originalText;
+                    }, 1000);
+                }
+            });
+            
+            console.log('✅ Manual listener added to send button');
+        } else {
+            console.error('❌ Send button not found!');
+        }
+        
+        // Also add Enter key listener
+        if (chatInput) {
+            chatInput.addEventListener('keypress', async (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    console.log('⌨️ Enter key pressed');
+                    e.preventDefault();
+                    if (chatInput.value.trim()) {
+                        await sendMessage();
                     }
                 }
             });
-        } else {
-            console.error('❌ Send button not found!');
         }
         
         // Add event listeners for mode switching
@@ -488,9 +691,46 @@
             quizModeBtn.addEventListener('click', switchToQuizMode);
         }
         
+        // Add test buttons for debugging
+        const testBtn = document.createElement('button');
+        testBtn.textContent = '🧪 Test Send';
+        testBtn.className = 'fixed top-4 right-4 bg-red-500 text-white px-3 py-1 rounded text-xs z-50';
+        testBtn.onclick = () => {
+            console.log('🧪 Test button clicked');
+            const input = document.getElementById('chat-input');
+            if (input) {
+                input.value = 'Test message from debug button';
+                sendMessage();
+            }
+        };
+        document.body.appendChild(testBtn);
+        
+        // Add AI connection test button
+        const aiTestBtn = document.createElement('button');
+        aiTestBtn.textContent = '🤖 Test AI';
+        aiTestBtn.className = 'fixed top-12 right-4 bg-blue-500 text-white px-3 py-1 rounded text-xs z-50';
+        aiTestBtn.onclick = async () => {
+            console.log('🤖 Testing AI connection...');
+            try {
+                const { getChatResponse } = await import('../../assets/js/core/gemini-service.js');
+                const response = await getChatResponse('Hello, test message');
+                console.log('✅ AI Response:', response);
+                addMessageToChat('AI Test: ' + response, 'assistant');
+            } catch (error) {
+                console.error('❌ AI Test Error:', error);
+                addMessageToChat('AI Test Error: ' + error.message, 'assistant');
+            }
+        };
+        document.body.appendChild(aiTestBtn);
+        
         console.log('✅ Chat page initialized');
     });
     </script>
+    <!-- Import chat logic and services -->
+    <script type="module" src="../../assets/js/chat/chat-logic.js"></script>
+    <script type="module" src="../../assets/js/core/gemini-service.js"></script>
+    <script type="module" src="../../assets/js/core/local-storage-service.js"></script>
+    <script type="module" src="../../assets/js/core/testing-account-service.js"></script>
     <!-- Di index.html dan profil.html -->
     <script type="module" src="../../assets/js/auth.js"></script>
     <script type="module" src="../../assets/js/core/user-stats.js"></script>

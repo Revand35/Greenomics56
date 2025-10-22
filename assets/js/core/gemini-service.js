@@ -172,9 +172,14 @@ function getErrorMessage(error) {
 // Main function to get chat response
 export async function getChatResponse(prompt, chatHistory = [], retryCount = 0) {
     try {
+        console.log('🤖 Starting Gemini API call...');
+        console.log('📝 Message:', prompt);
+        console.log('📊 Daily requests:', dailyRequestCount);
+        
         await checkRateLimit();
 
         const model = await getModelWithFallback();
+        console.log('✅ Using model:', model);
         // generation config (bounded for free tier)
         const generationConfig = {
             temperature: appConfig.temperature || 0.7,
@@ -236,11 +241,11 @@ Jawab dalam bahasa Indonesia yang natural dan mudah dipahami.`;
         let result, response, text;
 
         try {
-            console.log('Sending message to Gemini with chat...');
+            console.log('🔄 Sending message to Gemini with chat...');
             result = await chat.sendMessage(prompt);
             response = await result.response;
             text = response.text();
-            console.log('Response received from chat:', text);
+            console.log('✅ Response received from chat:', text);
 
             if (!text || text.trim() === '') {
                 console.log('Empty response from chat, attempting fallback generation...');
@@ -273,6 +278,24 @@ Jawab dalam bahasa Indonesia yang natural dan mudah dipahami.`;
 
     } catch (error) {
         console.error('❌ Error getting chat response:', error);
+        console.error('❌ Error details:', {
+            message: error.message,
+            name: error.name,
+            stack: error.stack
+        });
+        
+        // Check for specific API key errors
+        if (error.message.includes('API_KEY') || error.message.includes('403')) {
+            console.error('❌ API Key Error - Check your Gemini API key');
+            return "❌ Error: API Key tidak valid atau tidak aktif. Silakan periksa konfigurasi API key di config.js";
+        }
+        
+        // Check for quota errors
+        if (error.message.includes('quota') || error.message.includes('429')) {
+            console.error('❌ Quota Error - Daily limit exceeded');
+            return "❌ Error: Kuota harian AI telah habis. Silakan coba lagi besok atau upgrade ke paket berbayar.";
+        }
+        
         const errorInfo = getErrorMessage(error);
 
         if (errorInfo.type === 'quota' || errorInfo.type === 'server') {
