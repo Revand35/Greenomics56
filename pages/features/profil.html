@@ -3,187 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil - Moral Intelligence</title>
+    <title>Profil - Greenomics</title>
+    
+    <!-- Meta Tags -->
+    <meta name="theme-color" content="#10b981">
+    <meta name="description" content="Platform Digital Green Accounting untuk UMKM">
+    
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://www.gstatic.com https://generativelanguage.googleapis.com;
+        style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com;
+        font-src 'self' https://fonts.gstatic.com;
+        img-src 'self' data: https: blob:;
+        connect-src 'self' https://firestore.googleapis.com https://firebase.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://generativelanguage.googleapis.com;
+        frame-src 'self' https://accounts.google.com https://*.firebaseapp.com https://*.google.com;
+        worker-src 'self' blob:;
+        manifest-src 'self';
+    ">
+    
+    <!-- Styles -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .nav-button.active { color: #4f46e5; }
-        .hover-scale:hover { transform: scale(1.03); }
-        .stat-pulse {
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-        #app-container {
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease-in-out;
-        }
+        .gradient-bg { background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%); }
+        .nav-button.active { color: #10b981; }
     </style>
-    <script type="module" src="../../assets/js/auth/auth-guard.js"></script>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100">
-
-    <!-- Loading Overlay -->
-    <div id="loading-overlay" class="fixed inset-0 bg-white bg-opacity-90 z-50 flex items-center justify-center">
-        <div class="text-center">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-            <p class="text-gray-600">Memuat informasi akun...</p>
+<body class="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-100">
+    
+    <!-- Header -->
+    <div class="gradient-bg text-white p-6 rounded-b-3xl shadow-xl">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <a href="../index.html" class="text-white hover:text-green-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </a>
+                <div>
+                    <h1 class="text-xl font-bold">🌱 Greenomics</h1>
+                    <p class="text-green-100 text-xs">Profil Pengguna</p>
+                </div>
+            </div>
+            <button id="logoutBtn" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full text-white text-sm font-semibold transition-all">
+                Logout
+            </button>
         </div>
     </div>
 
-    <div id="app-container" class="pb-24">
-        <!-- Header with Inline Stats -->
-        <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 text-white p-6 rounded-b-3xl shadow-xl">
-            <div class="flex items-center justify-between mb-6">
-                <div>
-                    <h1 class="text-xl font-bold">Profil Saya</h1>
-                    <p class="text-indigo-100 text-xs mt-1">Kelola akun dan pengaturan</p>
+    <!-- Main Content -->
+    <div class="p-6 pb-24">
+        
+        <!-- User Profile Card -->
+        <div class="bg-white rounded-2xl p-6 shadow-md mb-6">
+            <div class="flex items-center space-x-4 mb-6">
+                <div id="userAvatar" class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center text-3xl text-green-600 font-bold">
+                    👤
                 </div>
-                <div class="relative">
-                    <div id="header-avatar" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-lg font-bold">
-                        👤
-                    </div>
-                    <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-indigo-700"></div>
+                <div class="flex-1">
+                    <h2 id="userName" class="text-xl font-bold text-gray-800">Loading...</h2>
+                    <p id="userEmail" class="text-gray-600 text-sm">Loading...</p>
+                    <p id="userRole" class="text-green-600 text-sm font-medium">Loading...</p>
                 </div>
             </div>
-
-            <!-- Stats Inside Header -->
-            <div class="grid grid-cols-3 gap-4 text-center">
-                <div>
-                    <p class="text-3xl font-bold stat-pulse" data-stat="active-days">0</p>
-                    <p class="text-white/80 text-xs mt-1">Hari Aktif</p>
+            
+            <!-- User Stats -->
+            <div class="grid grid-cols-3 gap-4">
+                <div class="bg-green-50 rounded-lg p-4 text-center">
+                    <p class="text-2xl font-bold text-green-600" id="forumPosts">0</p>
+                    <p class="text-xs text-gray-600">Forum Posts</p>
                 </div>
-                <div>
-                    <p class="text-3xl font-bold stat-pulse" data-stat="post-forum">0</p>
-                    <p class="text-white/80 text-xs mt-1">Post Forum</p>
+                <div class="bg-blue-50 rounded-lg p-4 text-center">
+                    <p class="text-2xl font-bold text-blue-600" id="quizCompleted">0</p>
+                    <p class="text-xs text-gray-600">Quiz Completed</p>
                 </div>
-                <div>
-                    <p class="text-3xl font-bold stat-pulse" data-stat="quiz-completed">0</p>
-                    <p class="text-white/80 text-xs mt-1">Quiz Selesai</p>
+                <div class="bg-purple-50 rounded-lg p-4 text-center">
+                    <p class="text-2xl font-bold text-purple-600" id="activeDays">0</p>
+                    <p class="text-xs text-gray-600">Active Days</p>
                 </div>
             </div>
         </div>
 
-        <div class="p-6 space-y-6">
-
-            <!-- Profile Section - With Gradient Background -->
-            <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-5 shadow-md flex items-center space-x-4">
-                <div id="user-avatar" class="w-14 h-14 bg-white/30 rounded-full flex items-center justify-center text-2xl text-white font-bold">
-                    👤
+        <!-- Account Information -->
+        <div class="bg-white rounded-2xl p-6 shadow-md mb-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">📋 Informasi Akun</h3>
+            <div class="space-y-3">
+                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span class="text-gray-600">User ID</span>
+                    <span id="userId" class="text-gray-800 font-mono text-sm">Loading...</span>
                 </div>
-                <div class="flex-1">
-                    <h3 id="user-name" class="text-base font-semibold text-white">Loading...</h3>
-                    <p id="user-profession" class="text-white/80 text-xs mb-1">Loading...</p>
-                    <div class="flex flex-wrap text-xs text-white/70 gap-3">
-                        <span><strong>Email:</strong> <span id="user-email">Loading...</span></span>
-                        <span><strong>Role:</strong> <span id="user-role">Loading...</span></span>
-                    </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span class="text-gray-600">Email</span>
+                    <span id="userEmailDetail" class="text-gray-800">Loading...</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span class="text-gray-600">Nama Lengkap</span>
+                    <span id="userDisplayName" class="text-gray-800">Loading...</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span class="text-gray-600">Role</span>
+                    <span id="userRoleDetail" class="text-gray-800">Loading...</span>
+                </div>
+                <div class="flex justify-between items-center py-2">
+                    <span class="text-gray-600">Bergabung</span>
+                    <span id="userJoinDate" class="text-gray-800">Loading...</span>
                 </div>
             </div>
+        </div>
 
-            <!-- Menu Cards - White Background -->
-            <div class="grid grid-cols-1 gap-4">
-                <a href="../auth/account-info.html" class="bg-white rounded-2xl p-5 shadow-md flex items-center justify-between hover-scale transition-all">
-                    <div class="flex items-center space-x-4">
-                        <div class="bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full p-3 w-fit">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-                                <circle cx="12" cy="7" r="4" />
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="font-semibold text-sm text-gray-800">Informasi Akun</h3>
-                            <p class="text-gray-500 text-xs">Data pribadi & detail</p>
-                        </div>
-                    </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path d="M9 5l7 7-7 7" />
-                    </svg>
-                </a>
-
-                <a href="./privacy-security.html" class="bg-white rounded-2xl p-5 shadow-md flex items-center justify-between hover-scale transition-all">
-                    <div class="flex items-center space-x-4">
-                        <div class="bg-gradient-to-br from-green-400 to-emerald-500 rounded-full p-3 w-fit">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="font-semibold text-sm text-gray-800">Privasi & Keamanan</h3>
-                            <p class="text-gray-500 text-xs">Password & pengaturan</p>
-                        </div>
-                    </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path d="M9 5l7 7-7 7" />
-                    </svg>
-                </a>
-
-                <a href="./feedback-survey.html" class="bg-white rounded-2xl p-5 shadow-md flex items-center justify-between hover-scale transition-all">
-                    <div class="flex items-center space-x-4">
-                        <div class="bg-gradient-to-br from-purple-500 to-pink-500 rounded-full p-3 w-fit">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="font-semibold text-sm text-gray-800">Saran & Kritik</h3>
-                            <p class="text-gray-500 text-xs">Bantu kami berkembang</p>
-                        </div>
-                    </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path d="M9 5l7 7-7 7" />
-                    </svg>
-                </a>
+        <!-- Actions -->
+        <div class="bg-white rounded-2xl p-6 shadow-md">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">⚙️ Aksi</h3>
+            <div class="space-y-3">
+                <button id="refreshProfileBtn" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">
+                    🔄 Refresh Profil
+                </button>
+                <button id="deleteAccountBtn" class="w-full bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">
+                    🗑️ Hapus Akun
+                </button>
             </div>
-
-            <!-- Logout Button -->
-            <button id="logout-button" class="w-full bg-gradient-to-r from-red-500 to-rose-500 text-white rounded-2xl p-5 shadow-md hover-scale transition-all flex items-center justify-center space-x-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                    <polyline points="16 17 21 12 16 7" />
-                    <line x1="21" y1="12" x2="9" y2="12" />
-                </svg>
-                <span class="font-semibold text-sm">Keluar</span>
-            </button>
         </div>
     </div>
 
     <!-- Bottom Navigation -->
     <div id="bottom-nav" class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-gray-200 p-3 z-50">
         <div class="flex justify-around items-center max-w-lg mx-auto">
-            <a href="../../index.html" data-page="home" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
+            <a href="../index.html" data-page="home" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 </svg>
-                Beranda
+                Dashboard
             </a>
-            <a href="./chat.html" data-page="chat" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
+            <a href="features/chat.html" data-page="chat" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423z" />
                 </svg>
-                Quiz
+                AI Assistant
             </a>
-            <a href="./forum.html" data-page="forum" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
+            <a href="features/materi.html" data-page="materi" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                    <circle cx="9" cy="7" r="4" />
-                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                Forum
+                Input Data
             </a>
-            <a href="./materi.html" data-page="materi" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
+            <a href="features/forum.html" data-page="forum" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                    <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
-                Materi
+                Reports
             </a>
-            <a href="./profil.html" data-page="profile" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium active">
+            <a href="features/profil.html" data-page="profile" class="nav-button active flex flex-col items-center text-green-600 text-xs font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
                     <circle cx="12" cy="7" r="4" />
@@ -193,214 +165,92 @@
         </div>
     </div>
 
-    <script type="module" src="../../assets/js/core/realtime-tracking.js"></script>
-    <script type="module" src="../../assets/js/core/user-stats.js"></script>
-
+    <!-- Scripts -->
     <script type="module">
-        import { AuthService } from '../../assets/js/auth/auth-service.js';
+        import authInstance from '../assets/js/auth.js';
+        import { auth } from '../config/firebase-init.js';
+        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+        import { showNotification } from '../config/config.js';
 
-        function setActiveNav() {
-            document.querySelectorAll('.nav-button').forEach(button => {
-                if (button.dataset.page === 'profile') {
-                    button.classList.add('active');
+        // Get elements
+        const logoutBtn = document.getElementById('logoutBtn');
+        const refreshProfileBtn = document.getElementById('refreshProfileBtn');
+        const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+
+        // Update user profile display
+        function updateUserProfile(userData) {
+            if (userData) {
+                // Basic info
+                document.getElementById('userName').textContent = userData.displayName || 'User';
+                document.getElementById('userEmail').textContent = userData.email || 'user@example.com';
+                document.getElementById('userRole').textContent = userData.role || 'user';
+                
+                // Detailed info
+                document.getElementById('userId').textContent = userData.uid || 'N/A';
+                document.getElementById('userEmailDetail').textContent = userData.email || 'N/A';
+                document.getElementById('userDisplayName').textContent = userData.displayName || 'N/A';
+                document.getElementById('userRoleDetail').textContent = userData.role || 'N/A';
+                document.getElementById('userJoinDate').textContent = userData.createdAt ? 
+                    new Date(userData.createdAt.toDate()).toLocaleDateString('id-ID') : 'N/A';
+
+                // Avatar
+                const avatar = document.getElementById('userAvatar');
+                if (userData.photoURL) {
+                    avatar.innerHTML = `<img src="${userData.photoURL}" alt="Profile" class="w-full h-full rounded-full object-cover">`;
                 } else {
-                    button.classList.remove('active');
+                    const initials = userData.displayName ?
+                        userData.displayName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) :
+                        '👤';
+                    avatar.textContent = initials.length <= 2 ? initials : '👤';
+                }
+
+                // Stats
+                if (userData.stats) {
+                    document.getElementById('forumPosts').textContent = userData.stats.forumPosts || 0;
+                    document.getElementById('quizCompleted').textContent = userData.stats.quizCompleted || 0;
+                    document.getElementById('activeDays').textContent = userData.stats.activeDays || 0;
+                }
+            }
+        }
+
+        // Logout handler
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await authInstance.signOut();
+                showNotification('Logout berhasil!', 'success');
+                window.location.href = '../login.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+                showNotification('Gagal logout: ' + error.message, 'error');
+            }
+        });
+
+        // Refresh profile handler
+        refreshProfileBtn.addEventListener('click', () => {
+            const userData = authInstance.getCurrentUser();
+            updateUserProfile(userData);
+            showNotification('Profil diperbarui!', 'success');
+        });
+
+        // Delete account handler
+        deleteAccountBtn.addEventListener('click', () => {
+            if (confirm('Apakah Anda yakin ingin menghapus akun? Tindakan ini tidak dapat dibatalkan.')) {
+                showNotification('Fitur hapus akun belum tersedia', 'warning');
+            }
+        });
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check authentication status
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const userData = authInstance.getCurrentUser();
+                    updateUserProfile(userData);
+                } else {
+                    // Redirect to login if not authenticated
+                    window.location.href = '../login.html';
                 }
             });
-        }
-
-        async function initializeAuth() {
-            try {
-                document.getElementById('loading-overlay').style.display = 'flex';
-                document.getElementById('app-container').style.opacity = '0';
-                document.getElementById('app-container').style.visibility = 'hidden';
-
-                const { onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
-                const { auth } = await import('../../config/firebase-init.js');
-
-                onAuthStateChanged(auth, async (user) => {
-                    try {
-                        await updateUserProfile(user);
-                    } catch (err) {
-                        console.error('Error updating user profile:', err);
-                    } finally {
-                        document.getElementById('loading-overlay').style.display = 'none';
-                        document.getElementById('app-container').style.opacity = '1';
-                        document.getElementById('app-container').style.visibility = 'visible';
-                    }
-                });
-
-            } catch (error) {
-                console.error('Error initializing auth:', error);
-                document.getElementById('loading-overlay').style.display = 'none';
-                document.getElementById('app-container').style.opacity = '1';
-                document.getElementById('app-container').style.visibility = 'visible';
-                updateUserProfile(null);
-            }
-        }
-
-        async function updateUserProfile(user) {
-            try {
-                if (user) {
-                    let userData = {
-                        uid: user.uid,
-                        email: user.email,
-                        displayName: user.displayName || user.email?.split('@')[0] || 'User',
-                        photoURL: user.photoURL,
-                        role: 'user'
-                    };
-                    
-                    try {
-                        const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
-                        const { db } = await import('../../config/firebase-init.js');
-                        
-                        const userDoc = await getDoc(doc(db, "users", user.uid));
-                        if (userDoc.exists()) {
-                            const firestoreData = userDoc.data();
-                            userData = {
-                                ...userData,
-                                displayName: firestoreData.displayName || 
-                                        (firestoreData.firstName && firestoreData.lastName ? 
-                                            `${firestoreData.firstName} ${firestoreData.lastName}` : 
-                                            userData.displayName),
-                                role: firestoreData.role || 'user',
-                                profession: firestoreData.profession || 'Pendidik',
-                                institution: firestoreData.institution
-                            };
-                        } else {
-                            userData.profession = 'Pendidik';
-                        }
-                    } catch (firestoreError) {
-                        console.log('Could not fetch Firestore data:', firestoreError);
-                        userData.profession = 'Pendidik';
-                    }
-                    
-                    document.getElementById('user-name').textContent = userData.displayName;
-                    document.getElementById('user-email').textContent = userData.email;
-                    document.getElementById('user-role').textContent = userData.role;
-                
-                    const profession = userData.profession
-                        ? userData.profession
-                            .split(' ')
-                            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                            .join(' ')
-                        : 'Pendidik';
-                    document.getElementById('user-profession').textContent = profession;
-                    
-                    const avatars = [
-                        document.getElementById('user-avatar'),
-                        document.getElementById('header-avatar')
-                    ];
-                    
-                    avatars.forEach(avatar => {
-                        if (avatar) {
-                            if (userData.photoURL) {
-                                avatar.innerHTML = `<img src="${userData.photoURL}" alt="Profile" class="w-full h-full rounded-full object-cover">`;
-                            } else {
-                                const initials = userData.displayName ? 
-                                    userData.displayName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) : 
-                                    '👤';
-                                if (avatar.id === 'user-avatar') {
-                                    avatar.className = 'w-14 h-14 bg-white/30 rounded-full flex items-center justify-center text-2xl text-white font-bold';
-                                }
-                                avatar.textContent = initials.length <= 2 ? initials : '👤';
-                            }
-                        }
-                    });
-                    
-                    // Active days will be handled by UserStats via updateStatistics()
-                    
-                } else {
-                    document.getElementById('user-name').textContent = 'Guest User';
-                    document.getElementById('user-profession').textContent = 'Visitor';
-                    document.getElementById('user-email').textContent = 'guest@example.com';
-                    document.getElementById('user-role').textContent = 'guest';
-                    document.getElementById('user-avatar').textContent = '👤';
-                    document.getElementById('header-avatar').textContent = '👤';
-                    
-                    document.querySelectorAll('[data-stat="active-days"]').forEach(el => {
-                        el.textContent = 0;
-                    });
-                }
-                updateStatistics();
-            } catch (error) {
-                console.error('Error updating user profile:', error);
-                document.getElementById('user-name').textContent = 'Error Loading';
-                document.getElementById('user-profession').textContent = 'Unable to load';
-                document.getElementById('user-email').textContent = 'error@example.com';
-                document.getElementById('user-role').textContent = 'user';
-            }
-        }
-
-        // calculateActiveDays removed - now handled by UserStats singleton
-
-
-        async function updateStatistics() {
-            try {
-                // Access global UserStats instance
-                const userStats = window.userStats;
-
-                if (!userStats) {
-                    console.warn('[Profil] UserStats not initialized yet');
-                    return;
-                }
-
-                // Function to sync stats from UserStats
-                function syncStatsFromUserStats() {
-                    // Quiz completed - directly from UserStats cache
-                    const quizCompletedValue = userStats.statsCache?.quizCompleted || 0;
-                    document.querySelectorAll('[data-stat="quiz-completed"]').forEach(el => {
-                        if (el) el.textContent = quizCompletedValue;
-                    });
-
-                    // Active days - directly from UserStats cache
-                    const activeDaysValue = userStats.statsCache?.activeDays || 0;
-                    document.querySelectorAll('[data-stat="active-days"]').forEach(el => {
-                        if (el) el.textContent = activeDaysValue;
-                    });
-
-                    // Forum posts - directly from UserStats cache
-                    const forumPostsValue = userStats.statsCache?.forumPosts || 0;
-                    document.querySelectorAll('[data-stat="post-forum"]').forEach(el => {
-                        if (el) el.textContent = forumPostsValue;
-                    });
-                }
-
-                // Initial sync after UserStats loads
-                setTimeout(syncStatsFromUserStats, 1000);
-
-                // Listen to real-time updates from UserStats
-                window.addEventListener('activeDaysCalculated', syncStatsFromUserStats);
-                window.addEventListener('forumPostsUpdated', syncStatsFromUserStats);
-                window.addEventListener('quizCompletedUpdated', syncStatsFromUserStats);
-
-            } catch (error) {
-                console.error('Error updating statistics:', error);
-            }
-        }
-
-        // Main execution block
-        document.addEventListener('DOMContentLoaded', () => {
-            setActiveNav();
-            initializeActivityTracking(); // From realtime-tracking.js
-            initializeAuth();
-
-            // Logout button logic
-            const logoutButton = document.getElementById('logout-button');
-            if (logoutButton) {
-                logoutButton.addEventListener('click', async () => {
-                    if (confirm('Apakah Anda yakin ingin keluar?')) {
-                        const authService = new AuthService();
-                        try {
-                            await authService.logout();
-                            window.location.href = '../auth/login.html';
-                        } catch (error) {
-                            console.error('Logout error:', error);
-                            alert('Gagal logout. Silakan coba lagi.');
-                        }
-                    }
-                });
-            }
         });
     </script>
 </body>

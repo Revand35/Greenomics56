@@ -1,4 +1,4 @@
-// config.js - Versi sederhana tanpa rate limiting untuk debug - Updated: 2025-01-01 14:30
+// config.js - Firebase Configuration untuk Google Login - Updated: 2025-01-01 15:30
 export const firebaseConfig = {
     apiKey: "AIzaSyC7vfSi6iGzWSkyWJTX1lvTG-k8P1HZL9s",
     authDomain: "greenomics-7639d.firebaseapp.com",
@@ -6,12 +6,12 @@ export const firebaseConfig = {
     storageBucket: "greenomics-7639d.firebasestorage.app",
     messagingSenderId: "381392746735",
     appId: "1:381392746735:web:c9873f430a5b04c4f5031a"
-};  
+};
 
-// API key yang sudah benar
+// Gemini API Key
 export const geminiApiKey = "AIzaSyAkIyXZk5Xk36eG4hrQ0aKlRlkg6B5gaw8";
 
-// Konfigurasi aplikasi
+// App Configuration
 export const appConfig = {
     maxRetries: 3,
     retryDelay: 1000,
@@ -19,7 +19,7 @@ export const appConfig = {
     temperature: 0.7
 };
 
-// Fungsi untuk menampilkan notifikasi
+// Notification function
 export function showNotification(message, type = 'info') {
     const existingNotif = document.getElementById('api-notification');
     if (existingNotif) {
@@ -49,43 +49,5 @@ export function showNotification(message, type = 'info') {
     }, 5000);
 }
 
-// Test koneksi API sederhana
-async function testAPIConnection() {
-    try {
-        console.log('Testing API connection...');
-        
-        if (!geminiApiKey || geminiApiKey === "PASTE_API_KEY_BARU_DISINI") {
-            console.error('API key belum diset!');
-            showNotification('API key belum diset. Generate di https://aistudio.google.com/app/apikey', 'error');
-            return;
-        }
-        
-        const { getChatResponse } = await import('/assets/js/core/gemini-service.js');
-        const response = await getChatResponse("Halo");
-        
-        if (response && !response.includes('Error:') && !response.includes('Maaf') && !response.includes('gangguan')) {
-            console.log('API connection successful');
-            showNotification('API Gemini berhasil terhubung!', 'success');
-        } else {
-            console.warn('API responded but with issues');
-            showNotification('API terhubung tetapi ada masalah kecil.', 'warning');
-        }
-        
-    } catch (error) {
-        console.error('API connection failed:', error);
-        showNotification('Tidak dapat terhubung ke API Gemini. Periksa API key Anda.', 'error');
-    }
-}
-
 // Export untuk global access
 window.showNotification = showNotification;
-
-// Inisialisasi saat DOM loaded
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('Config loaded - simple version');
-    
-    // Test koneksi API setelah delay
-    setTimeout(() => {
-        testAPIConnection();
-    }, 3000);
-});

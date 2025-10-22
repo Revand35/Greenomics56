@@ -49,7 +49,7 @@
             to { transform: translateX(0); opacity: 1; }
         }
     </style>
-    <script type="module" src="assets/js/auth/auth-guard.js"></script>
+    <script type="module" src="assets/js/auth.js"></script>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-100">
 
@@ -332,10 +332,9 @@
     </script>
     
     <script type="module">
+        import authInstance from './assets/js/auth.js';
         import { auth } from './config/firebase-init.js';
         import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-        import { getDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-        import { db } from './config/firebase-init.js';
 
         function setActiveNav() {
             const currentPage = window.location.pathname.split('/').pop();
@@ -357,68 +356,37 @@
         async function updateUserProfile(user) {
             try {
                 if (user) {
-                    let userData = {
-                        uid: user.uid,
-                        email: user.email,
-                        displayName: user.displayName || user.email?.split('@')[0] || 'UMKM',
-                        photoURL: user.photoURL,
-                        role: 'umkm'
-                    };
+                    const userData = authInstance.getCurrentUser();
+                    
+                    if (userData) {
+                        document.getElementById('user-name').textContent = userData.displayName || 'User';
+                        document.getElementById('user-email').textContent = userData.email || 'user@example.com';
+                        document.getElementById('user-role').textContent = userData.role || 'user';
 
-                    try {
-                        const userDoc = await getDoc(doc(db, "users", user.uid));
-                        if (userDoc.exists()) {
-                            const firestoreData = userDoc.data();
-                            userData = {
-                                ...userData,
-                                displayName: firestoreData.displayName ||
-                                        (firestoreData.firstName && firestoreData.lastName ?
-                                            `${firestoreData.firstName} ${firestoreData.lastName}` :
-                                            userData.displayName),
-                                role: firestoreData.role || 'umkm',
-                                profession: firestoreData.profession || 'UMKM'
-                            };
-                        } else {
-                            userData.profession = 'UMKM';
+                        const profession = userData.profession || 'UMKM';
+                        document.getElementById('user-profession').textContent = profession;
+
+                        const avatar = document.getElementById('user-avatar');
+                        if (avatar) {
+                            if (userData.photoURL) {
+                                avatar.innerHTML = `<img src="${userData.photoURL}" alt="Profile" class="w-full h-full rounded-full object-cover">`;
+                            } else {
+                                const initials = userData.displayName ?
+                                    userData.displayName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) :
+                                    '👤';
+                                avatar.textContent = initials.length <= 2 ? initials : '👤';
+                            }
                         }
-                    } catch (firestoreError) {
-                        console.log('Could not fetch Firestore data:', firestoreError);
-                        userData.profession = 'UMKM';
-                    }
 
-                    document.getElementById('user-name').textContent = userData.displayName;
-                    document.getElementById('user-email').textContent = userData.email;
-                    document.getElementById('user-role').textContent = userData.role;
-
-                    const profession = userData.profession
-                        ? userData.profession.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
-                        : 'UMKM';
-                    document.getElementById('user-profession').textContent = profession;
-
-                    const avatar = document.getElementById('user-avatar');
-                    if (avatar) {
-                        if (userData.photoURL) {
-                            avatar.innerHTML = `<img src="${userData.photoURL}" alt="Profile" class="w-full h-full rounded-full object-cover">`;
-                        } else {
-                            const initials = userData.displayName ?
-                                userData.displayName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) :
-                                '👤';
-                            avatar.textContent = initials.length <= 2 ? initials : '👤';
+                        // Show admin dashboard button only for admin
+                        const adminDashboardBtn = document.getElementById('admin-dashboard-btn');
+                        if (adminDashboardBtn && userData.role === 'admin') {
+                            adminDashboardBtn.classList.remove('hidden');
                         }
                     }
-
-                    // Show admin dashboard button only for admin
-                    const adminDashboardBtn = document.getElementById('admin-dashboard-btn');
-                    if (adminDashboardBtn && userData.role === 'admin') {
-                        adminDashboardBtn.classList.remove('hidden');
-                    }
-
                 } else {
-                    document.getElementById('user-name').textContent = 'Guest UMKM';
-                    document.getElementById('user-profession').textContent = 'Visitor';
-                    document.getElementById('user-email').textContent = 'guest@example.com';
-                    document.getElementById('user-role').textContent = 'guest';
-                    document.getElementById('user-avatar').textContent = '🏢';
+                    // Redirect to login if not authenticated
+                    window.location.href = './login.html';
                 }
 
             } catch (error) {
@@ -433,8 +401,14 @@
             initializeEcoScore();
             initializeMotivationNotifications();
             
+            // Check authentication status
             onAuthStateChanged(auth, async (user) => {
-                await updateUserProfile(user);
+                if (user) {
+                    await updateUserProfile(user);
+                } else {
+                    // Redirect to login if not authenticated
+                    window.location.href = './login.html';
+                }
             });
         });
 
