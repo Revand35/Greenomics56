@@ -40,6 +40,7 @@
   "homepage": "https://moral-intelligence.web.app",
   "dependencies": {
     "docx": "^8.5.0",
-    "dotenv": "^17.2.2"
+    "dotenv": "^17.2.2",
+    "firebase": "^12.4.0"
   }
 }

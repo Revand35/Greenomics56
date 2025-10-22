@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Moral Intelligence</title>
+    <title>Policy Dashboard - Greenomics</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .gradient-bg { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
         .card-hover { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         .card-hover:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
         .stat-card { position: relative; overflow: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -21,7 +21,7 @@
         canvas { max-height: 250px; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 min-h-screen">
+<body class="bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 min-h-screen">
     
     <!-- Navigation -->
     <nav class="gradient-bg shadow-2xl relative overflow-hidden">
@@ -30,13 +30,13 @@
             <div class="flex justify-between items-center py-6">
                 <div class="flex items-center space-x-4">
                     <a href="../../index.html" class="text-2xl font-bold text-white flex items-center">
-                        <i class="fas fa-brain mr-3 text-3xl"></i>
-                        <span class="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-                            Moral Intelligence
+                        <i class="fas fa-leaf mr-3 text-3xl"></i>
+                        <span class="bg-gradient-to-r from-white to-green-100 bg-clip-text text-transparent">
+                            🌱 Greenomics
                         </span>
                     </a>
-                    <span class="bg-white/20 text-red-100 px-4 py-2 rounded-full text-sm font-bold">
-                        Admin Panel
+                    <span class="bg-white/20 text-green-100 px-4 py-2 rounded-full text-sm font-bold">
+                        Policy Dashboard
                     </span>
                 </div>
                 <div class="flex items-center space-x-6">
@@ -56,36 +56,36 @@
         
         <!-- Header -->
         <div class="text-center mb-6 sm:mb-8 relative">
-            <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent mb-2">
-                Admin Dashboard
+            <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent mb-2">
+                Policy Dashboard
             </h1>
-            <p class="text-sm sm:text-base text-gray-600 font-medium">Kelola sistem Moral Intelligence</p>
+            <p class="text-sm sm:text-base text-gray-600 font-medium">Analisis Data Green Accounting untuk Kebijakan UMKM</p>
         </div>
 
         <!-- Stats Overview -->
         <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 mb-8">
-            <div class="stat-card bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-3 sm:p-4 text-white">
+            <div class="stat-card bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-3 sm:p-4 text-white">
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
-                        <p class="text-blue-100 text-xs font-medium mb-1">Users</p>
-                        <p class="text-2xl sm:text-3xl font-bold mb-0.5 stat-pulse" id="totalUsers">0</p>
-                        <p class="text-blue-200 text-xs hidden sm:block">Registered</p>
+                        <p class="text-green-100 text-xs font-medium mb-1">UMKM</p>
+                        <p class="text-2xl sm:text-3xl font-bold mb-0.5 stat-pulse" id="totalUMKM">156</p>
+                        <p class="text-green-200 text-xs hidden sm:block">Terdaftar</p>
                     </div>
                     <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <i class="fas fa-users text-base sm:text-lg"></i>
+                        <i class="fas fa-building text-base sm:text-lg"></i>
                     </div>
                 </div>
             </div>
 
-            <div class="stat-card bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-3 sm:p-4 text-white">
+            <div class="stat-card bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-3 sm:p-4 text-white">
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
-                        <p class="text-green-100 text-xs font-medium mb-1">Materi</p>
-                        <p class="text-2xl sm:text-3xl font-bold mb-0.5 stat-pulse" id="totalMaterials">0</p>
-                        <p class="text-green-200 text-xs hidden sm:block">Resources</p>
+                        <p class="text-blue-100 text-xs font-medium mb-1">Eco-Score</p>
+                        <p class="text-2xl sm:text-3xl font-bold mb-0.5 stat-pulse" id="avgEcoScore">78</p>
+                        <p class="text-blue-200 text-xs hidden sm:block">Rata-rata</p>
                     </div>
                     <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <i class="fas fa-book text-base sm:text-lg"></i>
+                        <i class="fas fa-leaf text-base sm:text-lg"></i>
                     </div>
                 </div>
             </div>
@@ -93,12 +93,12 @@
             <div class="stat-card bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-3 sm:p-4 text-white">
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
-                        <p class="text-purple-100 text-xs font-medium mb-1">Forum</p>
-                        <p class="text-2xl sm:text-3xl font-bold mb-0.5 stat-pulse" id="totalForumPosts">0</p>
-                        <p class="text-purple-200 text-xs hidden sm:block">Posts</p>
+                        <p class="text-purple-100 text-xs font-medium mb-1">Limbah</p>
+                        <p class="text-2xl sm:text-3xl font-bold mb-0.5 stat-pulse" id="totalWaste">2.4T</p>
+                        <p class="text-purple-200 text-xs hidden sm:block">Dikelola</p>
                     </div>
                     <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <i class="fas fa-comments text-base sm:text-lg"></i>
+                        <i class="fas fa-recycle text-base sm:text-lg"></i>
                     </div>
                 </div>
             </div>
@@ -106,25 +106,25 @@
             <div class="stat-card bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-lg p-3 sm:p-4 text-white">
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
-                        <p class="text-orange-100 text-xs font-medium mb-1">Quiz</p>
-                        <p class="text-2xl sm:text-3xl font-bold mb-0.5 stat-pulse" id="totalQuizSessions">0</p>
-                        <p class="text-orange-200 text-xs hidden sm:block">Sessions</p>
+                        <p class="text-orange-100 text-xs font-medium mb-1">Nilai Ekonomi</p>
+                        <p class="text-2xl sm:text-3xl font-bold mb-0.5 stat-pulse" id="totalEconomicValue">Rp 12.5M</p>
+                        <p class="text-orange-200 text-xs hidden sm:block">Total</p>
                     </div>
                     <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <i class="fas fa-clipboard-check text-base sm:text-lg"></i>
+                        <i class="fas fa-coins text-base sm:text-lg"></i>
                     </div>
                 </div>
             </div>
 
-            <div class="stat-card bg-gradient-to-br from-pink-500 to-pink-600 rounded-lg shadow-lg p-3 sm:p-4 text-white">
+            <div class="stat-card bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg shadow-lg p-3 sm:p-4 text-white">
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
-                        <p class="text-pink-100 text-xs font-medium mb-1">Survey</p>
-                        <p class="text-2xl sm:text-3xl font-bold mb-0.5 stat-pulse" id="totalSurveyResponses">0</p>
-                        <p class="text-pink-200 text-xs hidden sm:block">Responses</p>
+                        <p class="text-teal-100 text-xs font-medium mb-1">Efisiensi</p>
+                        <p class="text-2xl sm:text-3xl font-bold mb-0.5 stat-pulse" id="avgEfficiency">23%</p>
+                        <p class="text-teal-200 text-xs hidden sm:block">Penghematan</p>
                     </div>
                     <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <i class="fas fa-poll text-base sm:text-lg"></i>
+                        <i class="fas fa-chart-line text-base sm:text-lg"></i>
                     </div>
                 </div>
             </div>
@@ -133,16 +133,16 @@
         <!-- Charts -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 mb-6">
             <div class="bg-white rounded-lg shadow-md p-3 sm:p-4">
-                <h3 class="text-sm sm:text-base font-semibold text-gray-800 mb-3">Distribusi Skor Quiz</h3>
+                <h3 class="text-sm sm:text-base font-semibold text-gray-800 mb-3">Distribusi Eco-Score UMKM</h3>
                 <div style="height: 250px; position: relative;">
-                    <canvas id="score-distribution-chart"></canvas>
+                    <canvas id="eco-score-distribution-chart"></canvas>
                 </div>
             </div>
 
             <div class="bg-white rounded-lg shadow-md p-3 sm:p-4">
-                <h3 class="text-sm sm:text-base font-semibold text-gray-800 mb-3">Rata-rata per Aspek</h3>
+                <h3 class="text-sm sm:text-base font-semibold text-gray-800 mb-3">Dampak Lingkungan per Sektor</h3>
                 <div style="height: 250px; position: relative;">
-                    <canvas id="aspect-average-chart"></canvas>
+                    <canvas id="environmental-impact-chart"></canvas>
                 </div>
             </div>
         </div>
@@ -885,28 +885,29 @@
 
             console.log('✅ Analytics loaded:', analytics);
 
-            const scoreCtx = document.getElementById('score-distribution-chart')?.getContext('2d');
+            const scoreCtx = document.getElementById('eco-score-distribution-chart')?.getContext('2d');
             if (!scoreCtx) {
-              console.error('❌ Score chart canvas not found');
+              console.error('❌ Eco-score chart canvas not found');
               return;
             }
 
-            const scoreLabels = Object.keys(analytics.scoreDistribution || {});
-            const scoreValues = Object.values(analytics.scoreDistribution || {});
+            // Sample data for green accounting
+            const ecoScoreLabels = ['0-20', '21-40', '41-60', '61-80', '81-100'];
+            const ecoScoreValues = [12, 28, 45, 52, 19]; // Sample UMKM distribution
 
             if (scoreChart) {
-              scoreChart.data.labels = scoreLabels;
-              scoreChart.data.datasets[0].data = scoreValues;
+              scoreChart.data.labels = ecoScoreLabels;
+              scoreChart.data.datasets[0].data = ecoScoreValues;
               scoreChart.update();
             } else {
               scoreChart = new Chart(scoreCtx, {
                 type: 'bar',
                 data: {
-                  labels: scoreLabels,
+                  labels: ecoScoreLabels,
                   datasets: [{
-                    label: 'Jumlah Sesi',
-                    data: scoreValues,
-                    backgroundColor: '#6366f1',
+                    label: 'Jumlah UMKM',
+                    data: ecoScoreValues,
+                    backgroundColor: '#10b981',
                     borderRadius: 8
                   }]
                 },
@@ -923,7 +924,7 @@
                     y: {
                       beginAtZero: true,
                       ticks: {
-                        stepSize: 1
+                        stepSize: 5
                       }
                     }
                   }
@@ -931,34 +932,34 @@
               });
             }
 
-            const aspectCtx = document.getElementById('aspect-average-chart')?.getContext('2d');
+            const aspectCtx = document.getElementById('environmental-impact-chart')?.getContext('2d');
             if (!aspectCtx) {
-              console.error('❌ Aspect chart canvas not found');
+              console.error('❌ Environmental impact chart canvas not found');
               return;
             }
 
-            const aspectLabels = Object.keys(analytics.aspectAverages || {}).map(a => a.charAt(0).toUpperCase() + a.slice(1));
-            const aspectValues = Object.values(analytics.aspectAverages || {});
+            const sectorLabels = ['Makanan', 'Tekstil', 'Kerajinan', 'Teknologi', 'Jasa'];
+            const impactValues = [85, 72, 68, 91, 76]; // Sample environmental impact scores
 
             if (aspectChart) {
-              aspectChart.data.labels = aspectLabels;
-              aspectChart.data.datasets[0].data = aspectValues;
+              aspectChart.data.labels = sectorLabels;
+              aspectChart.data.datasets[0].data = impactValues;
               aspectChart.update();
             } else {
               aspectChart = new Chart(aspectCtx, {
                 type: 'radar',
                 data: {
-                  labels: aspectLabels,
+                  labels: sectorLabels,
                   datasets: [{
-                    label: 'Rata-rata Skor',
-                    data: aspectValues,
-                    backgroundColor: 'rgba(99,102,241,0.2)',
-                    borderColor: '#6366f1',
+                    label: 'Dampak Lingkungan',
+                    data: impactValues,
+                    backgroundColor: 'rgba(16,185,129,0.2)',
+                    borderColor: '#10b981',
                     borderWidth: 2,
-                    pointBackgroundColor: '#6366f1',
+                    pointBackgroundColor: '#10b981',
                     pointBorderColor: '#fff',
                     pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: '#6366f1'
+                    pointHoverBorderColor: '#10b981'
                   }]
                 },
                 options: {

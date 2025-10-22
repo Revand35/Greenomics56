@@ -1,12 +1,11 @@
 // config.js - Versi sederhana tanpa rate limiting untuk debug - Updated: 2025-01-01 14:30
 export const firebaseConfig = {
-    apiKey: "AIzaSyBwbrFIX-ywTm5eAOTNIRlbAiBmnOhsRL0",
-    authDomain: "mi-app-8ff5c.firebaseapp.com",
-    projectId: "mi-app-8ff5c",
-    storageBucket: "mi-app-8ff5c.appspot.com", // ✅ FIX DI SINI
-    messagingSenderId: "320717032422",
-    appId: "1:320717032422:web:452ebbffb5055f83a02427",
-    measurementId: "G-Q1GV4BGLBR"
+    apiKey: "AIzaSyC7vfSi6iGzWSkyWJTX1lvTG-k8P1HZL9s",
+    authDomain: "greenomics-7639d.firebaseapp.com",
+    projectId: "greenomics-7639d",
+    storageBucket: "greenomics-7639d.firebasestorage.app",
+    messagingSenderId: "381392746735",
+    appId: "1:381392746735:web:c9873f430a5b04c4f5031a"
 };  
 
 // API key yang sudah benar

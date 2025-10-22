@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Materi - Moral Intelligence</title>
+    <title>Input Data - Greenomics</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .nav-button.active { color: #4f46e5; }
+        .nav-button.active { color: #10b981; }
         .material-card { transition: transform 0.2s, box-shadow 0.2s; }
         .material-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
         .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
@@ -19,7 +19,7 @@
             top: 0; 
             left: 0; 
             height: 4px; 
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6); 
+            background: linear-gradient(90deg, #10b981, #059669); 
             z-index: 1000; 
             transition: width 0.3s ease;
         }
@@ -33,82 +33,156 @@
     </style>
     <script type="module" src="../../assets/js/auth/auth-guard.js"></script>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100">
+<body class="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-100">
 
     <!-- Reading Progress Bar -->
     <div id="reading-progress" class="reading-progress" style="width: 0%"></div>
 
     <!-- Main App Container -->
     <div id="app-container" class="pb-24">
-        <!-- Materi Header -->
-        <div class="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 text-white p-6 rounded-b-3xl shadow-xl">
+        <!-- Input Data Header -->
+        <div class="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 text-white p-6 rounded-b-3xl shadow-xl">
             <div class="flex justify-between items-center">
                 <div>
-                    <h1 class="text-2xl font-bold mb-1">Pusat Materi</h1>
-                    <p class="text-purple-100 text-sm">Panduan lengkap moral intelligence untuk pendidik</p>
+                    <h1 class="text-2xl font-bold mb-1">📊 Input Data Green Accounting</h1>
+                    <p class="text-green-100 text-sm">Catat aktivitas lingkungan UMKM Anda</p>
                 </div>
+                <button id="add-data-button" class="bg-white/20 hover:bg-white/30 p-3 rounded-full transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14m-7-7h14"/></svg>
+                </button>
             </div>
         </div>
         
         <div class="p-6 space-y-6">
-            <!-- Main Content -->
-            <div class="container mx-auto px-4 py-8">
-                <!-- Loading State -->
-                <div id="loading-state" class="hidden text-center py-10">
-                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto"></div>
-                    <p class="mt-4 text-gray-600">Memuat materi...</p>
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white rounded-xl p-4 shadow-md text-center">
+                    <div class="text-2xl font-bold text-green-600 stat-pulse">250</div>
+                    <div class="text-xs text-gray-500">kg Limbah</div>
                 </div>
+                <div class="bg-white rounded-xl p-4 shadow-md text-center">
+                    <div class="text-2xl font-bold text-blue-600 stat-pulse">Rp 1.2M</div>
+                    <div class="text-xs text-gray-500">Nilai Ekonomi</div>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-md text-center">
+                    <div class="text-2xl font-bold text-purple-600 stat-pulse">87</div>
+                    <div class="text-xs text-gray-500">Eco-Score</div>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-md text-center">
+                    <div class="text-2xl font-bold text-orange-600 stat-pulse">15%</div>
+                    <div class="text-xs text-gray-500">Efisiensi</div>
+                </div>
+            </div>
 
-                <!-- Empty State -->
-                <div id="empty-state" class="hidden text-center py-10">
-                    <div class="w-24 h-24 mx-auto mb-4 text-gray-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
+            <!-- Input Form -->
+            <div class="bg-white rounded-2xl p-6 shadow-lg">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">📝 Tambah Aktivitas Lingkungan</h2>
+                
+                <form id="environmental-activity-form" class="space-y-6">
+                    <!-- Activity Type -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Aktivitas</label>
+                        <select id="activity-type" class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="">Pilih jenis aktivitas</option>
+                            <option value="waste">Pengelolaan Limbah</option>
+                            <option value="energy">Penggunaan Energi</option>
+                            <option value="water">Penggunaan Air</option>
+                            <option value="carbon">Emisi Karbon</option>
+                            <option value="recycling">Daur Ulang</option>
+                        </select>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-900">Tidak ada materi</h3>
-                    <p class="mt-1 text-sm text-gray-500">Belum ada materi yang tersedia.</p>
-                </div>
 
-                <!-- Search and Filter -->
-                <div class="mb-8">
-                    <div class="relative max-w-2xl mx-auto">
-                        <input type="text" id="search-input" 
-                               class="w-full px-6 py-4 rounded-2xl border-0 shadow-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
-                               placeholder="Cari materi...">
-                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                            <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                            </svg>
+                    <!-- Material/Resource -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Material/Sumber Daya</label>
+                        <select id="material-type" class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="">Pilih material</option>
+                            <option value="plastic">Plastik</option>
+                            <option value="paper">Kertas</option>
+                            <option value="metal">Logam</option>
+                            <option value="organic">Organik</option>
+                            <option value="electricity">Listrik</option>
+                            <option value="water">Air</option>
+                        </select>
+                    </div>
+
+                    <!-- Amount -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Jumlah</label>
+                        <div class="flex">
+                            <input type="number" id="amount" placeholder="0" class="flex-1 p-3 border border-gray-200 rounded-l-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <select id="unit" class="p-3 border border-gray-200 border-l-0 rounded-r-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                <option value="kg">kg</option>
+                                <option value="liter">liter</option>
+                                <option value="kwh">kWh</option>
+                                <option value="m3">m³</option>
+                                <option value="piece">buah</option>
+                            </select>
                         </div>
                     </div>
 
-                    <div class="flex justify-center mt-4 space-x-2 overflow-x-auto py-2">
-                        <button class="filter-btn px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 text-sm font-medium" data-filter="all">Semua</button>
-                        <button class="filter-btn px-4 py-2 rounded-full text-gray-600 hover:bg-gray-100 text-sm font-medium" data-filter="pdf">PDF</button>
-                        <button class="filter-btn px-4 py-2 rounded-full text-gray-600 hover:bg-gray-100 text-sm font-medium" data-filter="doc">Dokumen</button>
-                        <button class="filter-btn px-4 py-2 rounded-full text-gray-600 hover:bg-gray-100 text-sm font-medium" data-filter="video">Video</button>
+                    <!-- Action -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Aksi</label>
+                        <select id="action" class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="">Pilih aksi</option>
+                            <option value="recycled">Daur Ulang</option>
+                            <option value="reduced">Dikurangi</option>
+                            <option value="reused">Digunakan Ulang</option>
+                            <option value="disposed">Dibuang</option>
+                            <option value="conserved">Dihasilkan</option>
+                        </select>
                     </div>
-                </div>
 
-                <!-- Featured Materials -->
-                <div id="featured-container" class="mb-12 hidden">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Materi Unggulan</h2>
-                    <div id="featured-materials" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                        <!-- Featured items will be inserted here -->
+                    <!-- Cost -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Biaya (Opsional)</label>
+                        <input type="number" id="cost" placeholder="0" class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     </div>
-                </div>
 
-                <!-- All Materials -->
-                <div id="materials-container">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-lg font-semibold text-gray-900">Semua Materi</h2>
-                        <span id="materials-count" class="text-sm text-gray-500">0 materi</span>
+                    <!-- Notes -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Catatan</label>
+                        <textarea id="notes" rows="3" placeholder="Tambahkan catatan tentang aktivitas ini..." class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"></textarea>
                     </div>
-                    <div id="materials-list" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                        <!-- Materials will be inserted here -->
-                        <div class="text-center py-10 text-gray-500">
-                            <p>Memuat materi...</p>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all">
+                        💰 Hitung Nilai Ekonomi
+                    </button>
+                </form>
+            </div>
+
+            <!-- Recent Activities -->
+            <div class="bg-white rounded-2xl p-6 shadow-lg">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">📋 Aktivitas Terbaru</h2>
+                <div id="recent-activities" class="space-y-4">
+                    <!-- Sample activities -->
+                    <div class="flex items-center justify-between p-4 bg-green-50 rounded-xl">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold">♻️</div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">Daur Ulang Plastik</h3>
+                                <p class="text-sm text-gray-600">50 kg • Rp 150.000</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-semibold text-green-600">+5 Eco-Score</p>
+                            <p class="text-xs text-gray-500">2 jam lalu</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-blue-50 rounded-xl">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">⚡</div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">Penghematan Listrik</h3>
+                                <p class="text-sm text-gray-600">100 kWh • Rp 150.000</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-semibold text-blue-600">+3 Eco-Score</p>
+                            <p class="text-xs text-gray-500">1 hari lalu</p>
                         </div>
                     </div>
                 </div>
@@ -145,19 +219,19 @@
         <div class="flex justify-around items-center max-w-lg mx-auto">
             <a href="../../index.html" data-page="home" class="nav-button flex flex-col items-center space-y-1 text-gray-500">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                <span class="text-xs font-medium">Beranda</span>
+                <span class="text-xs font-medium">Dashboard</span>
             </a>
             <a href="./chat.html" data-page="chat" class="nav-button flex flex-col items-center space-y-1 text-gray-500">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                <span class="text-xs font-medium">Quiz</span>
+                <span class="text-xs font-medium">AI Assistant</span>
             </a>
             <a href="./forum.html" data-page="forum" class="nav-button flex flex-col items-center space-y-1 text-gray-500">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                <span class="text-xs font-medium">Forum</span>
+                <span class="text-xs font-medium">Reports</span>
             </a>
             <a href="./materi.html" data-page="materi" class="nav-button flex flex-col items-center space-y-1 text-gray-500">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                <span class="text-xs font-medium">Materi</span>
+                <span class="text-xs font-medium">Input Data</span>
             </a>
             <a href="./profil.html" data-page="profile" class="nav-button flex flex-col items-center space-y-1 text-gray-500">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -505,6 +579,120 @@
             };
 
             document.addEventListener("DOMContentLoaded", loadMateri);
+        </script>
+        
+        <script>
+            // Form submission handler
+            document.getElementById('environmental-activity-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = {
+                    activityType: document.getElementById('activity-type').value,
+                    materialType: document.getElementById('material-type').value,
+                    amount: document.getElementById('amount').value,
+                    unit: document.getElementById('unit').value,
+                    action: document.getElementById('action').value,
+                    cost: document.getElementById('cost').value,
+                    notes: document.getElementById('notes').value,
+                    timestamp: new Date().toISOString()
+                };
+                
+                // Calculate economic value (sample calculation)
+                const economicValue = calculateEconomicValue(formData);
+                
+                // Show success notification
+                showSuccessNotification(`✅ Aktivitas berhasil dicatat! Nilai ekonomi: Rp ${economicValue.toLocaleString()}`);
+                
+                // Add to recent activities
+                addToRecentActivities(formData, economicValue);
+                
+                // Reset form
+                this.reset();
+            });
+            
+            // Calculate economic value based on activity
+            function calculateEconomicValue(data) {
+                const baseValue = parseFloat(data.amount) || 0;
+                let multiplier = 1;
+                
+                switch(data.materialType) {
+                    case 'plastic':
+                        multiplier = 3000; // Rp 3,000 per kg
+                        break;
+                    case 'paper':
+                        multiplier = 2000; // Rp 2,000 per kg
+                        break;
+                    case 'metal':
+                        multiplier = 5000; // Rp 5,000 per kg
+                        break;
+                    case 'electricity':
+                        multiplier = 1500; // Rp 1,500 per kWh
+                        break;
+                    case 'water':
+                        multiplier = 500; // Rp 500 per liter
+                        break;
+                    default:
+                        multiplier = 1000;
+                }
+                
+                return baseValue * multiplier;
+            }
+            
+            // Show success notification
+            function showSuccessNotification(message) {
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-20 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50 max-w-sm';
+                notification.innerHTML = `
+                    <div class="flex items-start space-x-2">
+                        <div class="text-lg">🎉</div>
+                        <div>
+                            <p class="text-sm font-medium">${message}</p>
+                            <button onclick="this.parentElement.parentElement.parentElement.remove()" class="text-xs text-green-100 hover:text-white mt-1">Tutup</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(notification);
+                
+                // Auto remove after 5 seconds
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 5000);
+            }
+            
+            // Add to recent activities
+            function addToRecentActivities(data, economicValue) {
+                const activitiesContainer = document.getElementById('recent-activities');
+                const activityElement = document.createElement('div');
+                
+                const icons = {
+                    'waste': '🗑️',
+                    'energy': '⚡',
+                    'water': '💧',
+                    'carbon': '🌍',
+                    'recycling': '♻️'
+                };
+                
+                const icon = icons[data.activityType] || '📊';
+                
+                activityElement.className = 'flex items-center justify-between p-4 bg-green-50 rounded-xl';
+                activityElement.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold">${icon}</div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">${data.materialType.charAt(0).toUpperCase() + data.materialType.slice(1)} ${data.action.charAt(0).toUpperCase() + data.action.slice(1)}</h3>
+                            <p class="text-sm text-gray-600">${data.amount} ${data.unit} • Rp ${economicValue.toLocaleString()}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-semibold text-green-600">+5 Eco-Score</p>
+                        <p class="text-xs text-gray-500">Baru saja</p>
+                    </div>
+                `;
+                
+                activitiesContainer.insertBefore(activityElement, activitiesContainer.firstChild);
+            }
         </script>
 </body>
 </html>

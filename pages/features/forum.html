@@ -3,30 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forum - Moral Intelligence</title>
+    <title>Green Reports - Greenomics</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .nav-button.active { color: #4f46e5; /* Indigo-600 */ }
+        .nav-button.active { color: #10b981; /* Green-600 */ }
         .no-scrollbar { scrollbar-width: none; /* Firefox */ }
         .no-scrollbar::-webkit-scrollbar { display: none; /* Safari and Chrome */ }
     </style>
     <script type="module" src="../../assets/js/auth/auth-guard.js"></script>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100">
+<body class="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-100">
 
     <!-- Main App Container -->
     <div id="app-container" class="pb-24">
-        <!-- Forum Header -->
-        <div class="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white p-6 rounded-b-3xl shadow-xl">
+        <!-- Green Reports Header -->
+        <div class="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 text-white p-6 rounded-b-3xl shadow-xl">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold mb-1">Forum Komunitas</h1>
-                    <p class="text-green-100 text-sm">Berbagi pengalaman dengan sesama pendidik</p>
+                    <h1 class="text-2xl font-bold mb-1">📊 Green Reports</h1>
+                    <p class="text-green-100 text-sm">Analisis & Laporan Dampak Lingkungan UMKM</p>
                 </div>
-                <button id="new-post-button" class="bg-white/20 hover:bg-white/30 p-3 rounded-full transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14m-7-7h14"/></svg>
+                <button id="new-report-button" class="bg-white/20 hover:bg-white/30 p-3 rounded-full transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
                 </button>
             </div>
         </div>
@@ -35,52 +35,78 @@
             <!-- Search & Filter -->
             <div class="bg-white rounded-2xl p-4 shadow-lg">
                 <div class="relative mb-4">
-                    <input type="text" id="search-input" placeholder="Cari topik diskusi..." class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <input type="text" id="search-input" placeholder="Cari laporan green accounting..." class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                 </div>
                 <div class="flex space-x-2 overflow-x-auto no-scrollbar">
                     <button class="bg-green-500 text-white px-4 py-2 rounded-full text-sm whitespace-nowrap">Semua</button>
-                    <button class="bg-gray-100 text-gray-600 px-4 py-2 rounded-full text-sm whitespace-nowrap">Bullying</button>
-                    <button class="bg-gray-100 text-gray-600 px-4 py-2 rounded-full text-sm whitespace-nowrap">Motivasi</button>
-                    <button class="bg-gray-100 text-gray-600 px-4 py-2 rounded-full text-sm whitespace-nowrap">Komunikasi</button>
-                    <button class="bg-gray-100 text-gray-600 px-4 py-2 rounded-full text-sm whitespace-nowrap">Disiplin</button>
+                    <button class="bg-gray-100 text-gray-600 px-4 py-2 rounded-full text-sm whitespace-nowrap">Limbah</button>
+                    <button class="bg-gray-100 text-gray-600 px-4 py-2 rounded-full text-sm whitespace-nowrap">Energi</button>
+                    <button class="bg-gray-100 text-gray-600 px-4 py-2 rounded-full text-sm whitespace-nowrap">Karbon</button>
+                    <button class="bg-gray-100 text-gray-600 px-4 py-2 rounded-full text-sm whitespace-nowrap">Ekonomi</button>
                 </div>
             </div>
             
-            <!-- Forum Threads -->
-            <div id="forum-threads" class="space-y-4">
-                <!-- Thread 1 -->
+            <!-- Green Reports -->
+            <div id="green-reports" class="space-y-4">
+                <!-- Report 1 -->
                 <div class="bg-white rounded-2xl p-5 shadow-lg">
                     <div class="flex items-start space-x-4">
-                        <div class="w-12 h-12 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">BR</div>
+                        <div class="w-12 h-12 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">🏭</div>
                         <div class="flex-1">
                             <div class="flex items-center justify-between mb-2">
-                                <h4 class="font-bold text-gray-800">Bu Rina</h4>
-                                <span class="text-gray-400 text-xs">2 jam lalu</span>
+                                <h4 class="font-bold text-gray-800">UMKM Tahu Bakso "Sari Rasa"</h4>
+                                <span class="text-gray-400 text-xs">2 hari lalu</span>
                             </div>
-                            <h3 class="font-semibold text-gray-800 mb-2">Menghadapi Siswa yang Suka Mencari Perhatian</h3>
-                            <p class="text-gray-600 text-sm mb-3">Ada siswa di kelas saya yang selalu mencari perhatian dengan berbagai cara... Bagaimana cara yang tepat untuk...</p>
+                            <h3 class="font-semibold text-gray-800 mb-2">Laporan Bulanan Dampak Lingkungan</h3>
+                            <div class="grid grid-cols-3 gap-4 mb-3">
+                                <div class="text-center">
+                                    <p class="text-lg font-bold text-green-600">250kg</p>
+                                    <p class="text-xs text-gray-500">Limbah Dikelola</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-lg font-bold text-blue-600">Rp 1.2M</p>
+                                    <p class="text-xs text-gray-500">Nilai Ekonomi</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-lg font-bold text-purple-600">85</p>
+                                    <p class="text-xs text-gray-500">Eco-Score</p>
+                                </div>
+                            </div>
                             <div class="flex items-center justify-between text-sm text-gray-500">
-                                <div class="flex space-x-4"><span>👍 24</span><span>💬 12</span></div>
-                                <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">komunikasi</span>
+                                <div class="flex space-x-4"><span>👁️ 24</span><span>💬 8</span><span>👍 12</span></div>
+                                <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">Limbah</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- Thread 2 -->
+                <!-- Report 2 -->
                 <div class="bg-white rounded-2xl p-5 shadow-lg">
                      <div class="flex items-start space-x-4">
-                        <div class="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">PA</div>
+                        <div class="w-12 h-12 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">⚡</div>
                         <div class="flex-1">
                             <div class="flex items-center justify-between mb-2">
-                                <h4 class="font-bold text-gray-800">Pak Ahmad</h4>
-                                <span class="text-gray-400 text-xs">4 jam lalu</span>
+                                <h4 class="font-bold text-gray-800">Warung Kopi "Ngopi Santai"</h4>
+                                <span class="text-gray-400 text-xs">5 hari lalu</span>
                             </div>
-                            <h3 class="font-semibold text-gray-800 mb-2">Tips Mengatasi Siswa yang Sering Terlambat</h3>
-                            <p class="text-gray-600 text-sm mb-3">Sudah berbagai cara saya lakukan untuk mengatasi siswa yang sering terlambat... Ada yang punya pengalaman?</p>
+                            <h3 class="font-semibold text-gray-800 mb-2">Analisis Efisiensi Energi</h3>
+                            <div class="grid grid-cols-3 gap-4 mb-3">
+                                <div class="text-center">
+                                    <p class="text-lg font-bold text-green-600">-15%</p>
+                                    <p class="text-xs text-gray-500">Penghematan</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-lg font-bold text-blue-600">Rp 800K</p>
+                                    <p class="text-xs text-gray-500">Biaya Listrik</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-lg font-bold text-purple-600">92</p>
+                                    <p class="text-xs text-gray-500">Eco-Score</p>
+                                </div>
+                            </div>
                             <div class="flex items-center justify-between text-sm text-gray-500">
-                                <div class="flex space-x-4"><span>👍 18</span><span>💬 8</span></div>
-                                <span class="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs">disiplin</span>
+                                <div class="flex space-x-4"><span>👁️ 18</span><span>💬 5</span><span>👍 9</span></div>
+                                <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">Energi</span>
                             </div>
                         </div>
                     </div>
@@ -94,19 +120,19 @@
         <div class="flex justify-around items-center max-w-lg mx-auto">
             <a href="../../index.html" data-page="home" class="nav-button flex flex-col items-center space-y-1 text-gray-500">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                <span class="text-xs font-medium">Beranda</span>
+                <span class="text-xs font-medium">Dashboard</span>
             </a>
             <a href="./chat.html" data-page="chat" class="nav-button flex flex-col items-center space-y-1 text-gray-500">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                <span class="text-xs font-medium">Quiz</span>
+                <span class="text-xs font-medium">AI Assistant</span>
             </a>
             <a href="./forum.html" data-page="forum" class="nav-button flex flex-col items-center space-y-1 text-gray-500">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                <span class="text-xs font-medium">Forum</span>
+                <span class="text-xs font-medium">Reports</span>
             </a>
             <a href="./materi.html" data-page="materi" class="nav-button flex flex-col items-center space-y-1 text-gray-500">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                <span class="text-xs font-medium">Materi</span>
+                <span class="text-xs font-medium">Input Data</span>
             </a>
             <a href="./profil.html" data-page="profile" class="nav-button flex flex-col items-center space-y-1 text-gray-500">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>

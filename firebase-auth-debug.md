@@ -1,6 +1,6 @@
 # Firebase Authentication Debug Guide
 
-## Error: "Refused to frame 'https://mi-app-8ff5c.firebaseapp.com/'"
+## Error: "Refused to frame 'https://greenomics-7639d.firebaseapp.com/'"
 
 ### Penyebab:
 1. **CSP frame-src**: Domain Firebase tidak diizinkan dalam Content Security Policy
@@ -17,7 +17,7 @@ frame-src 'self' https://accounts.google.com https://*.firebaseapp.com;
 
 **Langkah-langkah:**
 1. Buka [Firebase Console](https://console.firebase.google.com/)
-2. Pilih project `mi-app-8ff5c`
+2. Pilih project `greenomics-7639d`
 3. Go to **Authentication** > **Settings** > **Authorized domains**
 4. Tambahkan domain berikut:
    - `127.0.0.1` 

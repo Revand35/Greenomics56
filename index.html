@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beranda - Moral Intelligence</title>
+    <title>Dashboard - Greenomics</title>
 
-    <meta name="theme-color" content="#667eea">
-    <meta name="description" content="Aplikasi pembelajaran moral intelligence">
+    <meta name="theme-color" content="#10b981">
+    <meta name="description" content="Platform Digital Green Accounting untuk UMKM">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
         script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.gstatic.com https://generativelanguage.googleapis.com https://apis.google.com https://esm.run;
@@ -25,7 +25,7 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
         .hover-scale:hover { transform: scale(1.03); }
-        .nav-button.active { color: #4f46e5; }
+        .nav-button.active { color: #10b981; }
         .stat-pulse {
             animation: pulse 2s infinite;
         }
@@ -33,21 +33,43 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
         }
+        .green-gradient {
+            background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+        }
+        .eco-score-ring {
+            stroke-dasharray: 251.2;
+            stroke-dashoffset: 251.2;
+            transition: stroke-dashoffset 1s ease-in-out;
+        }
+        .motivation-notification {
+            animation: slideInRight 0.5s ease-out;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
     </style>
     <script type="module" src="assets/js/auth/auth-guard.js"></script>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100">
+<body class="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-100">
 
     <div id="app-container" class="pb-24">
 
-        <!-- Header with Stats -->
-        <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 text-white p-6 rounded-b-3xl shadow-xl">
+        <!-- Header with Green Stats -->
+        <div class="green-gradient text-white p-6 rounded-b-3xl shadow-xl">
             <div class="flex items-center justify-between mb-6">
                 <div>
-                    <h1 class="text-xl font-bold">Moral Intelligence</h1>
-                    <p class="text-indigo-100 text-xs mt-1">Panduan bijak menghadapi remaja</p>
+                    <h1 class="text-xl font-bold">🌱 Greenomics</h1>
+                    <p class="text-green-100 text-xs mt-1">Digital Green Accounting untuk UMKM</p>
                 </div>
                 <div class="flex items-center gap-3">
+                    <!-- AI Assistant Button -->
+                    <a href="pages/features/chat.html" class="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-full text-white text-xs font-semibold transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423z" />
+                        </svg>
+                        AI Assistant
+                    </a>
                     <!-- Admin Dashboard Button (Only visible for admin) -->
                     <a href="pages/admin/admin-dashboard.html" id="admin-dashboard-btn" class="hidden bg-white/20 hover:bg-white/30 px-3 py-2 rounded-full text-white text-xs font-semibold transition-all">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -62,42 +84,42 @@
                                 <rect x="2" y="9" width="20" height="12" rx="2" ry="2" />
                             </svg>
                         </div>
-                        <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-indigo-700"></div>
+                        <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-green-700"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Stats Inside Header -->
+            <!-- Green Stats Inside Header -->
             <div class="grid grid-cols-3 gap-4 text-center">
                 <div>
-                    <p class="text-3xl font-bold stat-pulse" data-stat="active-days">0</p>
-                    <p class="text-white/80 text-xs mt-1">Hari Aktif</p>
+                    <p class="text-3xl font-bold stat-pulse" data-stat="eco-score">87</p>
+                    <p class="text-white/80 text-xs mt-1">Eco-Score</p>
                 </div>
                 <div>
-                    <p class="text-3xl font-bold stat-pulse" data-stat="post-forum">0</p>
-                    <p class="text-white/80 text-xs mt-1">Post Forum</p>
+                    <p class="text-3xl font-bold stat-pulse" data-stat="waste-managed">250</p>
+                    <p class="text-white/80 text-xs mt-1">kg Dikelola</p>
                 </div>
                 <div>
-                    <p class="text-3xl font-bold stat-pulse" data-stat="quiz-completed">0</p>
-                    <p class="text-white/80 text-xs mt-1">Quiz Selesai</p>
+                    <p class="text-3xl font-bold stat-pulse" data-stat="economic-value">7.5M</p>
+                    <p class="text-white/80 text-xs mt-1">Nilai Ekonomi</p>
                 </div>
             </div>
         </div>
 
         <div class="p-6 space-y-6">
 
-            <!-- Profile Section -->
+            <!-- UMKM Profile Section -->
             <div class="bg-white rounded-2xl p-5 shadow-md flex items-center space-x-4">
-                <div id="user-avatar" class="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center text-2xl text-indigo-600 font-bold">👤</div>
+                <div id="user-avatar" class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center text-2xl text-green-600 font-bold">🏢</div>
                 <div class="flex-1">
                     <h3 id="user-name" class="text-base font-semibold text-gray-800">Loading...</h3>
-                    <p id="user-profession" class="text-gray-500 text-xs mb-1">Loading...</p>
+                    <p id="user-profession" class="text-gray-500 text-xs mb-1">UMKM - Loading...</p>
                     <div class="flex flex-wrap text-xs text-gray-600 gap-3">
                         <span><strong>Email:</strong> <span id="user-email">Loading...</span></span>
-                        <span><strong>Role:</strong> <span id="user-role">Loading...</span></span>
+                        <span><strong>Bidang:</strong> <span id="user-role">Loading...</span></span>
                     </div>
                 </div>
-                <a href="pages/features/profil.html" class="bg-indigo-50 hover:bg-indigo-100 p-2 rounded-full transition-colors text-indigo-600">
+                <a href="pages/features/profil.html" class="bg-green-50 hover:bg-green-100 p-2 rounded-full transition-colors text-green-600">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path d="M12 20h9" />
                         <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
@@ -105,53 +127,91 @@
                 </a>
             </div>
 
-            <!-- Shortcuts -->
+            <!-- Green Accounting Features -->
             <div class="grid grid-cols-2 gap-4">
-                <a href="pages/features/chat.html" class="bg-gradient-to-br from-blue-500 to-cyan-500 text-white rounded-2xl p-5 shadow-md text-center hover-scale">
+                <a href="pages/features/chat.html" class="bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-2xl p-5 shadow-md text-center hover-scale">
                     <div class="bg-white/20 rounded-full p-3 mx-auto mb-2 w-fit">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                            <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423z" />
                         </svg>
                     </div>
-                    <h3 class="font-semibold text-sm">Chat AI</h3>
-                    <p class="text-blue-100 text-xs">Konsultasi cepat</p>
+                    <h3 class="font-semibold text-sm">AI Konsultan</h3>
+                    <p class="text-green-100 text-xs">Green Accounting Expert</p>
                 </a>
-                <a href="pages/features/forum.html" class="bg-gradient-to-br from-green-400 to-emerald-500 text-white rounded-2xl p-5 shadow-md text-center hover-scale">
+                <a href="pages/features/materi.html" class="bg-gradient-to-br from-blue-500 to-cyan-500 text-white rounded-2xl p-5 shadow-md text-center hover-scale">
                     <div class="bg-white/20 rounded-full p-3 mx-auto mb-2 w-fit">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                            <circle cx="9" cy="7" r="4" />
-                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                     </div>
-                    <h3 class="font-semibold text-sm">Forum</h3>
-                    <p class="text-green-100 text-xs">Diskusi komunitas</p>
+                    <h3 class="font-semibold text-sm">Input Data</h3>
+                    <p class="text-blue-100 text-xs">Catat Aktivitas Hijau</p>
                 </a>
             </div>
 
-            <!-- News Section -->
+            <!-- Green Impact Overview -->
             <div class="bg-white rounded-2xl p-5 shadow-md">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-base font-bold text-gray-800">📰 Berita & Update</h3>
-                    <button class="text-indigo-600 text-xs font-medium">Semua ></button>
+                    <h3 class="text-base font-bold text-gray-800">📊 Ringkasan Dampak Hijau</h3>
+                    <button class="text-green-600 text-xs font-medium">Detail ></button>
                 </div>
-                <div class="space-y-3">
-                    <div class="flex items-start space-x-3 bg-gray-50 rounded-xl p-3">
-                        <div class="w-10 h-10 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full flex items-center justify-center text-white text-xs font-bold">ED</div>
+                
+                <!-- Eco-Score Display -->
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="relative w-16 h-16">
+                            <svg class="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
+                                <path class="text-gray-200" stroke="currentColor" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path class="text-green-500 eco-score-ring" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" style="stroke-dashoffset: 32.6;" />
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span class="text-lg font-bold text-green-600">87</span>
+                            </div>
+                        </div>
                         <div>
-                            <h4 class="font-semibold text-sm text-gray-800">Edukasi Plus</h4>
-                            <p class="text-xs text-gray-600">Strategi baru menghadapi bullying di sekolah</p>
-                            <span class="text-[10px] text-gray-400">2 jam lalu</span>
+                            <h4 class="font-semibold text-gray-800">Eco-Score</h4>
+                            <p class="text-xs text-gray-500">Sangat Baik</p>
                         </div>
                     </div>
+                    <div class="text-right">
+                        <p class="text-sm font-semibold text-green-600">+12%</p>
+                        <p class="text-xs text-gray-500">vs bulan lalu</p>
+                    </div>
+                </div>
 
-                    <div class="flex items-start space-x-3 bg-gray-50 rounded-xl p-3">
-                        <div class="w-10 h-10 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center text-white text-xs font-bold">PS</div>
-                        <div>
-                            <h4 class="font-semibold text-sm text-gray-800">Psikologi Sekolah</h4>
-                            <p class="text-xs text-gray-600">Workshop mengelola emosi remaja</p>
-                            <span class="text-[10px] text-gray-400">5 jam lalu</span>
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div class="bg-green-50 rounded-lg p-3">
+                        <p class="text-lg font-bold text-green-600">250</p>
+                        <p class="text-xs text-gray-600">kg Dikelola</p>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-3">
+                        <p class="text-lg font-bold text-blue-600">Rp 7.5M</p>
+                        <p class="text-xs text-gray-600">Nilai Ekonomi</p>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-3">
+                        <p class="text-lg font-bold text-purple-600">15%</p>
+                        <p class="text-xs text-gray-600">Efisiensi</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Insights & Motivation -->
+            <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-5 shadow-md border border-green-100">
+                <div class="flex items-start space-x-3">
+                    <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white text-lg font-bold flex-shrink-0">🤖</div>
+                    <div class="flex-1">
+                        <h4 class="font-semibold text-gray-800 mb-2">💡 Insight AI</h4>
+                        <p class="text-sm text-gray-700 leading-relaxed">
+                            Jika Anda meningkatkan daur ulang plastik sebesar 20% bulan depan, potensi nilai ekonomi bisa meningkat hingga <span class="font-semibold text-green-600">Rp 1.200.000</span>! 🌱
+                        </p>
+                        <div class="mt-3 flex gap-2">
+                            <button class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium hover:bg-green-600 transition-colors">
+                                Terima Saran
+                            </button>
+                            <button class="bg-white text-green-600 px-3 py-1 rounded-full text-xs font-medium border border-green-200 hover:bg-green-50 transition-colors">
+                                Pelajari Lebih Lanjut
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -167,29 +227,25 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 </svg>
-                Beranda
+                Dashboard
             </a>
             <a href="pages/features/chat.html" data-page="chat" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423z" />
                 </svg>
-                Quiz
-            </a>
-            <a href="pages/features/forum.html" data-page="forum" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                    <circle cx="9" cy="7" r="4" />
-                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                </svg>
-                Forum
+                AI Assistant
             </a>
             <a href="pages/features/materi.html" data-page="materi" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                    <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                Materi
+                Input Data
+            </a>
+            <a href="pages/features/forum.html" data-page="forum" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                Reports
             </a>
             <a href="pages/features/profil.html" data-page="profile" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -304,9 +360,9 @@
                     let userData = {
                         uid: user.uid,
                         email: user.email,
-                        displayName: user.displayName || user.email?.split('@')[0] || 'User',
+                        displayName: user.displayName || user.email?.split('@')[0] || 'UMKM',
                         photoURL: user.photoURL,
-                        role: 'user'
+                        role: 'umkm'
                     };
 
                     try {
@@ -319,15 +375,15 @@
                                         (firestoreData.firstName && firestoreData.lastName ?
                                             `${firestoreData.firstName} ${firestoreData.lastName}` :
                                             userData.displayName),
-                                role: firestoreData.role || 'user',
-                                profession: firestoreData.profession || 'Pendidik'
+                                role: firestoreData.role || 'umkm',
+                                profession: firestoreData.profession || 'UMKM'
                             };
                         } else {
-                            userData.profession = 'Pendidik';
+                            userData.profession = 'UMKM';
                         }
                     } catch (firestoreError) {
                         console.log('Could not fetch Firestore data:', firestoreError);
-                        userData.profession = 'Pendidik';
+                        userData.profession = 'UMKM';
                     }
 
                     document.getElementById('user-name').textContent = userData.displayName;
@@ -336,7 +392,7 @@
 
                     const profession = userData.profession
                         ? userData.profession.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
-                        : 'Pendidik';
+                        : 'UMKM';
                     document.getElementById('user-profession').textContent = profession;
 
                     const avatar = document.getElementById('user-avatar');
@@ -358,11 +414,11 @@
                     }
 
                 } else {
-                    document.getElementById('user-name').textContent = 'Guest User';
+                    document.getElementById('user-name').textContent = 'Guest UMKM';
                     document.getElementById('user-profession').textContent = 'Visitor';
                     document.getElementById('user-email').textContent = 'guest@example.com';
                     document.getElementById('user-role').textContent = 'guest';
-                    document.getElementById('user-avatar').textContent = '👤';
+                    document.getElementById('user-avatar').textContent = '🏢';
                 }
 
             } catch (error) {
@@ -373,10 +429,65 @@
         document.addEventListener('DOMContentLoaded', () => {
             setActiveNav();
             
+            // Initialize Green Accounting features
+            initializeEcoScore();
+            initializeMotivationNotifications();
+            
             onAuthStateChanged(auth, async (user) => {
                 await updateUserProfile(user);
             });
         });
+
+        // Initialize Eco-Score animation
+        function initializeEcoScore() {
+            const ecoScoreRing = document.querySelector('.eco-score-ring');
+            if (ecoScoreRing) {
+                // Animate the ring to show 87% completion
+                setTimeout(() => {
+                    ecoScoreRing.style.strokeDashoffset = '32.6'; // 87% of 251.2
+                }, 500);
+            }
+        }
+
+        // Initialize motivation notifications
+        function initializeMotivationNotifications() {
+            // Show random motivation notifications
+            const motivations = [
+                "🌱 Hebat! Kamu berhasil mengurangi 10% limbah bulan ini!",
+                "💚 Eco-Score kamu meningkat! Terus pertahankan!",
+                "💰 Nilai ekonomi hijau kamu sudah mencapai Rp 7.5M!",
+                "♻️ Daur ulang plastik meningkat 15%! Excellent!",
+                "🌿 Kamu sudah menghemat 20% energi bulan ini!"
+            ];
+
+            // Show notification after 3 seconds
+            setTimeout(() => {
+                showMotivationNotification(motivations[Math.floor(Math.random() * motivations.length)]);
+            }, 3000);
+        }
+
+        // Show motivation notification
+        function showMotivationNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-20 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50 motivation-notification max-w-sm';
+            notification.innerHTML = `
+                <div class="flex items-start space-x-2">
+                    <div class="text-lg">🎉</div>
+                    <div>
+                        <p class="text-sm font-medium">${message}</p>
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" class="text-xs text-green-100 hover:text-white mt-1">Tutup</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(notification);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
     </script>
 </body>
 </html>
