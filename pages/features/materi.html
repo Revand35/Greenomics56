@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materi - Moral Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .nav-button.active { color: #4f46e5; }
+        .material-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .material-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+        .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .reading-progress { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            height: 4px; 
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6); 
+            z-index: 1000; 
+            transition: width 0.3s ease;
+        }
+        .stat-pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+    <script type="module" src="../../assets/js/auth/auth-guard.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100">
+
+    <!-- Reading Progress Bar -->
+    <div id="reading-progress" class="reading-progress" style="width: 0%"></div>
+
+    <!-- Main App Container -->
+    <div id="app-container" class="pb-24">
+        <!-- Materi Header -->
+        <div class="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 text-white p-6 rounded-b-3xl shadow-xl">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold mb-1">Pusat Materi</h1>
+                    <p class="text-purple-100 text-sm">Panduan lengkap moral intelligence untuk pendidik</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="p-6 space-y-6">
+            <!-- Main Content -->
+            <div class="container mx-auto px-4 py-8">
+                <!-- Loading State -->
+                <div id="loading-state" class="hidden text-center py-10">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto"></div>
+                    <p class="mt-4 text-gray-600">Memuat materi...</p>
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="hidden text-center py-10">
+                    <div class="w-24 h-24 mx-auto mb-4 text-gray-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900">Tidak ada materi</h3>
+                    <p class="mt-1 text-sm text-gray-500">Belum ada materi yang tersedia.</p>
+                </div>
+
+                <!-- Search and Filter -->
+                <div class="mb-8">
+                    <div class="relative max-w-2xl mx-auto">
+                        <input type="text" id="search-input" 
+                               class="w-full px-6 py-4 rounded-2xl border-0 shadow-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+                               placeholder="Cari materi...">
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                            <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center mt-4 space-x-2 overflow-x-auto py-2">
+                        <button class="filter-btn px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 text-sm font-medium" data-filter="all">Semua</button>
+                        <button class="filter-btn px-4 py-2 rounded-full text-gray-600 hover:bg-gray-100 text-sm font-medium" data-filter="pdf">PDF</button>
+                        <button class="filter-btn px-4 py-2 rounded-full text-gray-600 hover:bg-gray-100 text-sm font-medium" data-filter="doc">Dokumen</button>
+                        <button class="filter-btn px-4 py-2 rounded-full text-gray-600 hover:bg-gray-100 text-sm font-medium" data-filter="video">Video</button>
+                    </div>
+                </div>
+
+                <!-- Featured Materials -->
+                <div id="featured-container" class="mb-12 hidden">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Materi Unggulan</h2>
+                    <div id="featured-materials" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        <!-- Featured items will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- All Materials -->
+                <div id="materials-container">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-lg font-semibold text-gray-900">Semua Materi</h2>
+                        <span id="materials-count" class="text-sm text-gray-500">0 materi</span>
+                    </div>
+                    <div id="materials-list" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        <!-- Materials will be inserted here -->
+                        <div class="text-center py-10 text-gray-500">
+                            <p>Memuat materi...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Material Reader Modal -->
+    <div id="material-reader-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-2xl w-full max-w-6xl h-[95vh] flex flex-col">
+            <!-- Header -->
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
+                <h2 id="material-title" class="text-xl font-bold text-gray-800">Loading...</h2>
+                <button onclick="closeMaterialReader()" class="text-gray-500 hover:text-gray-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="flex-1 overflow-hidden p-6" id="material-content">
+                <div class="text-center py-20">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto mb-4"></div>
+                    <p class="text-gray-600">Memuat konten...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div id="bottom-nav" class="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-sm border-t border-gray-200 p-4 z-50">
+        <div class="flex justify-around items-center max-w-lg mx-auto">
+            <a href="../../index.html" data-page="home" class="nav-button flex flex-col items-center space-y-1 text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                <span class="text-xs font-medium">Beranda</span>
+            </a>
+            <a href="./chat.html" data-page="chat" class="nav-button flex flex-col items-center space-y-1 text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <span class="text-xs font-medium">Quiz</span>
+            </a>
+            <a href="./forum.html" data-page="forum" class="nav-button flex flex-col items-center space-y-1 text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span class="text-xs font-medium">Forum</span>
+            </a>
+            <a href="./materi.html" data-page="materi" class="nav-button flex flex-col items-center space-y-1 text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                <span class="text-xs font-medium">Materi</span>
+            </a>
+            <a href="./profil.html" data-page="profile" class="nav-button flex flex-col items-center space-y-1 text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span class="text-xs font-medium">Profil</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../assets/js/materials/materi-search.js" defer></script>
+    <script type="module" src="../../assets/js/materials/materials-display.js"></script>
+
+    <!-- Import User Stats System (replaces realtime-stats and material-tracker) -->
+    <script type="module" src="../../assets/js/core/user-stats.js"></script>
+
+    <script>
+        function setActiveNav() {
+            document.querySelectorAll('.nav-button').forEach(button => {
+                if (button.dataset.page === 'materi') {
+                    button.classList.add('active');
+                }
+            });
+        }
+        
+        // Update completion rate
+        function updateCompletionRate() {
+            const materialsRead = parseInt(document.querySelector('[data-stat="materials-read"]')?.textContent || '0');
+            const materialsCompleted = parseInt(document.querySelector('[data-stat="materials-completed"]')?.textContent || '0');
+            
+            const completionRate = materialsRead > 0 ? Math.round((materialsCompleted / materialsRead) * 100) : 0;
+            const completionRateElement = document.getElementById('completion-rate');
+            if (completionRateElement) {
+                completionRateElement.textContent = `${completionRate}%`;
+            }
+        }
+
+        // Material Reader Functions
+        function openMaterialReader(materialId, materialName, materialUrl) {
+            const modal = document.getElementById('material-reader-modal');
+            const titleElement = document.getElementById('material-title');
+            const contentElement = document.getElementById('material-content');
+            
+            // Set title
+            titleElement.textContent = materialName;
+            
+            // Show modal
+            modal.classList.remove('hidden');
+            
+            // Start tracking using userStats
+            if (window.userStats) {
+                window.userStats.startMaterialTracking(materialId, materialName, 'document');
+            }
+            
+            // Load content
+            loadMaterialContent(materialUrl, materialName);
+        }
+
+        function closeMaterialReader() {
+            const modal = document.getElementById('material-reader-modal');
+            modal.classList.add('hidden');
+
+            // Stop tracking using userStats
+            if (window.userStats) {
+                window.userStats.stopMaterialTracking();
+            }
+        }
+
+        
+        async function loadMaterialContent(url, materialName) {
+            const contentElement = document.getElementById('material-content');
+
+            try {
+                // Detect file type from URL
+                const fileExtension = url.split('.').pop().toLowerCase();
+                const isPDF = fileExtension === 'pdf' || url.includes('.pdf');
+
+                if (isPDF) {
+                    // Embed PDF viewer
+                    contentElement.innerHTML = `
+                        <div class="h-full flex flex-col">
+                            <div class="flex-1 bg-gray-100 rounded-lg overflow-hidden" style="min-height: 600px;">
+                                <iframe
+                                    src="${url}"
+                                    class="w-full h-full"
+                                    style="min-height: 600px; border: none;"
+                                    title="${materialName}">
+                                </iframe>
+                            </div>
+                            <div class="mt-4 flex justify-center gap-3">
+                                <a href="${url}" target="_blank"
+                                   class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                                    🔗 Buka di Tab Baru
+                                </a>
+                                <button onclick="downloadMaterial('${url}', '${materialName}')"
+                                        class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                                    📥 Unduh
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else if (fileExtension === 'doc' || fileExtension === 'docx' ||
+                           fileExtension === 'ppt' || fileExtension === 'pptx' ||
+                           fileExtension === 'xls' || fileExtension === 'xlsx') {
+                    // Use Google Docs Viewer for Office documents
+                    const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
+                    contentElement.innerHTML = `
+                        <div class="h-full flex flex-col">
+                            <div class="flex-1 bg-gray-100 rounded-lg overflow-hidden" style="min-height: 600px;">
+                                <iframe
+                                    src="${viewerUrl}"
+                                    class="w-full h-full"
+                                    style="min-height: 600px; border: none;"
+                                    title="${materialName}">
+                                </iframe>
+                            </div>
+                            <div class="mt-4 flex justify-center gap-3">
+                                <a href="${url}" target="_blank"
+                                   class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                                    🔗 Buka di Tab Baru
+                                </a>
+                                <button onclick="downloadMaterial('${url}', '${materialName}')"
+                                        class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                                    📥 Unduh
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // For other file types, show download option
+                    contentElement.innerHTML = `
+                        <div class="text-center py-10">
+                            <div class="w-24 h-24 mx-auto mb-6 bg-blue-100 rounded-full flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14,2 14,8 20,8"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">${materialName}</h3>
+                            <p class="text-gray-600 mb-6">File ini tidak dapat ditampilkan di browser. Silakan unduh untuk membukanya.</p>
+                            <div class="space-y-3">
+                                <button onclick="downloadMaterial('${url}', '${materialName}')"
+                                        class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                                    📥 Unduh Materi
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+
+            } catch (error) {
+                console.error('Error loading material content:', error);
+                contentElement.innerHTML = `
+                    <div class="text-center py-10">
+                        <div class="text-red-500 mb-4">❌ Gagal memuat konten</div>
+                        <p class="text-gray-600">${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        
+        // Make functions global
+        window.openMaterialReader = openMaterialReader;
+        window.closeMaterialReader = closeMaterialReader;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            setActiveNav();
+            
+            // Setup mark complete button
+            const markCompleteBtn = document.getElementById('mark-complete-btn');
+            if (markCompleteBtn) {
+                markCompleteBtn.addEventListener('click', () => {
+                    if (window.userStats) {
+                        window.userStats.forceCompleteMaterial();
+                    }
+                });
+            }
+            
+            // Update completion rate when stats change
+            setInterval(updateCompletionRate, 1000);
+        });
+    </script>
+        <script type="module">
+            import { getAllMateri } from '../../assets/services/materiService.js';
+            
+            async function loadMateri() {
+                console.log("🔥 Memuat daftar materi dari Supabase...");
+                
+                try {
+                    const materials = await getAllMateri();
+                    
+                    const materiList = document.getElementById('materials-list');
+                    materiList.innerHTML = '';
+                    
+                    // Update materials count
+                    const materialsCount = document.getElementById('materials-count');
+                    if (materialsCount) {
+                        materialsCount.textContent = `${materials.length} materi`;
+                    }
+                    
+                    // Show empty state if no materials
+                    if (!materials || materials.length === 0) {
+                        materiList.innerHTML = `
+                            <div class="col-span-full text-center py-12">
+                                <div class="text-gray-400 mb-4">
+                                    <i class="fas fa-folder-open text-6xl"></i>
+                                </div>
+                                <h3 class="text-xl font-semibold text-gray-700 mb-2">Belum Ada Materi</h3>
+                                <p class="text-gray-500">Admin belum mengupload materi pembelajaran.</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    console.log(`✅ Berhasil memuat ${materials.length} materi`);
+                    
+                    // Display materials
+                    materials.forEach(material => {
+                        const fileType = material.tipe_file || 'application/octet-stream';
+                        let fileIcon = '<i class="fas fa-file text-xl"></i>';
+
+                        if (fileType.includes('pdf')) {
+                            fileIcon = '<i class="fas fa-file-pdf text-xl"></i>';
+                        } else if (fileType.includes('word') || fileType.includes('document')) {
+                            fileIcon = '<i class="fas fa-file-word text-xl"></i>';
+                        } else if (fileType.includes('powerpoint') || fileType.includes('presentation')) {
+                            fileIcon = '<i class="fas fa-file-powerpoint text-xl"></i>';
+                        } else if (fileType.includes('video')) {
+                            fileIcon = '<i class="fas fa-file-video text-xl"></i>';
+                        } else if (fileType.includes('image')) {
+                            fileIcon = '<i class="fas fa-file-image text-xl"></i>';
+                        }
+
+                        // Extract title from filename (remove timestamp and extension)
+                        const displayName = material.original_name || material.nama_file;
+                        const materialTitle = displayName.replace(/^\d+_/, '').replace(/\.[^/.]+$/, '');
+
+                        const div = document.createElement('div');
+                        div.className = "material-card bg-white rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300";
+                        div.innerHTML = `
+                            <div class="flex items-start space-x-4">
+                                <div class="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center text-white flex-shrink-0">
+                                    ${fileIcon}
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-semibold text-gray-800 mb-2">${escapeHtml(materialTitle)}</h4>
+                                    <p class="text-sm text-gray-500 mb-3">Materi pembelajaran</p>
+                                    <p class="text-xs text-gray-400 mb-3">
+                                        <i class="fas fa-file"></i> ${escapeHtml(displayName)}
+                                        ${material.ukuran_file ? `• ${formatFileSize(material.ukuran_file)}` : ''}
+                                    </p>
+                                    <div class="flex space-x-2">
+                                        <button onclick="openMaterialReader('${escapeHtml(material.id)}', '${escapeHtml(materialTitle)}', '${material.url_file}')"
+                                                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                                            📖 Baca Materi
+                                        </button>
+                                        <button onclick="downloadMaterial('${material.url_file}', '${escapeHtml(displayName)}')"
+                                                class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm">
+                                            📥 Unduh
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        materiList.appendChild(div);
+                    });
+                } catch (error) {
+                    console.error("❌ Gagal memuat materi:", error);
+                    const materiList = document.getElementById('materials-list');
+                    materiList.innerHTML = `
+                        <div class="col-span-full text-center py-12">
+                            <div class="text-red-400 mb-4">
+                                <i class="fas fa-exclamation-circle text-6xl"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-700 mb-2">Gagal Memuat Materi</h3>
+                            <p class="text-gray-500">${error.message}</p>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Helper: Format file size
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+            }
+            
+            // Helper: Escape HTML to prevent XSS
+            function escapeHtml(text) {
+                if (!text) return '';
+                const map = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                };
+                return text.toString().replace(/[&<>"']/g, m => map[m]);
+            }
+
+            // Download material function
+            window.downloadMaterial = async function(url, filename) {
+                try {
+                    // Show loading indicator
+                    const btn = event.target;
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengunduh...';
+                    btn.disabled = true;
+
+                    // Fetch the file as blob
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error('Gagal mengunduh file');
+
+                    const blob = await response.blob();
+
+                    // Create download link
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+
+                    // Cleanup
+                    window.URL.revokeObjectURL(downloadUrl);
+                    document.body.removeChild(a);
+
+                    // Restore button
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                } catch (error) {
+                    console.error('Error downloading file:', error);
+                    alert('Gagal mengunduh file: ' + error.message);
+
+                    // Restore button
+                    if (event && event.target) {
+                        event.target.innerHTML = '📥 Unduh';
+                        event.target.disabled = false;
+                    }
+                }
+            };
+
+            document.addEventListener("DOMContentLoaded", loadMateri);
+        </script>
+</body>
+</html>
+   

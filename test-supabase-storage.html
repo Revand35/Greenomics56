@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Supabase Storage</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-8">
+    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">🔍 Supabase Storage Debugger</h1>
+
+        <div id="output" class="space-y-4 font-mono text-sm">
+            <p class="text-gray-500">Running tests...</p>
+        </div>
+
+        <div class="mt-8 space-y-4">
+            <button onclick="testListBuckets()" class="w-full bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600">
+                Test 1: List All Buckets
+            </button>
+            <button onclick="testGetBucket()" class="w-full bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600">
+                Test 2: Get Bucket 'materi'
+            </button>
+            <button onclick="testListFiles()" class="w-full bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-600">
+                Test 3: List Files in 'materi'
+            </button>
+            <button onclick="testUpload()" class="w-full bg-orange-500 text-white px-6 py-3 rounded-lg hover:bg-orange-600">
+                Test 4: Test Upload (requires login)
+            </button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from './config/supabase-init.js';
+
+        function log(message, type = 'info') {
+            const output = document.getElementById('output');
+            const colors = {
+                info: 'text-blue-600',
+                success: 'text-green-600',
+                error: 'text-red-600',
+                warning: 'text-yellow-600'
+            };
+            const icons = {
+                info: 'ℹ️',
+                success: '✅',
+                error: '❌',
+                warning: '⚠️'
+            };
+            output.innerHTML += `<p class="${colors[type]}">${icons[type]} ${message}</p>`;
+        }
+
+        function clearLog() {
+            document.getElementById('output').innerHTML = '';
+        }
+
+        window.testListBuckets = async function() {
+            clearLog();
+            log('Testing: List all buckets...', 'info');
+
+            try {
+                const { data, error } = await supabase.storage.listBuckets();
+
+                if (error) {
+                    log(`ERROR: ${error.message}`, 'error');
+                    log(`Error details: ${JSON.stringify(error)}`, 'error');
+                } else {
+                    log(`SUCCESS! Found ${data.length} bucket(s)`, 'success');
+                    data.forEach(bucket => {
+                        log(`  → ${bucket.name} (${bucket.public ? 'Public' : 'Private'})`, 'info');
+                    });
+
+                    const hasMateriBucket = data.some(b => b.name === 'materi');
+                    if (hasMateriBucket) {
+                        log('✓ Bucket "materi" EXISTS!', 'success');
+                    } else {
+                        log('✗ Bucket "materi" NOT FOUND!', 'error');
+                        log('→ Buat bucket "materi" via Supabase Dashboard', 'warning');
+                    }
+                }
+            } catch (err) {
+                log(`EXCEPTION: ${err.message}`, 'error');
+            }
+        };
+
+        window.testGetBucket = async function() {
+            clearLog();
+            log('Testing: Get bucket "materi"...', 'info');
+
+            try {
+                const { data, error } = await supabase.storage.getBucket('materi');
+
+                if (error) {
+                    log(`ERROR: ${error.message}`, 'error');
+                    log(`Status: ${error.status || 'N/A'}`, 'error');
+
+                    if (error.message.includes('not found')) {
+                        log('→ Bucket "materi" tidak ditemukan!', 'warning');
+                        log('→ Buat bucket via: Supabase Dashboard > Storage > New Bucket', 'warning');
+                    }
+                } else {
+                    log('SUCCESS! Bucket found:', 'success');
+                    log(`  → ID: ${data.id}`, 'info');
+                    log(`  → Name: ${data.name}`, 'info');
+                    log(`  → Public: ${data.public}`, 'info');
+                    log(`  → Created: ${data.created_at}`, 'info');
+
+                    if (!data.public) {
+                        log('⚠️ WARNING: Bucket is PRIVATE!', 'warning');
+                        log('→ Set bucket to Public via Dashboard', 'warning');
+                    }
+                }
+            } catch (err) {
+                log(`EXCEPTION: ${err.message}`, 'error');
+            }
+        };
+
+        window.testListFiles = async function() {
+            clearLog();
+            log('Testing: List files in "materi"...', 'info');
+
+            try {
+                const { data, error } = await supabase.storage.from('materi').list('', {
+                    limit: 100,
+                    sortBy: { column: 'created_at', order: 'desc' }
+                });
+
+                if (error) {
+                    log(`ERROR: ${error.message}`, 'error');
+                    log(`Status: ${error.statusCode || 'N/A'}`, 'error');
+                } else {
+                    log(`SUCCESS! Found ${data.length} file(s)`, 'success');
+
+                    const actualFiles = data.filter(f =>
+                        f.id &&
+                        !f.name.startsWith('.') &&
+                        f.name !== '.emptyFolderPlaceholder'
+                    );
+
+                    log(`After filtering: ${actualFiles.length} actual file(s)`, 'info');
+
+                    actualFiles.forEach(file => {
+                        const sizeKB = file.metadata?.size ? (file.metadata.size / 1024).toFixed(1) : '0';
+                        log(`  → ${file.name} (${sizeKB} KB)`, 'info');
+
+                        const { data: urlData } = supabase.storage.from('materi').getPublicUrl(file.name);
+                        log(`    URL: ${urlData.publicUrl}`, 'info');
+                    });
+                }
+            } catch (err) {
+                log(`EXCEPTION: ${err.message}`, 'error');
+            }
+        };
+
+        window.testUpload = async function() {
+            clearLog();
+            log('Testing: Upload capability...', 'info');
+
+            // Create a test file
+            const testContent = 'Test file created at ' + new Date().toISOString();
+            const testBlob = new Blob([testContent], { type: 'text/plain' });
+            const testFileName = `test_${Date.now()}.txt`;
+
+            try {
+                log('Uploading test file: ' + testFileName, 'info');
+
+                const { data, error } = await supabase.storage
+                    .from('materi')
+                    .upload(testFileName, testBlob);
+
+                if (error) {
+                    log(`ERROR: ${error.message}`, 'error');
+
+                    if (error.message.includes('Bucket not found')) {
+                        log('→ Bucket "materi" tidak ada!', 'warning');
+                    } else if (error.message.includes('policy')) {
+                        log('→ Storage Policy belum diatur!', 'warning');
+                        log('→ Set policies: INSERT untuk authenticated users', 'warning');
+                    }
+                } else {
+                    log('SUCCESS! File uploaded:', 'success');
+                    log(`  → Path: ${data.path}`, 'info');
+                    log(`  → ID: ${data.id}`, 'info');
+
+                    // Try to delete test file
+                    const { error: deleteError } = await supabase.storage
+                        .from('materi')
+                        .remove([testFileName]);
+
+                    if (deleteError) {
+                        log('Warning: Could not delete test file', 'warning');
+                    } else {
+                        log('Test file cleaned up successfully', 'success');
+                    }
+                }
+            } catch (err) {
+                log(`EXCEPTION: ${err.message}`, 'error');
+            }
+        };
+
+        // Auto-run first test
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                testListBuckets();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

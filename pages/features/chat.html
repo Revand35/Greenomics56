@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz & Chat AI - Moral Intelligence</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.gstatic.com https://generativelanguage.googleapis.com https://esm.run; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://firestore.googleapis.com https://firebase.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://generativelanguage.googleapis.com https://content-firebaseappcheck.googleapis.com http://127.0.0.1:* http://localhost:*; frame-src 'self'; worker-src 'self' blob:; manifest-src 'self';">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Add jsPDF library for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .nav-button.active { color: #4f46e5; }
+        
+        /* Loading animation */
+        .dot-flashing { 
+            position: relative; 
+            width: 5px; 
+            height: 5px; 
+            border-radius: 5px; 
+            background-color: #9880ff; 
+            animation: dotFlashing 1s infinite linear alternate; 
+            animation-delay: .5s; 
+            display: inline-block; 
+            margin-left: 5px; 
+        }
+        .dot-flashing::before, .dot-flashing::after { 
+            content: ''; 
+            display: inline-block; 
+            position: absolute; 
+            top: 0; 
+        }
+        .dot-flashing::before { 
+            left: -10px; 
+            width: 5px; 
+            height: 5px; 
+            border-radius: 5px; 
+            background-color: #9880ff; 
+            animation: dotFlashing 1s infinite alternate; 
+            animation-delay: 0s; 
+        }
+        .dot-flashing::after { 
+            left: 10px; 
+            width: 5px; 
+            height: 5px; 
+            border-radius: 5px; 
+            background-color: #9880ff; 
+            animation: dotFlashing 1s infinite alternate; 
+            animation-delay: 1s; 
+        }
+        @keyframes dotFlashing { 
+            0% { background-color: #9880ff; } 
+            50%, 100% { background-color: #ebe6ff; } 
+        }
+
+        /* Secara default, tampilkan quiz dan sembunyikan chat */
+        .quiz-section { display: flex; }
+        .chat-section { display: none; }
+    
+        /* Saat body dalam mode chat, sembunyikan quiz dan tampilkan chat */
+        body.chat-mode .quiz-section { display: none; }
+        body.chat-mode .chat-section { display: flex; }
+
+        .chat-bubble {
+        max-width: 80%;
+        padding: 12px 16px;
+        border-radius: 16px;
+        position: relative;
+        word-wrap: break-word;
+        margin-bottom: 0.5rem; /* jarak antar bubble */
+        }
+
+        .chat-bubble.user {
+        background: linear-gradient(to right, #6366f1, #8b5cf6);
+        color: white;
+        border-bottom-right-radius: 4px;
+        margin-left: auto;
+        align-self: flex-end; /* pastikan rata kanan */
+        }
+
+        .chat-bubble.ai {
+        background: #ffffff;
+        color: #1f2937;
+        border-bottom-left-radius: 4px;
+        margin-right: auto;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .timestamp {
+        font-size: 0.7rem;
+        color: #9ca3af;
+        margin-top: 4px;
+        display: block;
+        text-align: right;
+        }
+
+        .message-content strong { font-weight: 600; }
+        .message-content em { font-style: italic; }
+
+        
+        /* Sembunyikan navigasi bawah saat mode chat aktif */
+        body.chat-mode #bottom-nav {
+            display: none;
+        }
+        /* Hapus padding bawah dari container utama saat mode chat */
+        body.chat-mode #app-container {
+            padding-bottom: 0;
+        }
+        
+        /* Ensure proper layout */
+        .quiz-section, .chat-section { 
+            height: 100%; 
+            flex-direction: column; 
+        }
+        
+        /* Progress bar animation */
+        .progress-bar-transition {
+            transition: width 0.5s ease-in-out;
+        }
+        
+        /* Better scrollbar for chat */
+        .chat-scroll::-webkit-scrollbar { width: 6px; }
+        .chat-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
+        .chat-scroll::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+        .chat-scroll::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100 quiz-mode">
+
+    <div id="app-container" class="pb-24">
+        <div class="flex flex-col h-screen">
+            <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 text-white p-6 rounded-b-3xl shadow-xl flex-shrink-0 z-20">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <a href="../../index.html" class="p-2 bg-white/20 rounded-full hover:bg-white/30 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5m7-7l-7 7 7 7"/></svg>
+                        </a>
+                        <div class="flex-1">
+                            <h1 class="text-xl font-bold">AI Moral Intelligence</h1>
+                            <p class="text-indigo-200 text-sm" id="header-status">Mode Quiz</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex bg-white/20 rounded-full p-1">
+                        <button id="quiz-mode-btn" class="px-4 py-2 rounded-full text-sm font-medium transition-all bg-white text-indigo-600">
+                            📝 Quiz
+                        </button>
+                        <button id="chat-mode-btn" class="px-4 py-2 rounded-full text-sm font-medium transition-all text-white hover:bg-white/10">
+                            💬 Chat AI
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-grow overflow-hidden">
+
+                <!-- Welcome Modal -->
+                <div id="welcome-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg animate-fade-in">
+                        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-t-2xl p-6 text-white">
+                            <div class="flex items-center gap-3 mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <h2 class="text-2xl font-bold">Selamat Datang!</h2>
+                            </div>
+                            <p class="text-indigo-100 text-sm">Tes Moral Intelligence</p>
+                        </div>
+
+                        <div class="p-6">
+                            <div class="space-y-4 text-gray-700 leading-relaxed">
+                                <p class="text-base">
+                                    Tes ini dirancang untuk mengukur <span class="font-semibold text-indigo-600">7 aspek kecerdasan moral</span> kamu.
+                                </p>
+
+                                <div class="bg-indigo-50 rounded-lg p-4 border-l-4 border-indigo-500">
+                                    <p class="text-sm">
+                                        📝 Kamu akan diberikan beberapa pertanyaan uraian<br>
+                                        ⚡ Setelah menjawab, soal berikutnya akan muncul secara otomatis<br>
+                                        💭 Silakan jawab dengan jujur dan senyaman mungkin
+                                    </p>
+                                </div>
+
+                                <p class="text-sm text-gray-600">
+                                    Di akhir tes, kamu akan mendapatkan <span class="font-semibold">skor total, kategori, dan profil moral intelligence lengkap</span>.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 rounded-b-2xl p-6 flex justify-end">
+                            <button onclick="closeWelcomeModal()" class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-105">
+                                Mulai Tes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-section">
+                    <div class="bg-white border-b border-gray-200 p-4 flex-shrink-0">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium text-gray-700" id="progress-text">Soal 1 dari 70</span>
+                            <span class="text-sm text-indigo-600 font-medium" id="aspect-name">Empati</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                            <div class="bg-gradient-to-r from-indigo-500 to-purple-600 h-3 rounded-full progress-bar-transition" id="progress-bar" style="width: 1.4%"></div>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1 text-center" id="progress-percentage">1.4%</div>
+                    </div>
+
+                    <div class="flex-grow p-6 overflow-y-auto">
+                        <div class="max-w-2xl lg:max-w-4xl mx-auto space-y-6">
+                            <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
+                                        <span class="text-indigo-600 font-bold text-sm" id="question-number">1</span>
+                                    </div>
+                                    <h2 class="text-lg font-semibold text-gray-800" id="question-title">Pertanyaan Empati</h2>
+                                </div>
+                                <div class="bg-indigo-50 rounded-xl p-4">
+                                    <p class="text-gray-700 leading-relaxed" id="question-text">
+                                        Bagaimana Anda merespons perasaan orang lain dalam situasi sosial, misalnya dengan kata-kata, sentuhan, atau ekspresi wajah?
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                    <span class="flex items-center gap-2">
+                                        ✏️ Jawaban Anda:
+                                        <span class="text-xs text-gray-500">(minimal 10 karakter)</span>
+                                    </span>
+                                </label>
+                                <textarea 
+                                    id="answer-input" 
+                                    class="w-full p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none transition-all" 
+                                    rows="6" 
+                                    placeholder="Ceritakan pengalaman konkret Anda dengan detail. Jelaskan perasaan, motivasi, dan tindakan yang Anda lakukan...">
+                                </textarea>
+                                
+                                <div class="flex justify-between items-center mt-4">
+                                    <div class="flex items-center gap-4">
+                                        <button 
+                                            id="prev-question-btn" 
+                                            class="bg-gray-200 text-gray-800 px-5 py-3 rounded-xl hover:bg-gray-300 transition-all font-medium text-sm" 
+                                            style="display: none;">
+                                            &larr; Kembali
+                                        </button>
+                                        <div class="text-sm text-gray-500">
+                                            <span id="char-count">0</span> karakter
+                                        </div>
+                                    </div>
+                                    <button 
+                                        id="submit-answer-btn" 
+                                        class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 sm:px-6 py-3 rounded-xl hover:shadow-lg transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                                        disabled>
+                                        Submit Jawaban
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-indigo-100">
+                                <p class="text-sm text-indigo-700 mb-3 font-medium">💡 Butuh bantuan?</p>
+                                <div class="space-y-2">
+                                    <button onclick="quickAskAI()" class="w-full text-left text-sm text-indigo-600 hover:text-indigo-800 underline transition-colors">
+                                        🤖 Tanya AI tentang pertanyaan ini
+                                    </button>
+                                    <button onclick="explainCurrentAspect()" class="w-full text-left text-sm text-gray-600 hover:text-gray-800 underline transition-colors">
+                                        📚 Penjelasan aspek "<span id="current-aspect-display">Empati</span>"
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-section">
+                    <div id="chat-messages" class="flex-grow p-6 pb-24 space-y-4 overflow-y-auto chat-scroll">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-r from-indigo-400 to-purple-500 rounded-full flex items-center justify-center text-white text-lg font-bold flex-shrink-0">AI</div>
+                            <div class="bg-white rounded-2xl rounded-tl-none p-4 shadow-lg max-w-md">
+                                <div class="text-gray-800 text-sm">
+                                    Halo! Saya siap membantu Anda dengan quiz moral intelligence. Anda bisa bertanya tentang:
+                                    <br><br>
+                                    • Tips menjawab soal<br>
+                                    • Penjelasan aspek moral<br>
+                                    • Skor dan progress<br>
+                                    • Upload materi PDF untuk diskusi
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="fixed z-30 bottom-4 inset-x-4">
+                        <div class="mx-auto max-w-5xl xl:max-w-7xl p-2 bg-white rounded-2xl shadow-xl transition-all">
+                            <div class="flex items-center space-x-2">
+                                <button id="file-upload-button" class="flex-shrink-0 p-3 rounded-full text-gray-500 hover:bg-gray-100 transition-colors" title="Upload File PDF">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19"/></svg>
+                                </button>
+                                <input type="file" id="file-input" class="hidden" accept=".pdf"/>
+                                                  
+                                <button 
+                                id="refresh-chat-btn" 
+                                class="flex-shrink-0 p-3 rounded-full text-gray-500 hover:bg-gray-100 transition-colors" 
+                                title="Refresh Chat AI">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 2v6h-6"/>
+                                    <path d="M3 12a9 9 0 0 1 15-6.7L21 8"/>
+                                    <path d="M3 22v-6h6"/>
+                                    <path d="M21 12a9 9 0 0 1-15 6.7L3 16"/>
+                                </svg>
+                                </button>
+
+                                <textarea 
+                                    id="chat-input" 
+                                    rows="1" 
+                                    placeholder="Tanya AI tentang moral intelligence..." 
+                                    class="w-full p-3 border-none bg-transparent focus:outline-none focus:ring-0 resize-none overflow-y-auto transition-height duration-150"
+                                    style="height: 48px;"
+                                ></textarea>
+                                
+                                <button id="send-chat-btn" class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-3 rounded-full hover:shadow-lg transition-all flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4 20-7Z"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            <div id="results-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                <div class="bg-white rounded-2xl shadow-xl w-full max-w-4xl xl:max-w-6xl max-h-[90vh] overflow-y-auto">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-2xl font-bold text-gray-800">Hasil Quiz Anda</h2>
+                            <button onclick="closeResults()" class="p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                        </div>
+                        <div class="border-b border-gray-200 mb-4">
+                            <nav class="-mb-px flex space-x-8">
+                                <button id="results-tab-btn" onclick="showResultsTab()" 
+                                  class="border-indigo-500 text-indigo-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                                  Ringkasan Hasil
+                                </button>
+                              
+                                <button id="history-tab-btn" onclick="showQuizHistory()" 
+                                  class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                                  Riwayat Quiz
+                                </button>
+                            </nav>
+                        </div>                          
+                        <!-- Ringkasan Hasil -->
+                        <div id="results-content">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6 text-center mb-6">
+                                <h3 class="text-lg font-semibold text-gray-700 mb-2">Skor Keseluruhan</h3>
+                                <div class="text-5xl font-bold text-indigo-600" id="overall-score">0/100</div>
+                                <p class="mt-2 text-base font-medium text-indigo-500" id="overall-category">-</p>
+                                </div>
+                                <div class="relative h-80 w-full">
+                                <canvas id="results-chart"></canvas>
+                                </div>
+                                <p class="text-xs text-center text-gray-500 mt-2" id="overall-interpretation">
+                                Interpretasi akan muncul di sini.
+                                </p>
+                            </div>
+                            <div class="max-h-[50vh] overflow-y-auto pr-2">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Rincian per Aspek</h3>
+                                <div id="detailed-results" class="space-y-3"></div>
+                            </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Riwayat Quiz -->
+                        <div id="history-content" class="hidden">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Riwayat Pengerjaan Quiz</h3>
+                            <div id="quiz-history-container" class="space-y-4 max-h-[60vh] overflow-y-auto"></div>
+                          </div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-3 justify-end border-t p-6 bg-gray-50 rounded-b-2xl">
+                        <button onclick="discussResults()" class="px-5 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium">Diskusi dengan AI</button>
+                        <button onclick="exportToPDF()" class="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium">📄 Ekspor ke PDF</button>
+                        <button onclick="restartQuiz()" class="px-5 py-2.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium">Ulangi Quiz</button>
+                    </div>
+                </div>
+            </div>
+        </div> 
+    </div> 
+    <div id="bottom-nav" class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-gray-200 p-4 z-40">
+        <div class="flex justify-around items-center max-w-lg mx-auto">
+            <a href="../../index.html" class="nav-button flex flex-col items-center space-y-1 text-gray-500 hover:text-indigo-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span class="text-xs font-medium">Beranda</span></a>
+            <a href="chat.html" class="nav-button active flex flex-col items-center space-y-1 text-gray-500 hover:text-indigo-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="text-xs font-medium">Quiz</span></a>
+            <a href="./forum.html" class="nav-button flex flex-col items-center space-y-1 text-gray-500 hover:text-indigo-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="text-xs font-medium">Forum</span></a>
+            <a href="./materi.html" class="nav-button flex flex-col items-center space-y-1 text-gray-500 hover:text-indigo-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span class="text-xs font-medium">Materi</span></a>
+            <a href="./profil.html" class="nav-button flex flex-col items-center space-y-1 text-gray-500 hover:text-indigo-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="text-xs font-medium">Profil</span></a>
+        </div>
+    </div>
+    <script type="module">
+    import { setupChatListeners } from '../../assets/js/chat/chat-logic.js';
+    document.addEventListener('DOMContentLoaded', () => {
+        setupChatListeners();
+    });
+    </script>
+    <!-- Di index.html dan profil.html -->
+    <script type="module" src="../../assets/js/core/user-stats.js"></script>
+    <!-- Di chat.html (halaman quiz) -->
+    <script type="module" src="../../assets/js/quiz/quiz-firestore-service.js"></script>
+    <script type="module" src="../../assets/js/quiz/test-logic.js"></script>
+</body>
+</html>

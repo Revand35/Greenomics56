@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Moral Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card-hover:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+        .stat-card { position: relative; overflow: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .stat-pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+        /* Chart container styling */
+        canvas { max-height: 250px; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 min-h-screen">
+    
+    <!-- Navigation -->
+    <nav class="gradient-bg shadow-2xl relative overflow-hidden">
+        <div class="absolute inset-0 bg-black opacity-10"></div>
+        <div class="max-w-7xl mx-auto px-4 relative z-10">
+            <div class="flex justify-between items-center py-6">
+                <div class="flex items-center space-x-4">
+                    <a href="../../index.html" class="text-2xl font-bold text-white flex items-center">
+                        <i class="fas fa-brain mr-3 text-3xl"></i>
+                        <span class="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                            Moral Intelligence
+                        </span>
+                    </a>
+                    <span class="bg-white/20 text-red-100 px-4 py-2 rounded-full text-sm font-bold">
+                        Admin Panel
+                    </span>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <a href="../../index.html" class="text-white/90 hover:text-white transition-all">
+                        <i class="fas fa-home mr-2"></i>Beranda
+                    </a>
+                    <button onclick="logout()" class="bg-red-500/90 text-white px-6 py-3 rounded-full hover:bg-red-600 transition-all">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
+        
+        <!-- Header -->
+        <div class="text-center mb-6 sm:mb-8 relative">
+            <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+                Admin Dashboard
+            </h1>
+            <p class="text-sm sm:text-base text-gray-600 font-medium">Kelola sistem Moral Intelligence</p>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 mb-8">
+            <div class="stat-card bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-3 sm:p-4 text-white">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <p class="text-blue-100 text-xs font-medium mb-1">Users</p>
+                        <p class="text-2xl sm:text-3xl font-bold mb-0.5 stat-pulse" id="totalUsers">0</p>
+                        <p class="text-blue-200 text-xs hidden sm:block">Registered</p>
+                    </div>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-users text-base sm:text-lg"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-3 sm:p-4 text-white">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <p class="text-green-100 text-xs font-medium mb-1">Materi</p>
+                        <p class="text-2xl sm:text-3xl font-bold mb-0.5 stat-pulse" id="totalMaterials">0</p>
+                        <p class="text-green-200 text-xs hidden sm:block">Resources</p>
+                    </div>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-book text-base sm:text-lg"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-3 sm:p-4 text-white">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <p class="text-purple-100 text-xs font-medium mb-1">Forum</p>
+                        <p class="text-2xl sm:text-3xl font-bold mb-0.5 stat-pulse" id="totalForumPosts">0</p>
+                        <p class="text-purple-200 text-xs hidden sm:block">Posts</p>
+                    </div>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-comments text-base sm:text-lg"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-lg p-3 sm:p-4 text-white">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <p class="text-orange-100 text-xs font-medium mb-1">Quiz</p>
+                        <p class="text-2xl sm:text-3xl font-bold mb-0.5 stat-pulse" id="totalQuizSessions">0</p>
+                        <p class="text-orange-200 text-xs hidden sm:block">Sessions</p>
+                    </div>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-clipboard-check text-base sm:text-lg"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card bg-gradient-to-br from-pink-500 to-pink-600 rounded-lg shadow-lg p-3 sm:p-4 text-white">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <p class="text-pink-100 text-xs font-medium mb-1">Survey</p>
+                        <p class="text-2xl sm:text-3xl font-bold mb-0.5 stat-pulse" id="totalSurveyResponses">0</p>
+                        <p class="text-pink-200 text-xs hidden sm:block">Responses</p>
+                    </div>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-poll text-base sm:text-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 mb-6">
+            <div class="bg-white rounded-lg shadow-md p-3 sm:p-4">
+                <h3 class="text-sm sm:text-base font-semibold text-gray-800 mb-3">Distribusi Skor Quiz</h3>
+                <div style="height: 250px; position: relative;">
+                    <canvas id="score-distribution-chart"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-3 sm:p-4">
+                <h3 class="text-sm sm:text-base font-semibold text-gray-800 mb-3">Rata-rata per Aspek</h3>
+                <div style="height: 250px; position: relative;">
+                    <canvas id="aspect-average-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Survey Responses -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-3 sm:p-4 mb-6 border border-white/50">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-clipboard-list text-white text-sm sm:text-base"></i>
+                    </div>
+                    <h2 class="text-lg sm:text-xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+                        Survey Responses
+                    </h2>
+                </div>
+                <button onclick="exportSurveys()" class="px-3 py-1.5 text-xs sm:text-sm bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-1 justify-center">
+                    <i class="fas fa-download text-xs"></i><span>Export CSV</span>
+                </button>
+            </div>
+
+            <!-- Survey Analytics Charts -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 mb-4">
+                <div class="bg-white rounded-lg shadow-md p-3 sm:p-4">
+                    <h3 class="text-xs sm:text-sm font-semibold text-gray-800 mb-2">Rating Rata-rata</h3>
+                    <div style="height: 200px; position: relative;">
+                        <canvas id="survey-ratings-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-3 sm:p-4">
+                    <h3 class="text-xs sm:text-sm font-semibold text-gray-800 mb-2">Perangkat Pengguna</h3>
+                    <div style="height: 200px; position: relative;">
+                        <canvas id="survey-devices-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-3 sm:p-4">
+                    <h3 class="text-xs sm:text-sm font-semibold text-gray-800 mb-2">Fitur Favorit</h3>
+                    <div style="height: 200px; position: relative;">
+                        <canvas id="survey-features-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="survey-responses-list" class="space-y-3">
+                <div class="text-center py-8 text-gray-500">
+                    <i class="fas fa-spinner fa-spin text-2xl mb-3"></i>
+                    <p class="text-sm">Memuat survey responses...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Material Management -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-3 sm:p-4 mb-6 border border-white/50">
+            <div class="flex items-center gap-2 mb-4">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-green-500 to-teal-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-folder-open text-white text-sm sm:text-base"></i>
+                </div>
+                <h2 class="text-lg sm:text-xl font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
+                    Daftar Materi
+                </h2>
+            </div>
+
+            <div id="materi-list" class="space-y-3">
+                <div class="text-center py-6">
+                    <i class="fas fa-spinner fa-spin text-2xl text-blue-500 mb-3"></i>
+                    <p class="text-sm text-gray-600">Memuat materi...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- File Upload Section -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-3 sm:p-4 border border-white/50">
+            <div class="flex items-center gap-2 mb-4">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-cloud-upload-alt text-white text-sm sm:text-base"></i>
+                </div>
+                <h3 class="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                    Unggah Materi
+                </h3>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-xs sm:text-sm font-bold text-gray-700 mb-2">
+                            <i class="fas fa-heading text-blue-500 mr-1 text-xs"></i>Judul Materi
+                        </label>
+                        <input type="text" id="materi-title"
+                               class="w-full px-3 py-2 text-sm rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="Masukkan judul materi...">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs sm:text-sm font-bold text-gray-700 mb-2">
+                            <i class="fas fa-align-left text-green-500 mr-1 text-xs"></i>Deskripsi
+                        </label>
+                        <textarea id="materi-desc" rows="3"
+                                  class="w-full px-3 py-2 text-sm rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                  placeholder="Berikan deskripsi singkat..."></textarea>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-3 sm:p-4 border-2 border-dashed border-blue-300 text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-file-upload text-3xl sm:text-4xl text-blue-400 mb-2"></i>
+                            <p class="text-sm sm:text-base font-semibold text-gray-700 mb-1">Upload File Materi</p>
+                            <p class="text-xs text-gray-500">Klik untuk memilih file</p>
+                        </div>
+
+                        <label class="cursor-pointer bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white px-4 py-2 text-xs sm:text-sm rounded-lg font-semibold transition-all hover:shadow-lg inline-flex items-center gap-1">
+                            <i class="fas fa-folder-open text-xs"></i>Pilih File
+                            <input type="file" id="file-upload" class="hidden" accept=".pdf,.doc,.docx,.ppt,.pptx" />
+                        </label>
+
+                        <div class="mt-3 p-2 bg-white rounded-lg">
+                            <span id="file-name" class="text-xs text-gray-600 font-medium">Belum ada file yang dipilih</span>
+                        </div>
+                    </div>
+
+                    <button id="upload-btn" class="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 text-sm sm:text-base rounded-lg font-bold transition-all hover:shadow-lg flex items-center justify-center gap-2">
+                        <i class="fas fa-rocket text-xs"></i> Unggah Materi
+                    </button>
+
+                    <div id="upload-progress" class="hidden">
+                        <div class="bg-gray-200 rounded-full h-3 mb-2 overflow-hidden">
+                            <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-indigo-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                        <p id="progress-text" class="text-center text-xs font-semibold text-gray-700">Mengunggah: 0%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="fixed top-6 right-6 px-8 py-4 rounded-2xl shadow-2xl z-50 opacity-0 transform translate-y-4 transition-all duration-500 backdrop-blur-sm border border-white/20"></div>
+
+    <script type="module">
+        import { supabase } from '../../config/supabase-init.js'; // ✅ ENABLED
+        import { db, auth } from '../../config/firebase-init.js';
+        import { deleteDoc, collection, onSnapshot, doc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getQuizAnalytics } from '../../assets/js/quiz/quiz-firestore-service.js';
+        import { uploadFile, getAllMateri, deleteMateri } from '../../assets/services/materiService.js';
+        
+        let scoreChart = null;
+        let aspectChart = null;
+        let surveyRatingsChart = null;
+        let surveyDevicesChart = null;
+        let surveyFeaturesChart = null;
+
+        window.deleteSurveyResponse = async function (id) {
+          if (!confirm('Yakin ingin menghapus response ini?')) return;
+
+          try {
+            await deleteDoc(doc(db, 'survey_responses', id));
+            showNotification('âœ… Response berhasil dihapus', 3000);
+
+            // refresh list
+            if (typeof loadSurveyResponses === 'function') {
+              await loadSurveyResponses();
+            }
+          } catch (err) {
+            console.error('âŒ Gagal menghapus response:', err);
+            showNotification(`Gagal hapus response: ${err.message}`, 4000);
+          }
+        };
+
+        /* === Helper Notif === */
+        function showNotification(message, duration = 3000) {
+          const notif = document.getElementById('notification');
+          notif.innerHTML = message;
+          notif.className = 'fixed top-6 right-6 px-8 py-4 rounded-2xl shadow-2xl z-50 bg-white/90 border border-gray-200 text-gray-800 font-semibold opacity-100 translate-y-0 transition-all duration-500';
+          setTimeout(() => { notif.classList.add('opacity-0','translate-y-4'); }, duration);
+        }
+
+        /* === Helper getPublicUrl === */
+        async function getPublicUrl(fileName) {
+          const { data } = supabase.storage.from('Mobile-Intelligence').getPublicUrl(`materi/${fileName}`);
+          return data.publicUrl;
+        }
+
+        /* === Load Materials Count === */
+        async function loadMaterialsCount() {
+          try {
+            const { data: files, error } = await supabase.storage.from('Mobile-Intelligence').list('materi', {
+              limit: 1000
+            });
+
+            if (!error && files) {
+              const actualFiles = files.filter(f =>
+                f.id &&
+                !f.name.startsWith('.') &&
+                f.name !== '.emptyFolderPlaceholder'
+              );
+              updateStat('totalMaterials', actualFiles.length);
+            }
+          } catch (err) {
+            console.error('Error loading materials count:', err);
+          }
+        }
+
+        /* === Load Materi === */
+        async function loadMateriList() {
+          const container = document.getElementById('materi-list');
+          container.innerHTML = `<div class="text-center py-8"><i class="fas fa-spinner fa-spin text-4xl text-blue-500 mb-4"></i><p>Memuat materi...</p></div>`;
+          try {
+            console.log('📂 Loading materi from Supabase Storage...');
+            const { data: files, error } = await supabase.storage.from('Mobile-Intelligence').list('materi', {
+              limit: 100,
+              sortBy: { column: 'created_at', order: 'desc' }
+            });
+
+            if (error) {
+              console.error('❌ Error loading files:', error);
+              throw error;
+            }
+
+            console.log('📦 Files loaded:', files);
+
+            // Filter out folders and placeholder files
+            const actualFiles = files.filter(f =>
+              f.id &&
+              !f.name.startsWith('.') &&
+              f.name !== '.emptyFolderPlaceholder'
+            );
+
+            console.log('✅ Filtered files:', actualFiles);
+
+            if (!actualFiles || actualFiles.length === 0) {
+              container.innerHTML = `<p class="text-center text-gray-500">Belum ada materi. Upload materi pertama kamu!</p>`;
+              return;
+            }
+
+            container.innerHTML = actualFiles.map(f => {
+              const fileSizeKB = f.metadata?.size ? (f.metadata.size / 1024).toFixed(1) : '0';
+              const publicUrl = supabase.storage.from('Mobile-Intelligence').getPublicUrl(`materi/${f.name}`).data.publicUrl;
+
+              return `
+                <div class="bg-white rounded-lg shadow-md p-3 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 hover:shadow-lg transition-shadow">
+                  <div class="flex-1 min-w-0">
+                    <p class="font-bold text-sm text-gray-800 truncate">${f.name}</p>
+                    <p class="text-xs text-gray-500">${fileSizeKB} KB</p>
+                    <p class="text-xs text-gray-400">${f.created_at ? new Date(f.created_at).toLocaleDateString('id-ID') : ''}</p>
+                  </div>
+                  <div class="flex gap-2 flex-shrink-0">
+                    <a href="${publicUrl}" target="_blank" class="px-3 py-1.5 text-xs sm:text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center gap-1">
+                      <i class="fas fa-eye text-xs"></i><span class="hidden sm:inline">Lihat</span>
+                    </a>
+                    <button onclick="deleteMateri('${f.name}')" class="px-3 py-1.5 text-xs sm:text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-1">
+                      <i class="fas fa-trash text-xs"></i><span class="hidden sm:inline">Hapus</span>
+                    </button>
+                  </div>
+                </div>
+              `;
+            }).join('');
+
+            console.log(`✅ Displayed ${actualFiles.length} materi files`);
+
+            // Update stat count
+            updateStat('totalMaterials', actualFiles.length);
+
+          } catch (err) {
+            console.error('❌ Load materi gagal:', err);
+            container.innerHTML = `
+              <div class="text-center py-8 text-red-500">
+                <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                <p class="font-bold">Gagal memuat materi</p>
+                <p class="text-sm">${err.message}</p>
+              </div>
+            `;
+            showNotification('Gagal memuat materi: ' + err.message);
+          }
+        }
+
+        /* === Upload Materi === */
+        document.getElementById('upload-btn').addEventListener('click', async () => {
+          const title = document.getElementById('materi-title').value.trim();
+          const desc = document.getElementById('materi-desc').value.trim();
+          const file = document.getElementById('file-upload').files[0];
+
+          if (!title || !desc || !file) {
+            showNotification('❌ Harap isi semua field!');
+            return;
+          }
+
+          document.getElementById('upload-progress').classList.remove('hidden');
+          document.getElementById('progress-bar').style.width = '0%';
+          document.getElementById('progress-text').textContent = 'Mengunggah: 0%';
+
+          try {
+            // Upload menggunakan materiService
+            await uploadFile(file, {
+              judul: title,
+              deskripsi: desc
+            });
+
+            document.getElementById('progress-bar').style.width = '100%';
+            document.getElementById('progress-text').textContent = 'Mengunggah: 100%';
+            showNotification(`✅ ${title} berhasil diunggah!`);
+
+            // Reset form
+            document.getElementById('materi-title').value = '';
+            document.getElementById('materi-desc').value = '';
+            document.getElementById('file-upload').value = '';
+            document.getElementById('file-name').textContent = 'Belum ada file yang dipilih';
+            document.getElementById('upload-progress').classList.add('hidden');
+
+            // Reload list - akan otomatis update
+          } catch (err) {
+            console.error(err);
+            showNotification(`Gagal upload: ${err.message}`);
+            document.getElementById('upload-progress').classList.add('hidden');
+          }
+        });
+
+        /* === Delete Materi === */
+        window.deleteMateri = async function(fileName) {
+          if (!confirm(`Hapus ${fileName}?`)) return;
+          try {
+            const filePath = `materi/${fileName}`;
+            const { error } = await supabase.storage.from('Mobile-Intelligence').remove([filePath]);
+            if (error) throw error;
+            showNotification(`✅ ${fileName} dihapus`);
+            loadMateriList();
+          } catch (err) {
+            console.error(err);
+            showNotification(`Gagal hapus: ${err.message}`);
+          }
+        };
+
+        // === File name preview ===
+        document.getElementById('file-upload').addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          document.getElementById('file-name').textContent = file ? file.name : 'Belum ada file yang dipilih';
+        });
+
+        /* === Realtime listeners === */
+        function setupRealtimeListeners() {
+          // Users
+          onSnapshot(collection(db, 'userStats'), (snap) =>
+            updateStat('totalUsers', snap.size));
+
+          // Forum posts
+          onSnapshot(collection(db, 'posts'), (snap) =>
+            updateStat('totalForumPosts', snap.size));
+
+          // Quiz sessions
+          onSnapshot(collection(db, 'quizResults'), (snap) =>
+            updateStat('totalQuizSessions', snap.size));
+
+          // Survey responses
+          onSnapshot(collection(db, 'surveyResponses'), (snap) => {
+            updateStat('totalSurveyResponses', snap.size);
+            displaySurveyResponses(snap);
+          });
+
+          // Materials - load from Supabase Storage instead
+          loadMaterialsCount();
+        }
+        
+        /* === Helper update === */
+        function updateStat(statId, value) {
+          const el = document.getElementById(statId);
+          if (!el) return;
+          el.textContent = value;
+          el.classList.add('stat-pulse');
+          setTimeout(() => el.classList.remove('stat-pulse'), 2000);
+        }
+
+        /* === Update Survey Charts === */
+        function updateSurveyCharts(responses) {
+          if (!responses || responses.length === 0) {
+            // Show empty state for charts
+            ['survey-ratings-chart', 'survey-devices-chart', 'survey-features-chart'].forEach(id => {
+              const canvas = document.getElementById(id);
+              if (canvas) {
+                const parent = canvas.parentElement;
+                parent.innerHTML = '<div class="flex items-center justify-center h-full"><p class="text-gray-400 text-sm">Belum ada data</p></div>';
+              }
+            });
+            return;
+          }
+
+          // 1. Calculate average ratings per category
+          const ratingCategories = {
+            textReadability: 'Teks Mudah Dibaca',
+            colorLayout: 'Warna & Layout',
+            attractiveDesign: 'Desain Menarik',
+            crossPlatform: 'Lintas Platform',
+            easeOfUse: 'Kemudahan',
+            chatbotRelevance: 'Chatbot',
+            mediaSupport: 'Media',
+            materialClarity: 'Kejelasan Materi',
+            questionVariety: 'Variasi Soal',
+            learningSupport: 'Dukungan Belajar'
+          };
+
+          const ratingAverages = {};
+          Object.keys(ratingCategories).forEach(key => {
+            const ratings = responses.map(r => r.ratings?.[key]).filter(v => typeof v === 'number');
+            ratingAverages[key] = ratings.length > 0 ? ratings.reduce((a, b) => a + b, 0) / ratings.length : 0;
+          });
+
+          // 2. Count devices
+          const deviceCounts = {};
+          responses.forEach(r => {
+            const device = r.device || 'Unknown';
+            deviceCounts[device] = (deviceCounts[device] || 0) + 1;
+          });
+
+          // 3. Count favorite features
+          const featureCounts = {};
+          responses.forEach(r => {
+            const feature = r.favoriteFeature || 'Unknown';
+            featureCounts[feature] = (featureCounts[feature] || 0) + 1;
+          });
+
+          // Render charts
+          renderSurveyRatingsChart(ratingCategories, ratingAverages);
+          renderSurveyDevicesChart(deviceCounts);
+          renderSurveyFeaturesChart(featureCounts);
+        }
+
+        function renderSurveyRatingsChart(categories, averages) {
+          const ctx = document.getElementById('survey-ratings-chart');
+          if (!ctx) return;
+
+          const labels = Object.values(categories);
+          const data = Object.keys(categories).map(key => averages[key]);
+
+          if (surveyRatingsChart) {
+            surveyRatingsChart.data.labels = labels;
+            surveyRatingsChart.data.datasets[0].data = data;
+            surveyRatingsChart.update();
+          } else {
+            surveyRatingsChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                labels: labels,
+                datasets: [{
+                  label: 'Rating Rata-rata',
+                  data: data,
+                  backgroundColor: 'rgba(249, 115, 22, 0.6)',
+                  borderColor: 'rgba(249, 115, 22, 1)',
+                  borderWidth: 2,
+                  borderRadius: 6
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    max: 5,
+                    ticks: { stepSize: 1 }
+                  },
+                  x: {
+                    ticks: {
+                      font: { size: 10 },
+                      maxRotation: 45,
+                      minRotation: 45
+                    }
+                  }
+                },
+                plugins: {
+                  legend: { display: false }
+                }
+              }
+            });
+          }
+        }
+
+        function renderSurveyDevicesChart(deviceCounts) {
+          const ctx = document.getElementById('survey-devices-chart');
+          if (!ctx) return;
+
+          const labels = Object.keys(deviceCounts);
+          const data = Object.values(deviceCounts);
+          const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+
+          if (surveyDevicesChart) {
+            surveyDevicesChart.data.labels = labels;
+            surveyDevicesChart.data.datasets[0].data = data;
+            surveyDevicesChart.update();
+          } else {
+            surveyDevicesChart = new Chart(ctx, {
+              type: 'doughnut',
+              data: {
+                labels: labels,
+                datasets: [{
+                  data: data,
+                  backgroundColor: colors.slice(0, labels.length),
+                  borderWidth: 2,
+                  borderColor: '#fff'
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    position: 'bottom',
+                    labels: { font: { size: 11 } }
+                  }
+                }
+              }
+            });
+          }
+        }
+
+        function renderSurveyFeaturesChart(featureCounts) {
+          const ctx = document.getElementById('survey-features-chart');
+          if (!ctx) return;
+
+          const labels = Object.keys(featureCounts);
+          const data = Object.values(featureCounts);
+          const colors = ['#6366f1', '#14b8a6', '#f97316', '#ec4899', '#84cc16', '#06b6d4'];
+
+          if (surveyFeaturesChart) {
+            surveyFeaturesChart.data.labels = labels;
+            surveyFeaturesChart.data.datasets[0].data = data;
+            surveyFeaturesChart.update();
+          } else {
+            surveyFeaturesChart = new Chart(ctx, {
+              type: 'pie',
+              data: {
+                labels: labels,
+                datasets: [{
+                  data: data,
+                  backgroundColor: colors.slice(0, labels.length),
+                  borderWidth: 2,
+                  borderColor: '#fff'
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    position: 'bottom',
+                    labels: { font: { size: 11 } }
+                  }
+                }
+              }
+            });
+          }
+        }
+
+        /* === Survey list card === */
+        function displaySurveyResponses(snapshot) {
+          const container = document.getElementById('survey-responses-list');
+          if (!container) return;
+
+          if (snapshot.empty) {
+            container.innerHTML = `
+              <div class="text-center py-12 text-gray-500">
+                <i class="fas fa-clipboard-list text-4xl mb-4"></i>
+                <p>Belum ada survey response</p>
+              </div>`;
+            return;
+          }
+
+          const responses = [];
+          snapshot.forEach(doc => responses.push({ id: doc.id, ...doc.data() }));
+
+          responses.sort((a,b)=> (b.timestamp?new Date(b.timestamp).getTime():0) - (a.timestamp?new Date(a.timestamp).getTime():0));
+
+          // Update survey charts
+          updateSurveyCharts(responses);
+        
+          container.innerHTML = responses.map(r=>{
+            const avgRating = calculateAverageRating(r.ratings);
+            return `
+              <div class="bg-white rounded-lg p-3 sm:p-4 shadow-md border border-gray-200 hover:shadow-lg transition-all">
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-3">
+                  <div class="flex-1 min-w-0">
+                    <h4 class="font-bold text-sm sm:text-base text-gray-800 truncate">${r.userName||'Anonymous'}</h4>
+                    <p class="text-xs text-gray-500 truncate">${r.userEmail||'No email'}</p>
+                    <p class="text-xs text-gray-400 mt-1">${r.timestamp?new Date(r.timestamp).toLocaleString('id-ID'):'No date'}</p>
+                  </div>
+                  <div class="flex gap-2 flex-shrink-0">
+                    <button onclick="viewSurveyDetail('${r.id}')"
+                      class="px-3 py-1.5 text-xs sm:text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-1">
+                      <i class="fas fa-eye text-xs"></i><span class="hidden sm:inline">Detail</span>
+                    </button>
+                    <button onclick="deleteSurveyResponse('${r.id}')"
+                      class="px-3 py-1.5 text-xs sm:text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-1">
+                      <i class="fas fa-trash text-xs"></i><span class="hidden sm:inline">Hapus</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 mb-3">
+                  <div class="bg-blue-50 p-2 rounded-lg">
+                    <p class="text-xs text-blue-600 font-medium mb-0.5">Perangkat</p>
+                    <p class="text-xs font-bold text-blue-800 truncate">${r.device||'N/A'}</p>
+                  </div>
+                  <div class="bg-green-50 p-2 rounded-lg">
+                    <p class="text-xs text-green-600 font-medium mb-0.5">Fitur Favorit</p>
+                    <p class="text-xs font-bold text-green-800 truncate">${r.favoriteFeature||'N/A'}</p>
+                  </div>
+                  <div class="bg-purple-50 p-2 rounded-lg">
+                    <p class="text-xs text-purple-600 font-medium mb-0.5">Tujuan</p>
+                    <p class="text-xs font-bold text-purple-800 truncate">${r.purpose||'N/A'}</p>
+                  </div>
+                  <div class="bg-orange-50 p-2 rounded-lg">
+                    <p class="text-xs text-orange-600 font-medium mb-0.5">Frekuensi</p>
+                    <p class="text-xs font-bold text-orange-800 truncate">${r.frequency||'N/A'}</p>
+                  </div>
+                </div>
+
+                <div class="bg-gray-50 p-2 rounded-lg">
+                  <p class="text-xs text-gray-600 font-medium mb-1">Rating Rata-rata</p>
+                  <div class="flex items-center">
+                    <span class="text-xl font-bold text-yellow-600">${avgRating}</span>
+                    <span class="text-xs text-gray-500 ml-1">/ 5.0</span>
+                  </div>
+                </div>
+              </div>`;
+          }).join('');
+        }
+    
+        function calculateAverageRating(ratings) {
+          if (!ratings || typeof ratings!=='object') return 'N/A';
+          const vals=Object.values(ratings).filter(v=>typeof v==='number');
+          if (!vals.length) return 'N/A';
+          return (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1);
+        }
+        
+        function formatRatingKey(key){
+          const labels={
+            textReadability:'Teks Mudah Dibaca',
+            colorLayout:'Warna dan Tata Letak',
+            attractiveDesign:'Desain Menarik',
+            crossPlatform:'Lintas Platform',
+            easeOfUse:'Kemudahan Penggunaan',
+            chatbotRelevance:'Relevansi Chatbot',
+            mediaSupport:'Media Pendukung',
+            materialClarity:'Kejelasan Materi',
+            questionVariety:'Variasi Soal',
+            learningSupport:'Dukungan Pembelajaran'
+          };
+          return labels[key]||key;
+        }
+        
+        /* === Modal detail survey dengan info tambahan === */
+        function showSurveyModal(data){
+          const modal=document.createElement('div');
+          modal.className='fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4';
+          modal.onclick=(e)=>{if(e.target===modal)modal.remove();};
+        
+          const ratingsHTML=data.ratings?Object.entries(data.ratings).map(([k,v])=>`
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <p class="text-sm text-gray-600 mb-2">${formatRatingKey(k)}</p>
+              <div class="flex items-center">
+                <div class="flex-1 bg-gray-200 h-2 rounded-full overflow-hidden">
+                  <div class="bg-gradient-to-r from-yellow-400 to-yellow-600 h-full" style="width:${(v/5)*100}%"></div>
+                </div>
+                <span class="ml-3 font-bold text-yellow-600">${v}/5</span>
+              </div>
+            </div>`).join(''):'<p class="text-gray-500">No ratings available</p>';
+        
+          modal.innerHTML=`
+            <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-8">
+              <div class="flex justify-between items-start mb-6">
+                <div>
+                  <h2 class="text-2xl font-bold text-gray-800">${data.userName||'Anonymous'}</h2>
+                  <p class="text-gray-600">${data.userEmail||'No email'}</p>
+                </div>
+                <button onclick="this.closest('.fixed').remove()" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <i class="fas fa-times text-xl text-gray-600"></i>
+                </button>
+              </div>
+        
+              <!-- Tambahan info di modal -->
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-blue-50 p-3 rounded-lg">
+                  <p class="text-xs text-blue-600 font-medium">Perangkat</p>
+                  <p class="text-sm font-bold text-blue-800">${data.device||'N/A'}</p>
+                </div>
+                <div class="bg-green-50 p-3 rounded-lg">
+                  <p class="text-xs text-green-600 font-medium">Fitur Favorit</p>
+                  <p class="text-sm font-bold text-green-800">${data.favoriteFeature||'N/A'}</p>
+                </div>
+                <div class="bg-purple-50 p-3 rounded-lg">
+                  <p class="text-xs text-purple-600 font-medium">Tujuan</p>
+                  <p class="text-sm font-bold text-purple-800">${data.purpose||'N/A'}</p>
+                </div>
+                <div class="bg-orange-50 p-3 rounded-lg">
+                  <p class="text-xs text-orange-600 font-medium">Frekuensi</p>
+                  <p class="text-sm font-bold text-orange-800">${data.frequency||'N/A'}</p>
+                </div>
+              </div>
+        
+              <div class="space-y-6">
+                <div>
+                  <h3 class="text-lg font-bold text-gray-800 mb-4">Detail Penilaian</h3>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    ${ratingsHTML}
+                  </div>
+                </div>
+                ${data.additionalFeedback?`
+                  <div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Saran & Masukan</h3>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                      <p class="text-gray-700">${data.additionalFeedback}</p>
+                    </div>
+                  </div>`:''}
+              </div>
+            </div>`;
+          document.body.appendChild(modal);
+        }
+        
+        /* supaya onclick berfungsi */
+        window.viewSurveyDetail=async function(surveyId){
+          try{
+            const docSnap=await getDoc(doc(db,'surveyResponses',surveyId));
+            if(docSnap.exists()){
+              showSurveyModal(docSnap.data());
+            }else alert('Survey tidak ditemukan');
+          }catch(e){
+            console.error('Error fetching survey detail:',e);
+            alert('Gagal memuat detail survey');
+          }
+        };
+        
+        /* === Chart quiz analytics === */
+        async function loadQuizAnalytics(){
+          try {
+            console.log('📊 Loading quiz analytics...');
+            const analytics = await getQuizAnalytics();
+
+            if (!analytics) {
+              console.warn('⚠️ No analytics data available');
+              return;
+            }
+
+            console.log('✅ Analytics loaded:', analytics);
+
+            const scoreCtx = document.getElementById('score-distribution-chart')?.getContext('2d');
+            if (!scoreCtx) {
+              console.error('❌ Score chart canvas not found');
+              return;
+            }
+
+            const scoreLabels = Object.keys(analytics.scoreDistribution || {});
+            const scoreValues = Object.values(analytics.scoreDistribution || {});
+
+            if (scoreChart) {
+              scoreChart.data.labels = scoreLabels;
+              scoreChart.data.datasets[0].data = scoreValues;
+              scoreChart.update();
+            } else {
+              scoreChart = new Chart(scoreCtx, {
+                type: 'bar',
+                data: {
+                  labels: scoreLabels,
+                  datasets: [{
+                    label: 'Jumlah Sesi',
+                    data: scoreValues,
+                    backgroundColor: '#6366f1',
+                    borderRadius: 8
+                  }]
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  animation: false,
+                  plugins: {
+                    legend: {
+                      display: false
+                    }
+                  },
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      ticks: {
+                        stepSize: 1
+                      }
+                    }
+                  }
+                }
+              });
+            }
+
+            const aspectCtx = document.getElementById('aspect-average-chart')?.getContext('2d');
+            if (!aspectCtx) {
+              console.error('❌ Aspect chart canvas not found');
+              return;
+            }
+
+            const aspectLabels = Object.keys(analytics.aspectAverages || {}).map(a => a.charAt(0).toUpperCase() + a.slice(1));
+            const aspectValues = Object.values(analytics.aspectAverages || {});
+
+            if (aspectChart) {
+              aspectChart.data.labels = aspectLabels;
+              aspectChart.data.datasets[0].data = aspectValues;
+              aspectChart.update();
+            } else {
+              aspectChart = new Chart(aspectCtx, {
+                type: 'radar',
+                data: {
+                  labels: aspectLabels,
+                  datasets: [{
+                    label: 'Rata-rata Skor',
+                    data: aspectValues,
+                    backgroundColor: 'rgba(99,102,241,0.2)',
+                    borderColor: '#6366f1',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#6366f1',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#6366f1'
+                  }]
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  animation: false,
+                  scales: {
+                    r: {
+                      suggestedMin: 0,
+                      suggestedMax: 100,
+                      ticks: {
+                        stepSize: 20
+                      }
+                    }
+                  },
+                  plugins: {
+                    legend: {
+                      display: false
+                    }
+                  }
+                }
+              });
+            }
+
+            console.log('✅ Charts rendered successfully');
+          } catch (error) {
+            console.error('❌ Error loading quiz analytics:', error);
+          }
+        }
+        
+        /* === Logout === */
+        window.logout = async function() {
+          try {
+            await auth.signOut();
+            window.location.href = '../auth/login.html';
+          } catch (error) {
+            console.error('❌ Error logging out:', error);
+            alert('Gagal logout');
+          }
+        };
+
+        /* === Export Surveys to CSV === */
+        window.exportSurveys = async function() {
+          try {
+            const snapshot = await getDocs(collection(db, 'surveyResponses'));
+            if (snapshot.empty) {
+              alert('Tidak ada data survey untuk di-export');
+              return;
+            }
+
+            let csvContent = 'Nama,Email,Tanggal,Device,Fitur Favorit,Tujuan,Frekuensi,Rating Rata-rata\n';
+
+            snapshot.forEach(doc => {
+              const data = doc.data();
+              const avgRating = calculateAverageRating(data.ratings);
+              const row = [
+                data.userName || 'Anonymous',
+                data.userEmail || 'No email',
+                data.timestamp ? new Date(data.timestamp).toLocaleString('id-ID') : 'No date',
+                data.device || 'N/A',
+                data.favoriteFeature || 'N/A',
+                data.purpose || 'N/A',
+                data.frequency || 'N/A',
+                avgRating
+              ].map(field => `"${field}"`).join(',');
+              csvContent += row + '\n';
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `survey_responses_${new Date().getTime()}.csv`;
+            link.click();
+
+            showNotification('✅ Survey berhasil di-export!');
+          } catch (error) {
+            console.error('❌ Error exporting surveys:', error);
+            alert('Gagal export survey: ' + error.message);
+          }
+        };
+
+        /* === Init === */
+        document.addEventListener('DOMContentLoaded',()=>{
+          setupRealtimeListeners();
+          loadMateriList();
+          loadQuizAnalytics();
+        });
+    </script>
+    <script type="module" src="../../assets/js/auth/auth-guard.js"></script>
+</body>
+</html>

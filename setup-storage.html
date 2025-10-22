@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Supabase Storage</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-lg p-8 max-w-2xl w-full">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Setup Supabase Storage</h1>
+
+        <div id="status" class="mb-6 p-4 rounded-lg bg-blue-50 border border-blue-200">
+            <p class="text-blue-800">Ready to setup storage bucket...</p>
+        </div>
+
+        <div class="space-y-4">
+            <button onclick="checkBucket()" class="w-full bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors">
+                1. Check Bucket Status
+            </button>
+
+            <button onclick="listBuckets()" class="w-full bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-600 transition-colors">
+                2. List All Buckets
+            </button>
+        </div>
+
+        <div class="mt-8 p-4 bg-gray-50 rounded-lg">
+            <h3 class="font-bold text-gray-800 mb-2">Manual Setup Instructions:</h3>
+            <ol class="list-decimal list-inside space-y-2 text-sm text-gray-600">
+                <li>Buka <a href="https://supabase.com/dashboard" target="_blank" class="text-blue-600 hover:underline">Supabase Dashboard</a></li>
+                <li>Login dan pilih project <strong>leqtvucfgxwukfgsvnei</strong></li>
+                <li>Klik menu <strong>Storage</strong> di sidebar kiri</li>
+                <li>Klik tombol <strong>"New bucket"</strong></li>
+                <li>Isi form:
+                    <ul class="list-disc list-inside ml-4 mt-1">
+                        <li>Name: <code class="bg-gray-200 px-1 rounded">materi</code></li>
+                        <li>✅ Centang <strong>"Public bucket"</strong></li>
+                    </ul>
+                </li>
+                <li>Klik <strong>"Create bucket"</strong></li>
+                <li>Setelah bucket dibuat, klik bucket <strong>"materi"</strong></li>
+                <li>Klik tab <strong>"Policies"</strong></li>
+                <li>Buat 3 policies (klik "New policy" → "For full customization"):
+                    <ul class="list-disc list-inside ml-4 mt-1">
+                        <li><strong>Policy 1 - SELECT:</strong> Target: public, USING: true</li>
+                        <li><strong>Policy 2 - INSERT:</strong> Target: authenticated, WITH CHECK: true</li>
+                        <li><strong>Policy 3 - DELETE:</strong> Target: authenticated, USING: true</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p class="text-sm text-yellow-800">
+                ⚠️ <strong>Note:</strong> Bucket harus dibuat manual via Dashboard karena ANON key tidak punya permission untuk create bucket.
+            </p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from './config/supabase-init.js';
+
+        function updateStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            const colors = {
+                info: 'bg-blue-50 border-blue-200 text-blue-800',
+                success: 'bg-green-50 border-green-200 text-green-800',
+                error: 'bg-red-50 border-red-200 text-red-800',
+                warning: 'bg-yellow-50 border-yellow-200 text-yellow-800'
+            };
+            statusDiv.className = `mb-6 p-4 rounded-lg border ${colors[type]}`;
+            statusDiv.innerHTML = `<p>${message}</p>`;
+        }
+
+        window.checkBucket = async function() {
+            updateStatus('🔍 Checking bucket status...', 'info');
+            try {
+                const { data, error } = await supabase.storage.getBucket('materi');
+
+                if (error) {
+                    if (error.message.includes('not found')) {
+                        updateStatus('❌ Bucket "materi" NOT FOUND.<br><br>Silakan buat bucket manual via Supabase Dashboard (lihat instruksi di bawah).', 'error');
+                    } else {
+                        updateStatus(`❌ Error: ${error.message}`, 'error');
+                    }
+                } else {
+                    updateStatus(`✅ Bucket "materi" FOUND!<br>Public: ${data.public}<br>ID: ${data.id}<br><br>Bucket sudah siap digunakan! 🎉`, 'success');
+                }
+            } catch (err) {
+                updateStatus(`❌ Unexpected error: ${err.message}`, 'error');
+            }
+        };
+
+        window.listBuckets = async function() {
+            updateStatus('📋 Listing all buckets...', 'info');
+            try {
+                const { data, error } = await supabase.storage.listBuckets();
+
+                if (error) {
+                    updateStatus(`❌ Error: ${error.message}`, 'error');
+                } else {
+                    if (data.length === 0) {
+                        updateStatus('ℹ️ No buckets found. Create one via Supabase Dashboard.', 'warning');
+                    } else {
+                        const bucketList = data.map(b => `• ${b.name} (${b.public ? 'Public' : 'Private'})`).join('<br>');
+                        updateStatus(`✅ Found ${data.length} bucket(s):<br><br>${bucketList}`, 'success');
+                    }
+                }
+            } catch (err) {
+                updateStatus(`❌ Unexpected error: ${err.message}`, 'error');
+            }
+        };
+
+        // Auto-check on load
+        window.addEventListener('DOMContentLoaded', checkBucket);
+    </script>
+</body>
+</html>

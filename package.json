@@ -1,0 +1,45 @@
+{
+  "name": "moral-intelligence",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Platform panduan bijak untuk pendidik dengan AI Gemini",
+  "main": "index.html",
+  "scripts": {
+    "start": "live-server",
+    "build": "echo 'No build step required for static site'",
+    "deploy": ".\\node_modules\\.bin\\firebase deploy",
+    "test": "echo 'No tests specified'"
+  },
+  "keywords": [
+    "education",
+    "ai",
+    "gemini",
+    "moral-intelligence",
+    "teacher-tools",
+    "counseling"
+  ],
+  "author": "Moral Intelligence Team",
+  "license": "MIT",
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "firebase-tools": "^14.17.0",
+    "live-server": "^1.2.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.13"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/moral-intelligence.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/moral-intelligence/issues"
+  },
+  "homepage": "https://moral-intelligence.web.app",
+  "dependencies": {
+    "docx": "^8.5.0",
+    "dotenv": "^17.2.2"
+  }
+}
