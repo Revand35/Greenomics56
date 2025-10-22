@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Assistant - Greenomics</title>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.gstatic.com https://generativelanguage.googleapis.com https://esm.run; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://firestore.googleapis.com https://firebase.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://generativelanguage.googleapis.com https://content-firebaseappcheck.googleapis.com http://127.0.0.1:* http://localhost:*; frame-src 'self'; worker-src 'self' blob:; manifest-src 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.gstatic.com https://generativelanguage.googleapis.com https://esm.run; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://firestore.googleapis.com https://firebase.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://generativelanguage.googleapis.com https://content-firebaseappcheck.googleapis.com https://www.gstatic.com https://apis.google.com https://esm.run https://cdn.jsdelivr.net https://cdnjs.cloudflare.com http://127.0.0.1:* http://localhost:* ws://127.0.0.1:* ws://localhost:*; frame-src 'self' https://accounts.google.com https://*.firebaseapp.com; worker-src 'self' blob:; manifest-src 'self';">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -55,6 +55,7 @@
             50%, 100% { background-color: #d1fae5; } 
         }
 
+
         /* Secara default, tampilkan chat AI Assistant */
         .quiz-section { display: none; }
         .chat-section { display: flex; }
@@ -62,6 +63,26 @@
         /* Saat body dalam mode quiz, sembunyikan chat dan tampilkan quiz */
         body.quiz-mode .quiz-section { display: flex; }
         body.quiz-mode .chat-section { display: none; }
+        
+        /* Pastikan chat messages tidak tertutup navbar */
+        .chat-section {
+            margin-top: 2rem;
+            padding-top: 1rem;
+        }
+        
+        #chat-messages {
+            padding-top: 3rem !important;
+            padding-bottom: 8rem !important;
+        }
+        
+        /* Pastikan input text tidak tertutup bottom navigation */
+        .chat-input-container {
+            position: fixed;
+            bottom: 5rem;
+            left: 1rem;
+            right: 1rem;
+            z-index: 40;
+        }
 
         .chat-bubble {
         max-width: 80%;
@@ -131,7 +152,7 @@
 
     <div id="app-container" class="pb-24">
         <div class="flex flex-col h-screen">
-            <div class="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 text-white p-6 rounded-b-3xl shadow-xl flex-shrink-0 z-20">
+            <div class="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 text-white p-6 rounded-b-3xl shadow-xl flex-shrink-0 z-10">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
                         <a href="../../index.html" class="p-2 bg-white/20 rounded-full hover:bg-white/30 transition-colors">
@@ -154,53 +175,12 @@
                 </div>
             </div>
 
-            <div class="flex-grow overflow-hidden">
+            <div class="flex-grow overflow-hidden mt-6">
 
-                <!-- Welcome Modal for Green Quiz -->
-                <div id="welcome-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg animate-fade-in">
-                        <div class="bg-gradient-to-r from-green-600 to-emerald-600 rounded-t-2xl p-6 text-white">
-                            <div class="flex items-center gap-3 mb-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <h2 class="text-2xl font-bold">🌱 Green Accounting Quiz</h2>
-                            </div>
-                            <p class="text-green-100 text-sm">Tes Pemahaman Green Accounting</p>
-                        </div>
-
-                        <div class="p-6">
-                            <div class="space-y-4 text-gray-700 leading-relaxed">
-                                <p class="text-base">
-                                    Tes ini dirancang untuk mengukur <span class="font-semibold text-green-600">pemahaman green accounting</span> UMKM Anda.
-                                </p>
-
-                                <div class="bg-green-50 rounded-lg p-4 border-l-4 border-green-500">
-                                    <p class="text-sm">
-                                        📝 Kamu akan diberikan beberapa pertanyaan tentang green accounting<br>
-                                        ⚡ Setelah menjawab, soal berikutnya akan muncul secara otomatis<br>
-                                        💭 Silakan jawab berdasarkan pengetahuan dan pengalaman UMKM Anda
-                                    </p>
-                                </div>
-
-                                <p class="text-sm text-gray-600">
-                                    Di akhir tes, kamu akan mendapatkan <span class="font-semibold">skor total, kategori, dan rekomendasi pengembangan green accounting</span>.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="bg-gray-50 rounded-b-2xl p-6 flex justify-end">
-                            <button onclick="closeWelcomeModal()" class="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-semibold hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-105">
-                                Mulai Tes
-                            </button>
-                        </div>
-                    </div>
-                </div>
 
                 <div class="quiz-section">
                     <div class="bg-white border-b border-gray-200 p-4 flex-shrink-0">
                         <div class="flex justify-between items-center mb-2">
-                            <span class="text-sm font-medium text-gray-700" id="progress-text">Soal 1 dari 70</span>
                             <span class="text-sm text-indigo-600 font-medium" id="aspect-name">Empati</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
@@ -276,44 +256,44 @@
                 </div>
 
                 <div class="chat-section">
-                    <div id="chat-messages" class="flex-grow p-6 pb-24 space-y-4 overflow-y-auto chat-scroll">
+                    <div id="chat-messages" class="flex-grow p-6 pt-8 pb-32 space-y-4 overflow-y-auto chat-scroll">
                         <div class="flex items-start space-x-3">
                             <div class="w-10 h-10 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center text-white text-lg font-bold flex-shrink-0">🌱</div>
                             <div class="bg-white rounded-2xl rounded-tl-none p-4 shadow-lg max-w-md">
                                 <div class="text-gray-800 text-sm">
-                                    Halo! Saya AI Assistant Greenomics, siap membantu UMKM Anda dengan green accounting. Anda bisa bertanya tentang:
+                                    Halo! Saya AI Assistant Greenomics, konsultan ahli Green Accounting untuk UMKM. Saya bisa membantu Anda dengan:
                                     <br><br>
-                                    • <strong>Konsep Green Accounting</strong> - Penjelasan dasar dan manfaat<br>
-                                    • <strong>Input Data Lingkungan</strong> - Cara mencatat limbah, energi, dll<br>
-                                    • <strong>Analisis Biaya Lingkungan</strong> - Menghitung dampak ekonomi<br>
-                                    • <strong>Eco-Score & Gamifikasi</strong> - Tracking progress hijau<br>
-                                    • <strong>Konsultasi UMKM</strong> - Saran spesifik untuk bisnis Anda
+                                    • <strong>Analisis Limbah</strong> - Hitung nilai ekonomi dan potensi profit<br>
+                                    • <strong>Saran Produk Daur Ulang</strong> - Ide bisnis circular economy<br>
+                                    • <strong>Kalkulasi ROI</strong> - Analisis profit dari pengolahan limbah<br>
+                                    • <strong>Strategi Green Accounting</strong> - Tips sustainability UMKM<br>
+                                    • <strong>Konsultasi Lingkungan</strong> - Panduan waste management
                                 </div>
                             </div>
                         </div>
                         
                         <!-- Quick Action Cards -->
                         <div class="grid grid-cols-2 gap-3 mt-4">
-                            <button onclick="askQuickQuestion('Apa itu green accounting?')" class="bg-green-50 hover:bg-green-100 p-3 rounded-lg text-left transition-colors">
-                                <div class="text-green-600 font-medium text-sm">📚 Apa itu Green Accounting?</div>
-                                <div class="text-xs text-gray-600 mt-1">Pelajari konsep dasar</div>
+                            <button onclick="askQuickQuestion('Analisis limbah terbaru saya')" class="bg-green-50 hover:bg-green-100 p-3 rounded-lg text-left transition-colors">
+                                <div class="text-green-600 font-medium text-sm">📊 Analisis Limbah</div>
+                                <div class="text-xs text-gray-600 mt-1">Hitung nilai ekonomi limbah</div>
                             </button>
-                            <button onclick="askQuickQuestion('Bagaimana cara menghitung biaya lingkungan?')" class="bg-blue-50 hover:bg-blue-100 p-3 rounded-lg text-left transition-colors">
-                                <div class="text-blue-600 font-medium text-sm">💰 Hitung Biaya Lingkungan</div>
-                                <div class="text-xs text-gray-600 mt-1">Analisis ekonomi hijau</div>
+                            <button onclick="askQuickQuestion('Saran produk dari limbah plastik')" class="bg-blue-50 hover:bg-blue-100 p-3 rounded-lg text-left transition-colors">
+                                <div class="text-blue-600 font-medium text-sm">♻️ Produk Daur Ulang</div>
+                                <div class="text-xs text-gray-600 mt-1">Ide bisnis circular economy</div>
                             </button>
-                            <button onclick="askQuickQuestion('Cara input data limbah UMKM')" class="bg-purple-50 hover:bg-purple-100 p-3 rounded-lg text-left transition-colors">
-                                <div class="text-purple-600 font-medium text-sm">📊 Input Data Limbah</div>
-                                <div class="text-xs text-gray-600 mt-1">Catat aktivitas hijau</div>
+                            <button onclick="askQuickQuestion('Cara menghitung profit dari limbah')" class="bg-purple-50 hover:bg-purple-100 p-3 rounded-lg text-left transition-colors">
+                                <div class="text-purple-600 font-medium text-sm">💰 Hitung Profit</div>
+                                <div class="text-xs text-gray-600 mt-1">ROI pengolahan limbah</div>
                             </button>
-                            <button onclick="askQuickQuestion('Tips meningkatkan eco-score')" class="bg-orange-50 hover:bg-orange-100 p-3 rounded-lg text-left transition-colors">
-                                <div class="text-orange-600 font-medium text-sm">🌱 Tingkatkan Eco-Score</div>
-                                <div class="text-xs text-gray-600 mt-1">Tips gamifikasi hijau</div>
+                            <button onclick="askQuickQuestion('Tampilkan histori data input saya')" class="bg-orange-50 hover:bg-orange-100 p-3 rounded-lg text-left transition-colors">
+                                <div class="text-orange-600 font-medium text-sm">📋 Histori Data</div>
+                                <div class="text-xs text-gray-600 mt-1">Lihat data input sebelumnya</div>
                             </button>
                         </div>
                     </div>
                     
-                    <div class="fixed z-30 bottom-4 inset-x-4">
+                    <div class="chat-input-container">
                         <div class="mx-auto max-w-5xl xl:max-w-7xl p-2 bg-white rounded-2xl shadow-xl transition-all">
                             <div class="flex items-center space-x-2">
                                 <button id="file-upload-button" class="flex-shrink-0 p-3 rounded-full text-gray-500 hover:bg-gray-100 transition-colors" title="Upload File PDF">
@@ -435,58 +415,81 @@
         }
     });
     
-    document.addEventListener('DOMContentLoaded', () => {
-        setupChatListeners();
-    });
-    </script>
-    
-    <script>
-        // Quick question function for green accounting
-        function askQuickQuestion(question) {
-            const chatInput = document.getElementById('chat-input');
-            if (chatInput) {
-                chatInput.value = question;
-                chatInput.focus();
-                // Trigger send button click
-                const sendBtn = document.getElementById('send-chat-btn');
-                if (sendBtn) {
-                    sendBtn.click();
-                }
+    // Quick question function for green accounting
+    function askQuickQuestion(question) {
+        const chatInput = document.getElementById('chat-input');
+        if (chatInput) {
+            chatInput.value = question;
+            chatInput.focus();
+            // Trigger send button click
+            const sendBtn = document.getElementById('send-chat-btn');
+            if (sendBtn) {
+                sendBtn.click();
             }
         }
+    }
+    
+    // Mode switching functions
+    function switchToChatMode() {
+        document.body.classList.remove('quiz-mode');
+        document.getElementById('header-status').textContent = 'Konsultan Green Accounting';
+        document.getElementById('chat-mode-btn').classList.add('bg-white', 'text-green-600');
+        document.getElementById('chat-mode-btn').classList.remove('text-white', 'hover:bg-white/10');
+        document.getElementById('quiz-mode-btn').classList.remove('bg-white', 'text-green-600');
+        document.getElementById('quiz-mode-btn').classList.add('text-white', 'hover:bg-white/10');
+    }
+    
+    function switchToQuizMode() {
+        document.body.classList.add('quiz-mode');
+        document.getElementById('header-status').textContent = 'Green Accounting Quiz';
+        document.getElementById('quiz-mode-btn').classList.add('bg-white', 'text-green-600');
+        document.getElementById('quiz-mode-btn').classList.remove('text-white', 'hover:bg-white/10');
+        document.getElementById('chat-mode-btn').classList.remove('bg-white', 'text-green-600');
+        document.getElementById('chat-mode-btn').classList.add('text-white', 'hover:bg-white/10');
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('🚀 Initializing chat page...');
         
-        // Mode switching functions
-        function switchToChatMode() {
-            document.body.classList.remove('quiz-mode');
-            document.getElementById('header-status').textContent = 'Konsultan Green Accounting';
-            document.getElementById('chat-mode-btn').classList.add('bg-white', 'text-green-600');
-            document.getElementById('chat-mode-btn').classList.remove('text-white', 'hover:bg-white/10');
-            document.getElementById('quiz-mode-btn').classList.remove('bg-white', 'text-green-600');
-            document.getElementById('quiz-mode-btn').classList.add('text-white', 'hover:bg-white/10');
-        }
+        // Setup chat listeners
+        setupChatListeners();
         
-        function switchToQuizMode() {
-            document.body.classList.add('quiz-mode');
-            document.getElementById('header-status').textContent = 'Green Accounting Quiz';
-            document.getElementById('quiz-mode-btn').classList.add('bg-white', 'text-green-600');
-            document.getElementById('quiz-mode-btn').classList.remove('text-white', 'hover:bg-white/10');
-            document.getElementById('chat-mode-btn').classList.remove('bg-white', 'text-green-600');
-            document.getElementById('chat-mode-btn').classList.add('text-white', 'hover:bg-white/10');
+        // Debug: Check if send button exists and add manual listener
+        const sendBtn = document.getElementById('send-chat-btn');
+        if (sendBtn) {
+            console.log('✅ Send button found, adding manual listener');
+            sendBtn.addEventListener('click', (e) => {
+                console.log('🔄 Send button clicked!');
+                e.preventDefault();
+                const input = document.getElementById('chat-input');
+                if (input && input.value.trim()) {
+                    console.log('📤 Sending message:', input.value);
+                    // Trigger the send function
+                    if (window.handleSendClick) {
+                        window.handleSendClick();
+                    } else {
+                        console.error('❌ handleSendClick function not found');
+                    }
+                }
+            });
+        } else {
+            console.error('❌ Send button not found!');
         }
         
         // Add event listeners for mode switching
-        document.addEventListener('DOMContentLoaded', () => {
-            const chatModeBtn = document.getElementById('chat-mode-btn');
-            const quizModeBtn = document.getElementById('quiz-mode-btn');
-            
-            if (chatModeBtn) {
-                chatModeBtn.addEventListener('click', switchToChatMode);
-            }
-            
-            if (quizModeBtn) {
-                quizModeBtn.addEventListener('click', switchToQuizMode);
-            }
-        });
+        const chatModeBtn = document.getElementById('chat-mode-btn');
+        const quizModeBtn = document.getElementById('quiz-mode-btn');
+        
+        if (chatModeBtn) {
+            chatModeBtn.addEventListener('click', switchToChatMode);
+        }
+        
+        if (quizModeBtn) {
+            quizModeBtn.addEventListener('click', switchToQuizMode);
+        }
+        
+        console.log('✅ Chat page initialized');
+    });
     </script>
     <!-- Di index.html dan profil.html -->
     <script type="module" src="../../assets/js/auth.js"></script>

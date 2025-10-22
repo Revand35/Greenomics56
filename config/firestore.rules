@@ -6,10 +6,10 @@ service cloud.firestore {
     function isAdmin() {
       return request.auth != null && 
              request.auth.token.email in [
-               'admin@mi.com', 
-               'admin@moralintelligence.com',
-               'superadmin@mi.com',
-               'nadyarara08@gmail.com'
+               'admin@greenomics.com', 
+               'admin@greenomics.id',
+               'superadmin@greenomics.com',
+               'revandjethrosetiawan@gmail.com'
              ];
     }
 
@@ -84,6 +84,19 @@ service cloud.firestore {
                           resource.data.userId == request.auth.uid;
     }
 
+    // Environmental Activities - Aktivitas Lingkungan
+    match /environmental_activities/{activityId} {
+      allow read: if request.auth != null && 
+                     (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if request.auth != null &&
+                      request.resource.data.userId == request.auth.uid &&
+                      request.resource.data.userEmail == request.auth.token.email;
+      allow update: if request.auth != null && 
+                       (resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if request.auth != null && 
+                       (resource.data.userId == request.auth.uid || isAdmin());
+    }
+    
     // Admin collections
     match /admin/{document} {
       allow read, write: if isAdmin();

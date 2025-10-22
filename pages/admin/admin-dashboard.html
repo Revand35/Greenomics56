@@ -283,11 +283,9 @@
     <div id="notification" class="fixed top-6 right-6 px-8 py-4 rounded-2xl shadow-2xl z-50 opacity-0 transform translate-y-4 transition-all duration-500 backdrop-blur-sm border border-white/20"></div>
 
     <script type="module">
-        import { supabase } from '../../config/supabase-init.js'; // ✅ ENABLED
         import { db, auth } from '../../config/firebase-init.js';
         import { deleteDoc, collection, onSnapshot, doc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         import { getQuizAnalytics } from '../../assets/js/quiz/quiz-firestore-service.js';
-        import { uploadFile, getAllMateri, deleteMateri } from '../../assets/services/materiService.js';
         
         let scoreChart = null;
         let aspectChart = null;
@@ -320,159 +318,35 @@
           setTimeout(() => { notif.classList.add('opacity-0','translate-y-4'); }, duration);
         }
 
-        /* === Helper getPublicUrl === */
-        async function getPublicUrl(fileName) {
-          const { data } = supabase.storage.from('Mobile-Intelligence').getPublicUrl(`materi/${fileName}`);
-          return data.publicUrl;
-        }
+        /* === Materials Management Disabled === */
+        // Materials management has been disabled as Supabase is no longer used
 
         /* === Load Materials Count === */
         async function loadMaterialsCount() {
-          try {
-            const { data: files, error } = await supabase.storage.from('Mobile-Intelligence').list('materi', {
-              limit: 1000
-            });
-
-            if (!error && files) {
-              const actualFiles = files.filter(f =>
-                f.id &&
-                !f.name.startsWith('.') &&
-                f.name !== '.emptyFolderPlaceholder'
-              );
-              updateStat('totalMaterials', actualFiles.length);
-            }
-          } catch (err) {
-            console.error('Error loading materials count:', err);
-          }
+          // Materials count disabled - Supabase no longer used
+          updateStat('totalMaterials', 0);
         }
 
         /* === Load Materi === */
         async function loadMateriList() {
           const container = document.getElementById('materi-list');
-          container.innerHTML = `<div class="text-center py-8"><i class="fas fa-spinner fa-spin text-4xl text-blue-500 mb-4"></i><p>Memuat materi...</p></div>`;
-          try {
-            console.log('📂 Loading materi from Supabase Storage...');
-            const { data: files, error } = await supabase.storage.from('Mobile-Intelligence').list('materi', {
-              limit: 100,
-              sortBy: { column: 'created_at', order: 'desc' }
-            });
-
-            if (error) {
-              console.error('❌ Error loading files:', error);
-              throw error;
-            }
-
-            console.log('📦 Files loaded:', files);
-
-            // Filter out folders and placeholder files
-            const actualFiles = files.filter(f =>
-              f.id &&
-              !f.name.startsWith('.') &&
-              f.name !== '.emptyFolderPlaceholder'
-            );
-
-            console.log('✅ Filtered files:', actualFiles);
-
-            if (!actualFiles || actualFiles.length === 0) {
-              container.innerHTML = `<p class="text-center text-gray-500">Belum ada materi. Upload materi pertama kamu!</p>`;
-              return;
-            }
-
-            container.innerHTML = actualFiles.map(f => {
-              const fileSizeKB = f.metadata?.size ? (f.metadata.size / 1024).toFixed(1) : '0';
-              const publicUrl = supabase.storage.from('Mobile-Intelligence').getPublicUrl(`materi/${f.name}`).data.publicUrl;
-
-              return `
-                <div class="bg-white rounded-lg shadow-md p-3 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 hover:shadow-lg transition-shadow">
-                  <div class="flex-1 min-w-0">
-                    <p class="font-bold text-sm text-gray-800 truncate">${f.name}</p>
-                    <p class="text-xs text-gray-500">${fileSizeKB} KB</p>
-                    <p class="text-xs text-gray-400">${f.created_at ? new Date(f.created_at).toLocaleDateString('id-ID') : ''}</p>
-                  </div>
-                  <div class="flex gap-2 flex-shrink-0">
-                    <a href="${publicUrl}" target="_blank" class="px-3 py-1.5 text-xs sm:text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center gap-1">
-                      <i class="fas fa-eye text-xs"></i><span class="hidden sm:inline">Lihat</span>
-                    </a>
-                    <button onclick="deleteMateri('${f.name}')" class="px-3 py-1.5 text-xs sm:text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-1">
-                      <i class="fas fa-trash text-xs"></i><span class="hidden sm:inline">Hapus</span>
-                    </button>
-                  </div>
-                </div>
-              `;
-            }).join('');
-
-            console.log(`✅ Displayed ${actualFiles.length} materi files`);
-
-            // Update stat count
-            updateStat('totalMaterials', actualFiles.length);
-
-          } catch (err) {
-            console.error('❌ Load materi gagal:', err);
-            container.innerHTML = `
-              <div class="text-center py-8 text-red-500">
-                <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
-                <p class="font-bold">Gagal memuat materi</p>
-                <p class="text-sm">${err.message}</p>
-              </div>
-            `;
-            showNotification('Gagal memuat materi: ' + err.message);
-          }
+          container.innerHTML = `
+            <div class="text-center py-8 text-gray-500">
+              <i class="fas fa-info-circle text-4xl mb-4"></i>
+              <p class="font-bold">Materials Management Disabled</p>
+              <p class="text-sm">Supabase integration has been removed. Materials are now managed through Firebase or Local Storage.</p>
+            </div>
+          `;
         }
 
         /* === Upload Materi === */
         document.getElementById('upload-btn').addEventListener('click', async () => {
-          const title = document.getElementById('materi-title').value.trim();
-          const desc = document.getElementById('materi-desc').value.trim();
-          const file = document.getElementById('file-upload').files[0];
-
-          if (!title || !desc || !file) {
-            showNotification('❌ Harap isi semua field!');
-            return;
-          }
-
-          document.getElementById('upload-progress').classList.remove('hidden');
-          document.getElementById('progress-bar').style.width = '0%';
-          document.getElementById('progress-text').textContent = 'Mengunggah: 0%';
-
-          try {
-            // Upload menggunakan materiService
-            await uploadFile(file, {
-              judul: title,
-              deskripsi: desc
-            });
-
-            document.getElementById('progress-bar').style.width = '100%';
-            document.getElementById('progress-text').textContent = 'Mengunggah: 100%';
-            showNotification(`✅ ${title} berhasil diunggah!`);
-
-            // Reset form
-            document.getElementById('materi-title').value = '';
-            document.getElementById('materi-desc').value = '';
-            document.getElementById('file-upload').value = '';
-            document.getElementById('file-name').textContent = 'Belum ada file yang dipilih';
-            document.getElementById('upload-progress').classList.add('hidden');
-
-            // Reload list - akan otomatis update
-          } catch (err) {
-            console.error(err);
-            showNotification(`Gagal upload: ${err.message}`);
-            document.getElementById('upload-progress').classList.add('hidden');
-          }
+          showNotification('❌ Upload disabled - Supabase integration removed');
         });
 
         /* === Delete Materi === */
         window.deleteMateri = async function(fileName) {
-          if (!confirm(`Hapus ${fileName}?`)) return;
-          try {
-            const filePath = `materi/${fileName}`;
-            const { error } = await supabase.storage.from('Mobile-Intelligence').remove([filePath]);
-            if (error) throw error;
-            showNotification(`✅ ${fileName} dihapus`);
-            loadMateriList();
-          } catch (err) {
-            console.error(err);
-            showNotification(`Gagal hapus: ${err.message}`);
-          }
+          showNotification('❌ Delete disabled - Supabase integration removed');
         };
 
         // === File name preview ===
@@ -501,7 +375,7 @@
             displaySurveyResponses(snap);
           });
 
-          // Materials - load from Supabase Storage instead
+          // Materials - disabled (Supabase removed)
           loadMaterialsCount();
         }
         

@@ -190,20 +190,40 @@ export async function getChatResponse(prompt, chatHistory = [], retryCount = 0) 
             { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_ONLY_HIGH" },
         ];
 
-        const systemPrompt = `Anda adalah AI asisten yang ahli dalam moral intelligence dan pengembangan karakter. Anda membantu pengguna memahami 7 aspek moral intelligence: Empati, Hati Nurani, Pengendalian Diri, Hormat, Kebaikan Hati, Toleransi, dan Keadilan.
+        const systemPrompt = `Anda adalah AI asisten ahli Green Accounting dan Konsultan Lingkungan untuk UMKM. Anda membantu pengguna dalam:
+
+1. **Kalkulasi Limbah & Nilai Ekonomi:**
+   - Menghitung nilai ekonomi dari limbah
+   - Menganalisis potensi pengolahan limbah
+   - Memberikan saran strategi waste management
+
+2. **Konsultasi Green Accounting:**
+   - Analisis dampak lingkungan bisnis
+   - Saran penghematan energi dan sumber daya
+   - Strategi sustainability untuk UMKM
+
+3. **Analisis Profit dari Pengolahan Limbah:**
+   - Identifikasi produk yang bisa dibuat dari limbah
+   - Kalkulasi ROI pengolahan limbah
+   - Saran bisnis circular economy
+
+4. **Panduan Praktis:**
+   - Cara mengurangi waste production
+   - Teknik recycling dan upcycling
+   - Implementasi green practices
 
 Berikan jawaban yang:
-- Praktis dan mudah dipahami
-- Berdasarkan teori moral intelligence yang solid
-- Menggunakan contoh nyata dari kehidupan sehari-hari
-- Mendorong refleksi dan pengembangan diri
+- Praktis dan mudah diterapkan untuk UMKM
+- Berdasarkan data dan fakta lingkungan
+- Menggunakan contoh nyata dari industri
 - Ramah dan mendukung
+- Fokus pada profitabilitas dan sustainability
 
 Jawab dalam bahasa Indonesia yang natural dan mudah dipahami.`;
 
         const history = [
             { role: "user", parts: [{ text: systemPrompt }] },
-            { role: "model", parts: [{ text: "Baik, saya siap membantu Anda dengan topik moral intelligence dan pengembangan karakter." }] },
+            { role: "model", parts: [{ text: "Baik, saya siap membantu Anda dengan konsultasi Green Accounting dan analisis limbah untuk UMKM. Saya bisa membantu menghitung nilai ekonomi limbah, memberikan saran pengolahan, dan menganalisis potensi profit dari circular economy." }] },
             ...chatHistory.slice(-8)
         ];
 
@@ -307,6 +327,315 @@ Berikan analisis yang komprehensif dan praktis berdasarkan konten tersebut. Foku
     }
 }
 
+// =============================
+// Waste Analysis Functions
+// =============================
+
+/**
+ * Analisis limbah dan berikan saran pengolahan
+ * @param {Object} wasteData - Data limbah dari user
+ * @returns {Promise<Object>} - Analisis dan saran
+ */
+export async function analyzeWasteData(wasteData) {
+    try {
+        const analysisPrompt = `
+Sebagai konsultan Green Accounting, analisis data limbah berikut:
+
+**Data Limbah:**
+- Jenis: ${wasteData.materialType}
+- Jumlah: ${wasteData.amount} ${wasteData.unit}
+- Aksi: ${wasteData.action}
+- Biaya: Rp ${wasteData.cost || 0}
+- Catatan: ${wasteData.notes || 'Tidak ada'}
+
+**Berikan analisis dalam format JSON:**
+{
+    "economicValue": {
+        "currentValue": "Nilai ekonomi saat ini",
+        "potentialValue": "Nilai ekonomi potensial",
+        "savings": "Penghematan yang bisa dicapai"
+    },
+    "processingOptions": [
+        {
+            "method": "Metode pengolahan",
+            "description": "Deskripsi metode",
+            "investment": "Investasi yang dibutuhkan",
+            "profit": "Potensi profit",
+            "roi": "ROI dalam persen",
+            "timeline": "Waktu implementasi"
+        }
+    ],
+    "productSuggestions": [
+        {
+            "product": "Nama produk",
+            "description": "Deskripsi produk",
+            "marketPrice": "Harga pasar",
+            "productionCost": "Biaya produksi",
+            "profitMargin": "Margin profit"
+        }
+    ],
+    "recommendations": [
+        "Rekomendasi praktis 1",
+        "Rekomendasi praktis 2",
+        "Rekomendasi praktis 3"
+    ],
+    "nextSteps": [
+        "Langkah selanjutnya 1",
+        "Langkah selanjutnya 2",
+        "Langkah selanjutnya 3"
+    ]
+}
+
+Berikan analisis yang praktis dan bisa diterapkan untuk UMKM.`;
+
+        const response = await getChatResponse(analysisPrompt);
+        
+        // Parse JSON response
+        try {
+            const jsonMatch = response.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                return JSON.parse(jsonMatch[0]);
+            }
+        } catch (parseError) {
+            console.warn('Failed to parse JSON response:', parseError);
+        }
+
+        // Fallback jika parsing gagal
+        return {
+            economicValue: {
+                currentValue: "Analisis sedang diproses",
+                potentialValue: "Potensi nilai ekonomi sedang dianalisis",
+                savings: "Penghematan sedang dihitung"
+            },
+            processingOptions: [],
+            productSuggestions: [],
+            recommendations: ["Analisis sedang diproses", "Silakan tunggu sebentar"],
+            nextSteps: ["Analisis sedang diproses"],
+            rawResponse: response
+        };
+
+    } catch (error) {
+        console.error('❌ Error analyzing waste data:', error);
+        throw new Error(`Gagal menganalisis data limbah: ${error.message}`);
+    }
+}
+
+/**
+ * Kalkulasi nilai ekonomi limbah
+ * @param {Object} wasteData - Data limbah
+ * @returns {Object} - Kalkulasi nilai ekonomi
+ */
+export function calculateWasteEconomicValue(wasteData) {
+    const amount = parseFloat(wasteData.amount) || 0;
+    const materialType = wasteData.materialType;
+    const action = wasteData.action;
+    
+    // Base prices per kg untuk berbagai material
+    const basePrices = {
+        'plastic': {
+            'recycled': 3000,
+            'reused': 2500,
+            'reduced': 2000,
+            'disposed': 500,
+            'conserved': 4000
+        },
+        'paper': {
+            'recycled': 2000,
+            'reused': 1500,
+            'reduced': 1000,
+            'disposed': 200,
+            'conserved': 3000
+        },
+        'metal': {
+            'recycled': 5000,
+            'reused': 4000,
+            'reduced': 3000,
+            'disposed': 1000,
+            'conserved': 6000
+        },
+        'organic': {
+            'recycled': 1500,
+            'reused': 1000,
+            'reduced': 800,
+            'disposed': 100,
+            'conserved': 2000
+        },
+        'electricity': {
+            'conserved': 1500,
+            'reduced': 1000,
+            'reused': 800,
+            'recycled': 600,
+            'disposed': 0
+        },
+        'water': {
+            'conserved': 500,
+            'reduced': 300,
+            'reused': 200,
+            'recycled': 150,
+            'disposed': 0
+        }
+    };
+
+    const materialPrices = basePrices[materialType] || {
+        'recycled': 1000,
+        'reused': 800,
+        'reduced': 600,
+        'disposed': 100,
+        'conserved': 1200
+    };
+
+    const basePrice = materialPrices[action] || 1000;
+    const currentValue = Math.round(amount * basePrice);
+    
+    // Potensi nilai jika diolah lebih lanjut
+    const potentialMultiplier = {
+        'plastic': 2.5,
+        'paper': 2.0,
+        'metal': 3.0,
+        'organic': 1.8,
+        'electricity': 1.5,
+        'water': 1.3
+    };
+
+    const multiplier = potentialMultiplier[materialType] || 2.0;
+    const potentialValue = Math.round(currentValue * multiplier);
+    const savings = potentialValue - currentValue;
+
+    return {
+        currentValue,
+        potentialValue,
+        savings,
+        basePrice,
+        multiplier
+    };
+}
+
+/**
+ * Generate saran produk dari limbah
+ * @param {Object} wasteData - Data limbah
+ * @returns {Array} - Array saran produk
+ */
+export function generateProductSuggestions(wasteData) {
+    const materialType = wasteData.materialType;
+    const amount = parseFloat(wasteData.amount) || 0;
+
+    const productSuggestions = {
+        'plastic': [
+            {
+                product: 'Ecobrick',
+                description: 'Bata ramah lingkungan dari botol plastik',
+                marketPrice: 15000,
+                productionCost: 5000,
+                profitMargin: 200,
+                materials: 'Botol plastik + sampah organik'
+            },
+            {
+                product: 'Pot Tanaman',
+                description: 'Pot tanaman dari botol plastik bekas',
+                marketPrice: 25000,
+                productionCost: 8000,
+                profitMargin: 212,
+                materials: 'Botol plastik besar'
+            },
+            {
+                product: 'Tas Belanja',
+                description: 'Tas belanja dari plastik daur ulang',
+                marketPrice: 35000,
+                productionCost: 15000,
+                profitMargin: 133,
+                materials: 'Kantong plastik bekas'
+            }
+        ],
+        'paper': [
+            {
+                product: 'Kertas Daur Ulang',
+                description: 'Kertas baru dari kertas bekas',
+                marketPrice: 12000,
+                productionCost: 6000,
+                profitMargin: 100,
+                materials: 'Kertas bekas + air'
+            },
+            {
+                product: 'Buku Catatan',
+                description: 'Buku catatan dari kertas daur ulang',
+                marketPrice: 25000,
+                productionCost: 12000,
+                profitMargin: 108,
+                materials: 'Kertas bekas + binding'
+            },
+            {
+                product: 'Kemasan Produk',
+                description: 'Kemasan ramah lingkungan',
+                marketPrice: 8000,
+                productionCost: 3000,
+                profitMargin: 167,
+                materials: 'Kertas bekas + printing'
+            }
+        ],
+        'organic': [
+            {
+                product: 'Kompos',
+                description: 'Pupuk organik dari sampah organik',
+                marketPrice: 10000,
+                productionCost: 3000,
+                profitMargin: 233,
+                materials: 'Sampah organik + waktu'
+            },
+            {
+                product: 'Biogas',
+                description: 'Energi biogas dari sampah organik',
+                marketPrice: 5000,
+                productionCost: 2000,
+                profitMargin: 150,
+                materials: 'Sampah organik + digester'
+            },
+            {
+                product: 'Pakan Ternak',
+                description: 'Pakan ternak dari limbah organik',
+                marketPrice: 15000,
+                productionCost: 8000,
+                profitMargin: 87,
+                materials: 'Limbah organik + nutrisi'
+            }
+        ],
+        'metal': [
+            {
+                product: 'Kerajinan Logam',
+                description: 'Kerajinan dari logam bekas',
+                marketPrice: 50000,
+                productionCost: 20000,
+                profitMargin: 150,
+                materials: 'Logam bekas + kreativitas'
+            },
+            {
+                product: 'Alat Pertukangan',
+                description: 'Alat pertukangan dari logam daur ulang',
+                marketPrice: 75000,
+                productionCost: 35000,
+                profitMargin: 114,
+                materials: 'Logam bekas + finishing'
+            }
+        ]
+    };
+
+    const suggestions = productSuggestions[materialType] || [
+        {
+            product: 'Produk Daur Ulang',
+            description: 'Produk kreatif dari limbah',
+            marketPrice: 20000,
+            productionCost: 10000,
+            profitMargin: 100,
+            materials: 'Limbah + kreativitas'
+        }
+    ];
+
+    // Filter berdasarkan jumlah material yang tersedia
+    return suggestions.filter(suggestion => {
+        const requiredAmount = suggestion.materials.includes('besar') ? 5 : 1;
+        return amount >= requiredAmount;
+    });
+}
+
 export function getQuotaStatus() {
     return {
         dailyUsed: dailyRequestCount,
@@ -319,6 +648,9 @@ export function getQuotaStatus() {
 window.getChatResponse = getChatResponse;
 window.getResponseWithContext = getResponseWithContext;
 window.getQuotaStatus = getQuotaStatus;
+window.analyzeWasteData = analyzeWasteData;
+window.calculateWasteEconomicValue = calculateWasteEconomicValue;
+window.generateProductSuggestions = generateProductSuggestions;
 
 console.log('✅ Improved Gemini service module loaded (2.0-flash prioritized)');
 console.log(`📊 Current quota: ${dailyRequestCount}/${FREE_TIER_LIMITS.DAILY} requests used today`);

@@ -1,11 +1,12 @@
 // chat-logic.js - FINAL
-import { getChatResponse, getResponseWithContext } from '../core/gemini-service.js';
+import { getChatResponse, getResponseWithContext, analyzeWasteData, calculateWasteEconomicValue, generateProductSuggestions } from '../core/gemini-service.js';
 import {
   saveChatToFirestore,
   getChatHistoryFromFirestore,
   deleteChatHistoryItem
 } from './chat-firestore-service.js';
 import { auth } from '../../../config/firebase-init.js';
+import { getActivitiesFromLocalStorage, getInputHistory } from '../core/local-storage-service.js';
 
 // =============================
 // State
@@ -295,6 +296,174 @@ async function sendMessage() {
   }
 }
 
+// =============================
+// Waste Analysis Functions
+// =============================
+
+/**
+ * Deteksi apakah pesan mengandung request analisis limbah
+ * @param {string} message - Pesan user
+ * @returns {boolean} - True jika mengandung request analisis limbah
+ */
+function isWasteAnalysisRequest(message) {
+  const wasteKeywords = [
+    'analisis limbah', 'hitung limbah', 'nilai ekonomi limbah',
+    'olah limbah', 'daur ulang', 'recycle', 'upcycle',
+    'profit dari limbah', 'produk dari limbah', 'circular economy',
+    'waste management', 'green accounting', 'sustainability',
+    'histori data', 'data input', 'aktivitas terbaru', 'data sebelumnya'
+  ];
+  
+  const lowerMessage = message.toLowerCase();
+  return wasteKeywords.some(keyword => lowerMessage.includes(keyword));
+}
+
+/**
+ * Ambil data aktivitas terbaru dari Local Storage
+ * @returns {Promise<Array>} - Array aktivitas terbaru
+ */
+async function getRecentWasteData() {
+  try {
+    const activities = await getActivitiesFromLocalStorage(10);
+    return activities.filter(activity => 
+      ['waste', 'energy', 'water', 'carbon', 'recycling'].includes(activity.activityType)
+    );
+  } catch (error) {
+    console.error('Error getting recent waste data:', error);
+    return [];
+  }
+}
+
+/**
+ * Ambil histori data input untuk konsultasi AI
+ * @returns {Promise<Array>} - Array histori data input
+ */
+async function getInputHistoryData() {
+  try {
+    const history = await getInputHistory(20);
+    return history;
+  } catch (error) {
+    console.error('Error fetching input history:', error);
+    return [];
+  }
+}
+
+/**
+ * Format waktu relatif (time ago)
+ * @param {Date} date - Tanggal
+ * @returns {string} - Format waktu relatif
+ */
+function getTimeAgo(date) {
+  const now = new Date();
+  const diffInSeconds = Math.floor((now - date) / 1000);
+  
+  if (diffInSeconds < 60) return 'Baru saja';
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} menit lalu`;
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} jam lalu`;
+  if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} hari lalu`;
+  return `${Math.floor(diffInSeconds / 2592000)} bulan lalu`;
+}
+
+/**
+ * Generate waste analysis response
+ * @param {string} message - Pesan user
+ * @returns {Promise<string>} - Response dengan analisis limbah
+ */
+async function generateWasteAnalysisResponse(message) {
+  try {
+    // Ambil data aktivitas terbaru dan histori input
+    const recentActivities = await getRecentWasteData();
+    const inputHistory = await getInputHistoryData();
+    
+    if (recentActivities.length === 0 && inputHistory.length === 0) {
+      return `Saya tidak menemukan data aktivitas limbah terbaru. Silakan input data aktivitas lingkungan terlebih dahulu di halaman "Input Data" untuk mendapatkan analisis yang lebih akurat.
+
+**Untuk mendapatkan analisis limbah yang komprehensif:**
+1. Buka halaman "Input Data" 
+2. Input aktivitas limbah Anda (plastik, kertas, organik, dll.)
+3. Kembali ke sini untuk konsultasi analisis
+
+**Saya tetap bisa membantu dengan:**
+- Saran umum pengolahan limbah
+- Strategi circular economy
+- Tips green accounting untuk UMKM
+- Analisis profit dari berbagai jenis limbah`;
+    }
+
+    // Analisis data terbaru
+    const latestActivity = recentActivities[0];
+    const economicValue = calculateWasteEconomicValue(latestActivity);
+    const productSuggestions = generateProductSuggestions(latestActivity);
+    
+    let response = `## 📊 **Analisis Limbah Terbaru Anda**
+
+**Data Terbaru:**
+- **Jenis**: ${latestActivity.materialType} (${latestActivity.amount} ${latestActivity.unit})
+- **Aksi**: ${latestActivity.action}
+- **Nilai Ekonomi Saat Ini**: Rp ${economicValue.currentValue.toLocaleString()}
+- **Potensi Nilai**: Rp ${economicValue.potentialValue.toLocaleString()}
+- **Potensi Penghematan**: Rp ${economicValue.savings.toLocaleString()}
+
+## 💡 **Saran Produk dari Limbah Anda**
+
+`;
+
+    // Tambahkan histori data input jika ada
+    if (inputHistory.length > 0) {
+      response += `## 📋 **Histori Data Input Anda**
+
+**Data Input Terbaru (${inputHistory.length} item):**
+`;
+      
+      inputHistory.slice(0, 5).forEach((item, index) => {
+        const timeAgo = getTimeAgo(item.timestamp);
+        response += `${index + 1}. **${item.summary}** (${timeAgo})\n`;
+      });
+      
+      if (inputHistory.length > 5) {
+        response += `... dan ${inputHistory.length - 5} data lainnya\n`;
+      }
+      
+      response += `\n**💡 Tips**: Anda bisa bertanya tentang data spesifik dari histori di atas, misalnya "analisis data plastik 50 kg" atau "saran produk dari data kertas terbaru".\n\n`;
+    }
+
+    // Tambahkan saran produk
+    productSuggestions.forEach((suggestion, index) => {
+      response += `**${index + 1}. ${suggestion.product}**
+- **Deskripsi**: ${suggestion.description}
+- **Harga Pasar**: Rp ${suggestion.marketPrice.toLocaleString()}
+- **Biaya Produksi**: Rp ${suggestion.productionCost.toLocaleString()}
+- **Margin Profit**: ${suggestion.profitMargin}%
+- **Bahan**: ${suggestion.materials}
+
+`;
+    });
+
+    // Tambahkan rekomendasi umum
+    response += `## 🎯 **Rekomendasi Strategis**
+
+1. **Implementasi Circular Economy**: Fokus pada pengolahan limbah menjadi produk bernilai tinggi
+2. **Partnership dengan Pengolah**: Cari mitra yang bisa mengolah limbah Anda
+3. **Diversifikasi Produk**: Kembangkan berbagai produk dari satu jenis limbah
+4. **Market Research**: Analisis permintaan pasar untuk produk daur ulang
+
+## 📈 **Potensi ROI**
+
+Dengan mengolah ${latestActivity.amount} ${latestActivity.unit} ${latestActivity.materialType}, Anda berpotensi mendapatkan:
+- **ROI**: ${Math.round((economicValue.savings / economicValue.currentValue) * 100)}%
+- **Payback Period**: 3-6 bulan (tergantung investasi)
+- **Annual Profit**: Rp ${(economicValue.savings * 12).toLocaleString()}
+
+Apakah Anda ingin analisis lebih detail untuk jenis limbah tertentu?`;
+
+    return response;
+
+  } catch (error) {
+    console.error('Error generating waste analysis:', error);
+    return `Maaf, terjadi error dalam menganalisis data limbah. Silakan coba lagi atau input data aktivitas terlebih dahulu.`;
+  }
+}
+
 async function handleChatInteraction(prompt, context = null) {
   addMessageToChat(prompt, 'user');
   persistMessage(prompt, 'user');
@@ -303,11 +472,16 @@ async function handleChatInteraction(prompt, context = null) {
 
   try {
     let responseText = '';
-    if (context) {
+    
+    // Cek apakah ini request analisis limbah
+    if (isWasteAnalysisRequest(prompt)) {
+      responseText = await generateWasteAnalysisResponse(prompt);
+    } else if (context) {
       responseText = await getResponseWithContext(context, prompt, chatHistory);
     } else {
       responseText = await getChatResponse(prompt, chatHistory);
     }
+    
     if (!responseText) responseText = 'Maaf, saya tidak dapat memberikan respons saat ini.';
 
     updateMessage(loadingId, responseText);
@@ -444,3 +618,4 @@ window.reloadChatHistoryOnSwitch = async function() {
 window.setupChatListeners = setupChatListeners;
 window.addMessageToChat = addMessageToChat;
 window.handleChatInteraction = handleChatInteraction;
+window.handleSendClick = handleSendClick;
