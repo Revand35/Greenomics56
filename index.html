@@ -365,9 +365,23 @@
     </script>
     
     <script type="module">
-        import authInstance from './assets/js/auth.js';
-        import { auth } from './config/firebase-init.js';
-        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+        // Import Firebase directly from CDN for reliability
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+        
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vfSi6iGzWSkyWJTX1lvTG-k8P1HZL9s",
+            authDomain: "greenomics-7639d.firebaseapp.com",
+            projectId: "greenomics-7639d",
+            storageBucket: "greenomics-7639d.firebasestorage.app",
+            messagingSenderId: "381392746735",
+            appId: "1:381392746735:web:c9873f430a5b04c4f5031a"
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
 
         function setActiveNav() {
             const currentPage = window.location.pathname.split('/').pop();
@@ -389,36 +403,57 @@
         async function updateUserProfile(user) {
             try {
                 if (user) {
-                    const userData = authInstance.getCurrentUser();
+                    console.log('Updating user profile with Firebase user:', user);
                     
-                    if (userData) {
-                        document.getElementById('user-name').textContent = userData.displayName || 'User';
-                        document.getElementById('user-email').textContent = userData.email || 'user@example.com';
-                        document.getElementById('user-role').textContent = userData.role || 'user';
+                    // Use data directly from Firebase Auth user object
+                    const displayName = user.displayName || 'User';
+                    const email = user.email || 'user@example.com';
+                    const photoURL = user.photoURL;
+                    
+                    // Update UI elements
+                    const nameElement = document.getElementById('user-name');
+                    const emailElement = document.getElementById('user-email');
+                    const roleElement = document.getElementById('user-role');
+                    const professionElement = document.getElementById('user-profession');
+                    
+                    if (nameElement) {
+                        nameElement.textContent = displayName;
+                        console.log('Updated user-name:', displayName);
+                    }
+                    if (emailElement) {
+                        emailElement.textContent = email;
+                        console.log('Updated user-email:', email);
+                    }
+                    if (roleElement) {
+                        roleElement.textContent = 'UMKM';
+                        console.log('Updated user-role: UMKM');
+                    }
+                    if (professionElement) {
+                        professionElement.textContent = 'UMKM';
+                        console.log('Updated user-profession: UMKM');
+                    }
 
-                        const profession = userData.profession || 'UMKM';
-                        document.getElementById('user-profession').textContent = profession;
-
-                        const avatar = document.getElementById('user-avatar');
-                        if (avatar) {
-                            if (userData.photoURL) {
-                                avatar.innerHTML = `<img src="${userData.photoURL}" alt="Profile" class="w-full h-full rounded-full object-cover">`;
-                            } else {
-                                const initials = userData.displayName ?
-                                    userData.displayName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) :
-                                    '👤';
-                                avatar.textContent = initials.length <= 2 ? initials : '👤';
-                            }
-                        }
-
-                        // Show admin dashboard button only for admin
-                        const adminDashboardBtn = document.getElementById('admin-dashboard-btn');
-                        if (adminDashboardBtn && userData.role === 'admin') {
-                            adminDashboardBtn.classList.remove('hidden');
+                    // Update avatar
+                    const avatar = document.getElementById('user-avatar');
+                    if (avatar) {
+                        if (photoURL) {
+                            avatar.innerHTML = `<img src="${photoURL}" alt="Profile" class="w-full h-full rounded-full object-cover">`;
+                            console.log('Updated avatar with photo');
+                        } else {
+                            const initials = displayName ?
+                                displayName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) :
+                                '👤';
+                            avatar.textContent = initials.length <= 2 ? initials : '👤';
+                            console.log('Updated avatar with initials:', initials);
                         }
                     }
+
+                    // Additional data can be fetched from Firestore if needed in the future
+                    
+                    console.log('User profile updated successfully');
                 } else {
                     // Redirect to login if not authenticated
+                    console.log('No user, redirecting to login');
                     window.location.href = './login.html';
                 }
 
@@ -435,11 +470,16 @@
             initializeMotivationNotifications();
             
             // Check authentication status
+            console.log('🔐 Setting up auth state listener...');
             onAuthStateChanged(auth, async (user) => {
+                console.log('🔐 Auth state changed, user:', user);
                 if (user) {
+                    console.log('✅ User authenticated, updating profile...');
                     await updateUserProfile(user);
+                    console.log('✅ Profile update complete');
                 } else {
                     // Redirect to login if not authenticated
+                    console.log('❌ No user, redirecting to login');
                     window.location.href = './login.html';
                 }
             });
