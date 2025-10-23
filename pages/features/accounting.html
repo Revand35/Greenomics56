@@ -130,7 +130,7 @@
 
                     <!-- Submit Button -->
                     <button type="submit" class="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all">
-                        Hitung Nilai Ekonomi
+                        💰 Hitung Nilai Ekonomi
                     </button>
                 </form>
             </div>
@@ -168,6 +168,37 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calculation Results Modal -->
+    <div id="calculation-results-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <!-- Header -->
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                <h2 class="text-xl font-bold text-gray-800">📊 Hasil Perhitungan Nilai Ekonomi</h2>
+                <button onclick="closeCalculationResults()" class="text-gray-500 hover:text-gray-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="p-6" id="calculation-results-content">
+                <!-- Results will be populated here -->
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="px-6 py-4 border-t border-gray-200 flex space-x-3">
+                <button onclick="closeCalculationResults()" class="flex-1 bg-gray-500 text-white py-3 rounded-xl font-semibold hover:bg-gray-600 transition-colors">
+                    ✏️ Edit Data
+                </button>
+                <button id="save-to-firestore-btn" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all">
+                    💾 Simpan ke Database
+                </button>
             </div>
         </div>
     </div>
@@ -235,7 +266,6 @@
 
     <!-- Scripts -->
     <script src="../../assets/js/materials/materi-search.js" defer></script>
-    <script type="module" src="../../assets/js/materials/materials-display.js"></script>
 
     <!-- Import User Stats System (replaces realtime-stats and material-tracker) -->
     <script type="module" src="../../assets/js/core/user-stats.js"></script>
@@ -411,113 +441,29 @@
             import authInstance from '../../assets/js/auth.js';
             import { auth } from '../../config/firebase-init.js';
             import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-            import { getAllMateri } from '../../assets/services/materiService.js';
             
-            // Check authentication before loading page
+            // Authentication flow: Wait for user to be authenticated before loading data
+            // This prevents the "User belum login" errors we were seeing
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
                     console.log('User authenticated:', user.displayName);
-                    // User is authenticated, continue loading
+                    // User is authenticated, now load stats and activities
+                    try {
+                        await updateStatsDisplay();
+                        await loadRecentActivities();
+                    } catch (error) {
+                        console.error('Error loading data after authentication:', error);
+                    }
                 } else {
                     // Redirect to login if not authenticated
                     window.location.href = '../../login.html';
                 }
             });
             
+            // Materials functionality has been disabled
+            // This function is kept for compatibility but does nothing
             async function loadMateri() {
-                console.log("🔥 Memuat daftar materi...");
-                
-                try {
-                    const materials = await getAllMateri();
-                    
-                    const materiList = document.getElementById('materials-list');
-                    materiList.innerHTML = '';
-                    
-                    // Update materials count
-                    const materialsCount = document.getElementById('materials-count');
-                    if (materialsCount) {
-                        materialsCount.textContent = `${materials.length} materi`;
-                    }
-                    
-                    // Show empty state if no materials
-                    if (!materials || materials.length === 0) {
-                        materiList.innerHTML = `
-                            <div class="col-span-full text-center py-12">
-                                <div class="text-gray-400 mb-4">
-                                    <i class="fas fa-folder-open text-6xl"></i>
-                                </div>
-                                <h3 class="text-xl font-semibold text-gray-700 mb-2">Belum Ada Materi</h3>
-                                <p class="text-gray-500">Admin belum mengupload materi pembelajaran.</p>
-                            </div>
-                        `;
-                        return;
-                    }
-                    
-                    console.log(`✅ Berhasil memuat ${materials.length} materi`);
-                    
-                    // Display materials
-                    materials.forEach(material => {
-                        const fileType = material.tipe_file || 'application/octet-stream';
-                        let fileIcon = '<i class="fas fa-file text-xl"></i>';
-
-                        if (fileType.includes('pdf')) {
-                            fileIcon = '<i class="fas fa-file-pdf text-xl"></i>';
-                        } else if (fileType.includes('word') || fileType.includes('document')) {
-                            fileIcon = '<i class="fas fa-file-word text-xl"></i>';
-                        } else if (fileType.includes('powerpoint') || fileType.includes('presentation')) {
-                            fileIcon = '<i class="fas fa-file-powerpoint text-xl"></i>';
-                        } else if (fileType.includes('video')) {
-                            fileIcon = '<i class="fas fa-file-video text-xl"></i>';
-                        } else if (fileType.includes('image')) {
-                            fileIcon = '<i class="fas fa-file-image text-xl"></i>';
-                        }
-
-                        // Extract title from filename (remove timestamp and extension)
-                        const displayName = material.original_name || material.nama_file;
-                        const materialTitle = displayName.replace(/^\d+_/, '').replace(/\.[^/.]+$/, '');
-
-                        const div = document.createElement('div');
-                        div.className = "material-card bg-white rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300";
-                        div.innerHTML = `
-                            <div class="flex items-start space-x-4">
-                                <div class="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center text-white flex-shrink-0">
-                                    ${fileIcon}
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-semibold text-gray-800 mb-2">${escapeHtml(materialTitle)}</h4>
-                                    <p class="text-sm text-gray-500 mb-3">Materi pembelajaran</p>
-                                    <p class="text-xs text-gray-400 mb-3">
-                                        <i class="fas fa-file"></i> ${escapeHtml(displayName)}
-                                        ${material.ukuran_file ? `• ${formatFileSize(material.ukuran_file)}` : ''}
-                                    </p>
-                                    <div class="flex space-x-2">
-                                        <button onclick="openMaterialReader('${escapeHtml(material.id)}', '${escapeHtml(materialTitle)}', '${material.url_file}')"
-                                                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm">
-                                            📖 Baca Materi
-                                        </button>
-                                        <button onclick="downloadMaterial('${material.url_file}', '${escapeHtml(displayName)}')"
-                                                class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm">
-                                            📥 Unduh
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                        materiList.appendChild(div);
-                    });
-                } catch (error) {
-                    console.error("❌ Gagal memuat materi:", error);
-                    const materiList = document.getElementById('materials-list');
-                    materiList.innerHTML = `
-                        <div class="col-span-full text-center py-12">
-                            <div class="text-red-400 mb-4">
-                                <i class="fas fa-exclamation-circle text-6xl"></i>
-                            </div>
-                            <h3 class="text-xl font-semibold text-gray-700 mb-2">Gagal Memuat Materi</h3>
-                            <p class="text-gray-500">${error.message}</p>
-                        </div>
-                    `;
-                }
+                console.log("📝 Materials functionality disabled - focusing on environmental activities");
             }
             
             // Helper: Format file size
@@ -589,18 +535,25 @@
         
         <script type="module">
             // Import Firebase Service untuk Environmental Activities
-            import { saveEnvironmentalActivity, getUserActivities, getActivityStats } from '../../assets/js/core/environmental-activity-service.js';
+            import environmentalService from '../../assets/js/core/environmental-activity-service.js';
             // Import AI Auto Notification Service
             import aiAutoNotificationService from '../../assets/js/core/ai-auto-notification.js';
             
-            // Form submission handler dengan Firebase Firestore
+            // Destructure the functions from the service
+            const { saveEnvironmentalActivity, getUserActivities, getActivityStats, calculateEconomicValue, calculateEcoScore } = environmentalService;
+            
+            // Global variable to store current calculation data
+            let currentCalculationData = null;
+            
+            // Form submission handler - Calculate first, then show results
+            // This creates a two-step process: Calculate → Review → Save
             document.getElementById('environmental-activity-form').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
                 // Tampilkan loading state
                 const submitButton = this.querySelector('button[type="submit"]');
                 const originalText = submitButton.textContent;
-                submitButton.textContent = '💾 Menyimpan ke Firebase...';
+                submitButton.textContent = '🧮 Menghitung...';
                 submitButton.disabled = true;
                 
                 try {
@@ -619,31 +572,83 @@
                         throw new Error('Mohon lengkapi semua field yang wajib diisi');
                     }
                     
+                    // Hitung nilai ekonomi dan eco-score
+                    const economicValue = formData.cost && parseFloat(formData.cost) > 0 
+                        ? parseFloat(formData.cost)
+                        : calculateEconomicValue(
+                            formData.activityType, 
+                            formData.materialType, 
+                            formData.amount, 
+                            formData.action
+                        );
+                    
+                    const ecoScore = calculateEcoScore(
+                        formData.activityType, 
+                        formData.action, 
+                        formData.amount
+                    );
+                    
+                    // Simpan data untuk digunakan saat save
+                    currentCalculationData = {
+                        ...formData,
+                        economicValue: economicValue,
+                        ecoScore: ecoScore,
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    // Tampilkan hasil perhitungan
+                    showCalculationResults(currentCalculationData);
+                    
+                } catch (error) {
+                    console.error('Error calculating:', error);
+                    showErrorNotification(`❌ Gagal menghitung: ${error.message}`);
+                } finally {
+                    // Reset button state
+                    submitButton.textContent = originalText;
+                    submitButton.disabled = false;
+                }
+            });
+            
+            // Save to Firestore handler
+            // This is the second step: User reviews calculation results and decides to save
+            document.getElementById('save-to-firestore-btn').addEventListener('click', async function() {
+                if (!currentCalculationData) {
+                    showErrorNotification('❌ Tidak ada data untuk disimpan');
+                    return;
+                }
+                
+                // Tampilkan loading state
+                const saveButton = this;
+                const originalText = saveButton.textContent;
+                saveButton.textContent = '💾 Menyimpan...';
+                saveButton.disabled = true;
+                
+                try {
                     // Simpan ke Firebase Firestore
-                    const savedActivity = await saveEnvironmentalActivity(formData);
+                    const savedActivity = await saveEnvironmentalActivity(currentCalculationData);
                     
                     // Simpan info aktivitas terbaru untuk AI notification
                     sessionStorage.setItem('latestActivity', JSON.stringify({
-                        material: formData.materialType,
-                        amount: formData.amount,
-                        unit: formData.unit,
-                        action: formData.action,
+                        material: currentCalculationData.materialType,
+                        amount: currentCalculationData.amount,
+                        unit: currentCalculationData.unit,
+                        action: currentCalculationData.action,
                         economicValue: savedActivity.economicValue,
                         ecoScore: savedActivity.ecoScore,
                         timestamp: new Date().toISOString(),
-                        activityType: formData.activityType
+                        activityType: currentCalculationData.activityType
                     }));
                     
                     // Trigger AI Auto Notification
                     console.log('🤖 Triggering AI auto notification...');
                     await aiAutoNotificationService.triggerAutoNotification({
-                        activityType: formData.activityType,
-                        materialType: formData.materialType,
-                        amount: formData.amount,
-                        unit: formData.unit,
-                        action: formData.action,
-                        cost: formData.cost,
-                        notes: formData.notes,
+                        activityType: currentCalculationData.activityType,
+                        materialType: currentCalculationData.materialType,
+                        amount: currentCalculationData.amount,
+                        unit: currentCalculationData.unit,
+                        action: currentCalculationData.action,
+                        cost: currentCalculationData.cost,
+                        notes: currentCalculationData.notes,
                         economicValue: savedActivity.economicValue,
                         ecoScore: savedActivity.ecoScore
                     });
@@ -662,25 +667,151 @@
                     await updateStatsDisplay();
                     addToRecentActivities(savedActivity);
                 
-                    // Reset form
-                    this.reset();
+                    // Reset form dan tutup modal
+                    document.getElementById('environmental-activity-form').reset();
+                    closeCalculationResults();
+                    currentCalculationData = null;
                     
                 } catch (error) {
                     console.error('Error saving activity:', error);
                     showErrorNotification(`❌ Gagal menyimpan aktivitas: ${error.message}`);
                 } finally {
                     // Reset button state
-                    submitButton.textContent = originalText;
-                    submitButton.disabled = false;
+                    saveButton.textContent = originalText;
+                    saveButton.disabled = false;
                 }
             });
+            
+            // Show calculation results in modal
+            function showCalculationResults(data) {
+                const modal = document.getElementById('calculation-results-modal');
+                const contentElement = document.getElementById('calculation-results-content');
+                
+                // Activity type icons
+                const activityIcons = {
+                    'waste': '🗑️',
+                    'energy': '⚡',
+                    'water': '💧',
+                    'carbon': '🌍',
+                    'recycling': '♻️'
+                };
+                
+                // Action descriptions
+                const actionDescriptions = {
+                    'recycled': 'Daur Ulang',
+                    'reduced': 'Dikurangi',
+                    'reused': 'Digunakan Ulang',
+                    'disposed': 'Dibuang',
+                    'conserved': 'Dihasilkan'
+                };
+                
+                const icon = activityIcons[data.activityType] || '📊';
+                const actionDesc = actionDescriptions[data.action] || data.action;
+                
+                // Calculate environmental impact
+                const impactLevel = data.ecoScore >= 8 ? 'Tinggi' : data.ecoScore >= 6 ? 'Sedang' : 'Rendah';
+                const impactColor = data.ecoScore >= 8 ? 'text-green-600' : data.ecoScore >= 6 ? 'text-yellow-600' : 'text-red-600';
+                
+                contentElement.innerHTML = `
+                    <!-- Activity Summary -->
+                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 mb-6">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-white text-2xl">
+                                ${icon}
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800">${data.materialType.charAt(0).toUpperCase() + data.materialType.slice(1)} ${actionDesc}</h3>
+                                <p class="text-gray-600">${data.amount} ${data.unit}</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Key Metrics -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-white rounded-lg p-4 text-center">
+                                <div class="text-2xl font-bold text-green-600">Rp ${data.economicValue.toLocaleString()}</div>
+                                <div class="text-sm text-gray-600">Nilai Ekonomi</div>
+                            </div>
+                            <div class="bg-white rounded-lg p-4 text-center">
+                                <div class="text-2xl font-bold ${impactColor}">${data.ecoScore}/10</div>
+                                <div class="text-sm text-gray-600">Eco-Score</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Detailed Breakdown -->
+                    <div class="space-y-4">
+                        <h4 class="font-semibold text-gray-800 mb-3">📋 Detail Perhitungan</h4>
+                        
+                        <div class="bg-gray-50 rounded-lg p-4 space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Jenis Aktivitas:</span>
+                                <span class="font-medium">${data.activityType.charAt(0).toUpperCase() + data.activityType.slice(1)}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Material:</span>
+                                <span class="font-medium">${data.materialType.charAt(0).toUpperCase() + data.materialType.slice(1)}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Jumlah:</span>
+                                <span class="font-medium">${data.amount} ${data.unit}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Aksi:</span>
+                                <span class="font-medium">${actionDesc}</span>
+                            </div>
+                            ${data.cost && parseFloat(data.cost) > 0 ? `
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Biaya Input:</span>
+                                <span class="font-medium">Rp ${parseFloat(data.cost).toLocaleString()}</span>
+                            </div>
+                            ` : ''}
+                        </div>
+                        
+                        <!-- Environmental Impact -->
+                        <div class="bg-blue-50 rounded-lg p-4">
+                            <h5 class="font-semibold text-gray-800 mb-2">🌱 Dampak Lingkungan</h5>
+                            <div class="flex items-center space-x-2">
+                                <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: ${(data.ecoScore / 10) * 100}%"></div>
+                                </div>
+                                <span class="text-sm font-medium ${impactColor}">${impactLevel}</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-2">
+                                ${data.ecoScore >= 8 ? 'Aktivitas ini sangat baik untuk lingkungan!' : 
+                                  data.ecoScore >= 6 ? 'Aktivitas ini cukup baik untuk lingkungan.' : 
+                                  'Aktivitas ini memiliki dampak lingkungan yang perlu diperhatikan.'}
+                            </p>
+                        </div>
+                        
+                        ${data.notes ? `
+                        <div class="bg-yellow-50 rounded-lg p-4">
+                            <h5 class="font-semibold text-gray-800 mb-2">📝 Catatan</h5>
+                            <p class="text-gray-700">${data.notes}</p>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+                // Show modal
+                modal.classList.remove('hidden');
+            }
+            
+            // Close calculation results modal
+            function closeCalculationResults() {
+                const modal = document.getElementById('calculation-results-modal');
+                modal.classList.add('hidden');
+                currentCalculationData = null;
+            }
+            
+            // Make functions global
+            window.closeCalculationResults = closeCalculationResults;
             
             // Update stats display dari Firebase Firestore
             async function updateStatsDisplay() {
                 try {
                     const stats = await getActivityStats();
                     
-                    // Update stat cards
+                    // Update stat cards if they exist
                     const wasteAmountElement = document.querySelector('.stat-pulse');
                     if (wasteAmountElement) {
                         wasteAmountElement.textContent = `${stats.totalWasteAmount}`;
@@ -707,6 +838,7 @@
                     
                 } catch (error) {
                     console.error('Error updating stats display:', error);
+                    // Don't show error notification for stats - it's not critical
                 }
             }
             
@@ -715,6 +847,11 @@
                 try {
                     const activities = await getUserActivities(5); // Ambil 5 aktivitas terbaru
                     const activitiesContainer = document.getElementById('recent-activities');
+                    
+                    if (!activitiesContainer) {
+                        console.log('Recent activities container not found');
+                        return;
+                    }
                     
                     // Clear existing activities
                     activitiesContainer.innerHTML = '';
@@ -737,6 +874,17 @@
                     
                 } catch (error) {
                     console.error('Error loading recent activities:', error);
+                    // Show friendly message instead of error
+                    const activitiesContainer = document.getElementById('recent-activities');
+                    if (activitiesContainer) {
+                        activitiesContainer.innerHTML = `
+                            <div class="text-center py-8 text-gray-500">
+                                <div class="text-4xl mb-2">📝</div>
+                                <p>Belum ada aktivitas yang dicatat</p>
+                                <p class="text-sm">Mulai catat aktivitas lingkungan Anda!</p>
+                            </div>
+                        `;
+                    }
                 }
             }
             
@@ -846,16 +994,8 @@
                 return `${Math.floor(diffInSeconds / 86400)} hari lalu`;
             }
             
-            // Initialize page
-            document.addEventListener('DOMContentLoaded', async () => {
-                try {
-                    await updateStatsDisplay();
-                    await loadRecentActivities();
-                } catch (error) {
-                    console.error('Error initializing page:', error);
-                    showErrorNotification('Gagal memuat data dari Firebase');
-                }
-            });
+            // Page initialization is now handled in the authentication callback above
+            // This ensures stats only load after user is authenticated
         </script>
 </body>
 </html>
