@@ -586,11 +586,120 @@ function clearFileContext() {
 // =============================
 // Utils
 // =============================
+/**
+ * Format AI message dengan support untuk markdown table
+ * @param {string} msg - Pesan dari AI
+ * @returns {string} - HTML formatted message
+ */
 function formatAIMessage(msg) {
+  // Check if message contains markdown table
+  if (msg.includes('|') && msg.match(/\|.*\|.*\|/)) {
+    return formatMarkdownTable(msg);
+  }
+  
+  // Regular formatting for non-table messages
   return msg
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
     .replace(/\n/g, '<br>');
+}
+
+/**
+ * Format markdown table ke HTML table yang rapi
+ * @param {string} text - Text dengan markdown table
+ * @returns {string} - HTML formatted text dengan table
+ */
+function formatMarkdownTable(text) {
+  const lines = text.split('\n');
+  let html = '';
+  let inTable = false;
+  let tableRows = [];
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    
+    // Detect table line (contains pipes)
+    if (line.includes('|')) {
+      // Skip separator line (contains dashes and colons)
+      if (line.match(/^\|[\s:-]+\|/)) {
+        continue;
+      }
+      
+      if (!inTable) {
+        inTable = true;
+        tableRows = [];
+      }
+      
+      // Parse table row
+      const cells = line
+        .split('|')
+        .map(cell => cell.trim())
+        .filter(cell => cell.length > 0);
+      
+      tableRows.push(cells);
+    } else {
+      // End of table or non-table line
+      if (inTable) {
+        // Render accumulated table
+        html += renderHTMLTable(tableRows);
+        tableRows = [];
+        inTable = false;
+      }
+      
+      // Add non-table line with regular formatting
+      if (line.length > 0) {
+        html += line
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>') + '<br>';
+      } else {
+        html += '<br>';
+      }
+    }
+  }
+  
+  // Handle table at end of message
+  if (inTable && tableRows.length > 0) {
+    html += renderHTMLTable(tableRows);
+  }
+  
+  return html;
+}
+
+/**
+ * Render HTML table dari array of rows
+ * @param {Array<Array<string>>} rows - Array of table rows
+ * @returns {string} - HTML table
+ */
+function renderHTMLTable(rows) {
+  if (rows.length === 0) return '';
+  
+  let html = '<div class="overflow-x-auto my-4">';
+  html += '<table class="min-w-full border-collapse border border-gray-300 shadow-sm">';
+  
+  // Header row (first row)
+  html += '<thead class="bg-gradient-to-r from-green-50 to-emerald-50">';
+  html += '<tr>';
+  rows[0].forEach(cell => {
+    html += `<th class="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">${escapeHtml(cell)}</th>`;
+  });
+  html += '</tr>';
+  html += '</thead>';
+  
+  // Body rows
+  html += '<tbody>';
+  for (let i = 1; i < rows.length; i++) {
+    html += '<tr class="hover:bg-gray-50 transition-colors">';
+    rows[i].forEach(cell => {
+      html += `<td class="border border-gray-300 px-4 py-2 text-sm text-gray-800">${escapeHtml(cell)}</td>`;
+    });
+    html += '</tr>';
+  }
+  html += '</tbody>';
+  
+  html += '</table>';
+  html += '</div>';
+  
+  return html;
 }
 function escapeHtml(text) {
   const div = document.createElement('div');

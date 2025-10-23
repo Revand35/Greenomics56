@@ -1,11 +1,11 @@
 // config.js - Firebase Configuration untuk Google Login - Updated: 2025-01-01 15:30
 export const firebaseConfig = {
-    apiKey: "AIzaSyC7vfSi6iGzWSkyWJTX1lvTG-k8P1HZL9s",
-    authDomain: "greenomics-7639d.firebaseapp.com",
-    projectId: "greenomics-7639d",
-    storageBucket: "greenomics-7639d.firebasestorage.app",
-    messagingSenderId: "381392746735",
-    appId: "1:381392746735:web:c9873f430a5b04c4f5031a"
+    apiKey: "AIzaSyD43R9_h0qZc5TFTrBn_Zt76Il3jDKP7kw",
+    authDomain: "greenomics-id.firebaseapp.com",
+    projectId: "greenomics-id",
+    storageBucket: "greenomics-id.firebasestorage.app",
+    messagingSenderId: "5727343643",
+    appId: "1:5727343643:web:0b84a6197ee989aa5dd4be"
 };
 
 // Gemini API Key

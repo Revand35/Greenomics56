@@ -2,7 +2,16 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { firebaseConfig } from "../config/config.js";
+
+// Firebase config
+const firebaseConfig = {
+    apiKey: "AIzaSyD43R9_h0qZc5TFTrBn_Zt76Il3jDKP7kw",
+    authDomain: "greenomics-id.firebaseapp.com",
+    projectId: "greenomics-id",
+    storageBucket: "greenomics-id.firebasestorage.app",
+    messagingSenderId: "5727343643",
+    appId: "1:5727343643:web:0b84a6197ee989aa5dd4be"
+};
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

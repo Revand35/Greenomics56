@@ -19,7 +19,7 @@
         worker-src 'self' blob:;
         manifest-src 'self';
     ">
-
+    
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="./assets/icons/tittle.png">
@@ -66,19 +66,19 @@
             </div>
             <h1 class="text-3xl font-bold text-gray-800 mb-2">Greenomics</h1>
             <p class="text-gray-600">Platform Digital Green Accounting untuk UMKM</p>
-            </div>
-
+        </div>
+        
         <!-- Loading Spinner -->
         <div class="flex justify-center mb-6">
             <div class="spinner"></div>
         </div>
-
+        
         <!-- Status Message -->
         <div class="text-gray-700">
             <p class="text-lg font-medium mb-2">Memeriksa status autentikasi...</p>
             <p class="text-sm text-gray-500">Mengarahkan ke halaman yang sesuai</p>
-            </div>
-
+        </div>
+        
         <!-- Manual Links (fallback) -->
         <div class="mt-8 space-y-2">
             <p class="text-sm text-gray-500">Jika tidak otomatis redirect:</p>
@@ -88,7 +88,7 @@
             </div>
         </div>
     </div>
-    
+
     <script type="module">
         // Import Firebase
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
@@ -107,7 +107,7 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-
+        
         // Update status message
         function updateStatus(message) {
             const statusElement = document.querySelector('.text-lg.font-medium');
@@ -118,7 +118,7 @@
         
         // Check authentication and redirect
         onAuthStateChanged(auth, (user) => {
-                if (user) {
+            if (user) {
                 console.log('✅ User authenticated, redirecting to dashboard...');
                 updateStatus('User terautentikasi, mengarahkan ke dashboard...');
                 
@@ -126,7 +126,7 @@
                 setTimeout(() => {
                     window.location.href = 'dashboard.html';
                 }, 1000);
-                } else {
+            } else {
                 console.log('❌ No user, redirecting to login...');
                 updateStatus('Belum login, mengarahkan ke halaman login...');
                 
@@ -138,10 +138,10 @@
         });
         
         // Fallback redirect after 3 seconds if auth check fails
-            setTimeout(() => {
+        setTimeout(() => {
             console.log('⏰ Fallback redirect to login...');
             window.location.href = 'login.html';
-            }, 3000);
+        }, 3000);
         
         console.log('🚀 Authentication check initialized');
     </script>

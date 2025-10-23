@@ -44,7 +44,10 @@
                     </svg>
                 </a>
                 <div>
-                    <h1 class="text-xl font-bold">🌱 Greenomics</h1>
+                    <h1 class="text-xl font-bold flex items-center">
+                        <img src="../../assets/icons/tittle.png" alt="Greenomics" class="w-6 h-6 mr-2">
+                        Greenomics
+                    </h1>
                     <p class="text-green-100 text-xs">Profil Pengguna</p>
                 </div>
             </div>
@@ -70,21 +73,6 @@
                 </div>
             </div>
             
-            <!-- User Stats -->
-            <div class="grid grid-cols-3 gap-4">
-                <div class="bg-green-50 rounded-lg p-4 text-center">
-                    <p class="text-2xl font-bold text-green-600" id="forumPosts">0</p>
-                    <p class="text-xs text-gray-600">Forum Posts</p>
-                </div>
-                <div class="bg-blue-50 rounded-lg p-4 text-center">
-                    <p class="text-2xl font-bold text-blue-600" id="quizCompleted">0</p>
-                    <p class="text-xs text-gray-600">Quiz Completed</p>
-                </div>
-                <div class="bg-purple-50 rounded-lg p-4 text-center">
-                    <p class="text-2xl font-bold text-purple-600" id="activeDays">0</p>
-                    <p class="text-xs text-gray-600">Active Days</p>
-                </div>
-            </div>
         </div>
 
         <!-- Account Information -->
@@ -114,25 +102,6 @@
             </div>
         </div>
 
-        <!-- Account Management -->
-        <div class="bg-white rounded-2xl p-6 shadow-md mb-6">
-            <h3 class="text-lg font-bold text-gray-800 mb-4">⚙️ Kelola Akun</h3>
-            <div class="space-y-3">
-                <button id="refreshProfileBtn" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">
-                    🔄 Refresh Data
-                </button>
-            </div>
-        </div>
-
-        <!-- Actions -->
-        <div class="bg-white rounded-2xl p-6 shadow-md">
-            <h3 class="text-lg font-bold text-gray-800 mb-4">⚙️ Aksi</h3>
-            <div class="space-y-3">
-                <button id="deleteAccountBtn" class="w-full bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">
-                    🗑️ Hapus Akun
-                </button>
-            </div>
-        </div>
     </div>
 
     <!-- Bottom Navigation -->
@@ -144,19 +113,19 @@
                 </svg>
                 Dashboard
             </a>
-            <a href="features/chat.html" data-page="chat" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
+            <a href="../../pages/features/chat.html" data-page="chat" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423z" />
                 </svg>
                 AI Assistant
             </a>
-            <a href="features/materi.html" data-page="materi" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
+            <a href="../../pages/features/accounting.html" data-page="accounting" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 Input Data
             </a>
-            <a href="features/forum.html" data-page="forum" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
+            <a href="../../pages/features/forum.html" data-page="forum" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
@@ -174,45 +143,143 @@
 
     <!-- Scripts -->
     <script type="module">
-        import authInstance from '../../assets/js/auth.js';
-        import { auth } from '../../config/firebase-init.js';
-        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-        import { showNotification } from '../../config/config.js';
-        import { getTestingAccountWithData, updateTestingAccountStats, getTestingAccountDataSummary } from '../../assets/js/core/testing-account-service.js';
+        // Import Firebase directly
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+        import { getFirestore, doc, getDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+        
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyD43R9_h0qZc5TFTrBn_Zt76Il3jDKP7kw",
+            authDomain: "greenomics-id.firebaseapp.com",
+            projectId: "greenomics-id",
+            storageBucket: "greenomics-id.firebasestorage.app",
+            messagingSenderId: "5727343643",
+            appId: "1:5727343643:web:0b84a6197ee989aa5dd4be"
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        console.log('✅ Firebase initialized for profile page');
 
         // Get elements
         const logoutBtn = document.getElementById('logoutBtn');
-        const refreshProfileBtn = document.getElementById('refreshProfileBtn');
-        const deleteAccountBtn = document.getElementById('deleteAccountBtn');
 
         // Current user data
         let currentUserData = null;
+        let currentFirebaseUser = null;
 
-        // Load testing account with real data
-        async function loadTestingAccount() {
+        // Show notification function
+        function showNotification(message, type = 'info') {
+            const existingNotif = document.getElementById('profile-notification');
+            if (existingNotif) {
+                existingNotif.remove();
+            }
+            
+            const colors = {
+                success: 'bg-green-100 text-green-800 border-green-200',
+                error: 'bg-red-100 text-red-800 border-red-200',
+                warning: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                info: 'bg-blue-100 text-blue-800 border-blue-200'
+            };
+            
+            const notificationHTML = `
+                <div id="profile-notification" class="fixed top-4 right-4 z-50 ${colors[type]} border rounded-lg p-4 shadow-lg max-w-sm">
+                    <div class="flex items-center justify-between">
+                        <p class="text-sm font-medium">${message}</p>
+                        <button onclick="document.getElementById('profile-notification').remove()" class="ml-3 text-lg leading-none">&times;</button>
+                    </div>
+                </div>`;
+            
+            document.body.insertAdjacentHTML('beforeend', notificationHTML);
+            
+            setTimeout(() => {
+                const notif = document.getElementById('profile-notification');
+                if (notif) notif.remove();
+            }, 5000);
+        }
+
+        // Load user data from Firestore
+        async function loadUserDataFromFirestore(user) {
             try {
-                const testingAccount = await getTestingAccountWithData();
-                currentUserData = testingAccount;
-                updateUserProfile(testingAccount);
+                console.log('📊 Loading user data from Firestore for:', user.uid);
                 
-                const dataSummary = getTestingAccountDataSummary(testingAccount);
-                if (dataSummary.hasData) {
-                    showNotification(`✅ Akun testing: ${testingAccount.displayName} - ${dataSummary.message}`, 'success');
+                const userRef = doc(db, 'users', user.uid);
+                const userDoc = await getDoc(userRef);
+                
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    console.log('✅ User data loaded from Firestore:', userData);
+                    
+                    // Combine Firebase user data with Firestore data
+                    const combinedUserData = {
+                        uid: user.uid,
+                        email: user.email,
+                        displayName: user.displayName,
+                        photoURL: user.photoURL,
+                        emailVerified: user.emailVerified,
+                        createdAt: userData.createdAt,
+                        lastLogin: userData.lastLogin,
+                        role: userData.role || 'user',
+                        stats: userData.stats || {
+                            forumPosts: 0,
+                            quizCompleted: 0,
+                            activeDays: 1
+                        }
+                    };
+                    
+                    return combinedUserData;
                 } else {
-                    showNotification(`ℹ️ Akun testing: ${testingAccount.displayName} - ${dataSummary.message}`, 'info');
+                    console.log('⚠️ User document not found in Firestore, using Firebase user data only');
+                    
+                    // Return basic Firebase user data if Firestore document doesn't exist
+                    return {
+                        uid: user.uid,
+                        email: user.email,
+                        displayName: user.displayName,
+                        photoURL: user.photoURL,
+                        emailVerified: user.emailVerified,
+                        createdAt: { seconds: Math.floor(Date.now() / 1000) },
+                        lastLogin: { seconds: Math.floor(Date.now() / 1000) },
+                        role: 'user',
+                        stats: {
+                            forumPosts: 0,
+                            quizCompleted: 0,
+                            activeDays: 1
+                        }
+                    };
                 }
             } catch (error) {
-                console.error('Error loading testing account:', error);
-                showNotification('❌ Gagal memuat akun testing', 'error');
+                console.error('❌ Error loading user data from Firestore:', error);
+                showNotification('Gagal memuat data pengguna: ' + error.message, 'error');
+                
+                // Return basic Firebase user data as fallback
+                return {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: user.displayName,
+                    photoURL: user.photoURL,
+                    emailVerified: user.emailVerified,
+                    createdAt: { seconds: Math.floor(Date.now() / 1000) },
+                    lastLogin: { seconds: Math.floor(Date.now() / 1000) },
+                    role: 'user',
+                    stats: {
+                        forumPosts: 0,
+                        quizCompleted: 0,
+                        activeDays: 1
+                    }
+                };
             }
         }
 
         // Update user profile display
         function updateUserProfile(userData) {
-            console.log('updateUserProfile called with:', userData);
+            console.log('📝 Updating profile with user data:', userData);
+            
             if (userData) {
-                console.log('Updating profile with user data:', userData);
-                
                 // Basic info
                 const userName = document.getElementById('userName');
                 const userEmail = document.getElementById('userEmail');
@@ -220,15 +287,12 @@
                 
                 if (userName) {
                     userName.textContent = userData.displayName || 'User';
-                    console.log('Updated userName:', userData.displayName);
                 }
                 if (userEmail) {
                     userEmail.textContent = userData.email || 'user@example.com';
-                    console.log('Updated userEmail:', userData.email);
                 }
                 if (userRole) {
                     userRole.textContent = userData.role || 'user';
-                    console.log('Updated userRole:', userData.role);
                 }
                 
                 // Detailed info
@@ -236,8 +300,17 @@
                 document.getElementById('userEmailDetail').textContent = userData.email || 'N/A';
                 document.getElementById('userDisplayName').textContent = userData.displayName || 'N/A';
                 document.getElementById('userRoleDetail').textContent = userData.role || 'N/A';
-                document.getElementById('userJoinDate').textContent = userData.createdAt ? 
-                    new Date(userData.createdAt.seconds * 1000).toLocaleDateString('id-ID') : 'N/A';
+                
+                // Format join date
+                let joinDate = 'N/A';
+                if (userData.createdAt) {
+                    if (userData.createdAt.seconds) {
+                        joinDate = new Date(userData.createdAt.seconds * 1000).toLocaleDateString('id-ID');
+                    } else if (userData.createdAt.toDate) {
+                        joinDate = userData.createdAt.toDate().toLocaleDateString('id-ID');
+                    }
+                }
+                document.getElementById('userJoinDate').textContent = joinDate;
 
                 // Avatar
                 const avatar = document.getElementById('userAvatar');
@@ -250,55 +323,24 @@
                     avatar.textContent = initials.length <= 2 ? initials : '👤';
                 }
 
-                // Stats - Show real data if available
-                if (userData.stats) {
-                    document.getElementById('forumPosts').textContent = userData.stats.forumPosts || 0;
-                    document.getElementById('quizCompleted').textContent = userData.stats.quizCompleted || 0;
-                    document.getElementById('activeDays').textContent = userData.stats.activeDays || 0;
-                } else {
-                    // Default stats if not available
-                    document.getElementById('forumPosts').textContent = '0';
-                    document.getElementById('quizCompleted').textContent = '0';
-                    document.getElementById('activeDays').textContent = '0';
-                }
+                console.log('✅ Profile updated successfully');
+            } else {
+                console.log('⚠️ No user data provided to updateUserProfile');
             }
         }
 
         // Logout handler
         logoutBtn.addEventListener('click', async () => {
             try {
-                await auth.signOut();
+                console.log('🚪 Logging out user...');
+                await signOut(auth);
                 showNotification('Logout berhasil!', 'success');
-                window.location.href = '../../login.html';
+                setTimeout(() => {
+                    window.location.href = '../../login.html';
+                }, 1000);
             } catch (error) {
-                console.error('Logout error:', error);
+                console.error('❌ Logout error:', error);
                 showNotification('Gagal logout: ' + error.message, 'error');
-            }
-        });
-
-        // Load testing account handler
-        loadRandomAccountBtn.addEventListener('click', () => {
-            loadTestingAccount();
-        });
-
-        // Refresh profile handler
-        refreshProfileBtn.addEventListener('click', async () => {
-            if (currentUserData) {
-                // Update with latest data
-                const updatedAccount = await updateTestingAccountStats(currentUserData);
-                currentUserData = updatedAccount;
-                updateUserProfile(updatedAccount);
-                showNotification('Profil diperbarui dengan data terbaru!', 'success');
-            } else {
-                // Load fresh testing account
-                await loadTestingAccount();
-            }
-        });
-
-        // Delete account handler
-        deleteAccountBtn.addEventListener('click', () => {
-            if (confirm('Apakah Anda yakin ingin menghapus akun? Tindakan ini tidak dapat dibatalkan.')) {
-                showNotification('Fitur hapus akun belum tersedia', 'warning');
             }
         });
 
@@ -306,20 +348,33 @@
         console.log('🚀 Profil page script loaded');
         
         document.addEventListener('DOMContentLoaded', () => {
-            // Load testing account by default
-            loadTestingAccount();
+            console.log('📄 DOM loaded, setting up auth listener...');
             
-            // Check authentication status (optional for testing)
+            // Check authentication status
             onAuthStateChanged(auth, async (user) => {
                 console.log('🔐 Auth state changed, user:', user);
                 
                 if (user) {
-                    // If user is authenticated, you can choose to use real data or keep mock data
-                    // const userData = authInstance.getCurrentUser();
-                    // updateUserProfile(userData);
+                    console.log('✅ User authenticated, loading profile data...');
+                    currentFirebaseUser = user;
+                    
+                    try {
+                        // Load user data from Firestore
+                        const userData = await loadUserDataFromFirestore(user);
+                        currentUserData = userData;
+                        updateUserProfile(userData);
+                        
+                        showNotification(`Selamat datang, ${userData.displayName || userData.email}!`, 'success');
+                    } catch (error) {
+                        console.error('❌ Error loading user profile:', error);
+                        showNotification('Gagal memuat profil pengguna', 'error');
+                    }
                 } else {
-                    // For testing, we'll keep using mock accounts instead of redirecting
-                    // window.location.href = '../login.html';
+                    console.log('❌ No user authenticated, redirecting to login...');
+                    showNotification('Anda belum login. Mengalihkan ke halaman login...', 'warning');
+                    setTimeout(() => {
+                        window.location.href = '../../login.html';
+                    }, 2000);
                 }
             });
         });

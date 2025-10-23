@@ -1,62 +1,26 @@
 {
-  "name": "Moral Intelligence",
-  "short_name": "MI App",
-  "description": "Aplikasi pembelajaran moral intelligence untuk pengembangan karakter dan etika",
+  "name": "Greenomics",
+  "short_name": "Greenomics",
+  "description": "Platform Digital Green Accounting untuk UMKM",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#667eea",
-  "theme_color": "#667eea",
+  "background_color": "#10b981",
+  "theme_color": "#10b981",
   "orientation": "portrait",
   "scope": "/",
-  "categories": ["education", "lifestyle"],
+  "categories": ["business", "finance", "environment"],
   "lang": "id",
   "icons": [
     {
-      "src": "/assets/icons/icon-72x72.svg",
-      "sizes": "72x72",
-      "type": "image/svg+xml",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/assets/icons/icon-96x96.svg",
-      "sizes": "96x96",
-      "type": "image/svg+xml",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/assets/icons/icon-128x128.svg",
-      "sizes": "128x128",
-      "type": "image/svg+xml",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/assets/icons/icon-144x144.svg",
-      "sizes": "144x144",
-      "type": "image/svg+xml",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/assets/icons/icon-152x152.svg",
-      "sizes": "152x152",
-      "type": "image/svg+xml",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/assets/icons/icon-192x192.svg",
+      "src": "/assets/icons/tittle.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "/assets/icons/icon-384x384.svg",
-      "sizes": "384x384",
-      "type": "image/svg+xml",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/assets/icons/icon-512x512.svg",
+      "src": "/assets/icons/tittle.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "maskable any"
     }
   ],
@@ -65,22 +29,22 @@
       "name": "Login",
       "short_name": "Login",
       "description": "Masuk ke akun Anda",
-      "url": "/pages/auth/login.html",
-      "icons": [{ "src": "/assets/icons/icon-96x96.svg", "sizes": "96x96" }]
+      "url": "/login.html",
+      "icons": [{ "src": "/assets/icons/tittle.png", "sizes": "192x192" }]
     },
     {
-      "name": "Materi",
-      "short_name": "Materi",
-      "description": "Lihat materi pembelajaran",
-      "url": "/pages/features/materi.html",
-      "icons": [{ "src": "/assets/icons/icon-96x96.svg", "sizes": "96x96" }]
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Lihat dashboard utama",
+      "url": "/dashboard.html",
+      "icons": [{ "src": "/assets/icons/tittle.png", "sizes": "192x192" }]
     },
     {
-      "name": "Forum",
-      "short_name": "Forum",
-      "description": "Diskusi di forum",
-      "url": "/pages/features/forum.html",
-      "icons": [{ "src": "/assets/icons/icon-96x96.svg", "sizes": "96x96" }]
+      "name": "AI Assistant",
+      "short_name": "AI Assistant",
+      "description": "Konsultan AI Green Accounting",
+      "url": "/pages/features/chat.html",
+      "icons": [{ "src": "/assets/icons/tittle.png", "sizes": "192x192" }]
     }
   ]
 }

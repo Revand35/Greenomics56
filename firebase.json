@@ -4,40 +4,12 @@
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**",
-      "**/package.json",
-      "**/package-lock.json",
-      "**/*.sh",
-      "**/*.bat",
-      "**/*.exe",
-      "**/*.dll",
-      "**/README*",
-      "**/*.md"
+      "**/node_modules/**"
     ],
-    "cleanUrls": true,
-    "trailingSlash": false,
-    "headers": [
+    "rewrites": [
       {
-        "source": "/assets/js/core/sw.js",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "no-cache, no-store, must-revalidate"
-          },
-          {
-            "key": "Service-Worker-Allowed",
-            "value": "/"
-          }
-        ]
-      },
-      {
-        "source": "**/*.@(js|css|html)",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "no-cache, no-store, must-revalidate"
-          }
-        ]
+        "source": "**",
+        "destination": "/index.html"
       }
     ]
   }

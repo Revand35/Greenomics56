@@ -179,16 +179,39 @@ async function getUserDataContext() {
         console.log('📊 Fetching user data context from Firestore...');
         
         // Get recent activities and stats
-        const [activities, stats] = await Promise.all([
-            getUserActivities(10).catch(err => {
-                console.warn('Could not fetch activities:', err);
-                return [];
-            }),
-            getActivityStats().catch(err => {
-                console.warn('Could not fetch stats:', err);
-                return null;
-            })
-        ]);
+        let activities = [];
+        let stats = null;
+        
+        try {
+            activities = await getUserActivities(10);
+            console.log(`✅ Fetched ${activities.length} activities for context`);
+        } catch (err) {
+            console.warn('Could not fetch activities:', err);
+            // Try to get activities from stats if available
+        }
+        
+        try {
+            stats = await getActivityStats();
+            console.log('✅ Stats calculated for context');
+        } catch (err) {
+            console.warn('Could not fetch stats:', err);
+        }
+
+        // If we have stats but no activities, use stats data
+        if ((!activities || activities.length === 0) && stats && stats.totalActivities > 0) {
+            console.log('Using stats data as fallback for context');
+            activities = [{ 
+                activityType: 'summary',
+                materialType: 'various',
+                amount: stats.totalWasteAmount,
+                unit: 'kg',
+                action: 'managed',
+                economicValue: stats.totalEconomicValue,
+                ecoScore: stats.averageEcoScore,
+                timestamp: new Date().toISOString(),
+                notes: 'Data summary from statistics'
+            }];
+        }
 
         if (!activities || activities.length === 0) {
             console.log('No activities data available');
@@ -285,10 +308,19 @@ Berikan jawaban yang:
 - Berdasarkan data dan fakta lingkungan
 - Menggunakan contoh nyata dari industri
 - Ramah dan mendukung
-- Fokus pada profitabilitas dan sustainability`;
+- Fokus pada profitabilitas dan sustainability
+
+**Format Tabel:**
+Saat memberikan data dalam bentuk tabel, gunakan format Markdown table yang rapi:
+| Header 1 | Header 2 | Header 3 |
+| Data 1 | Data 2 | Data 3 |
+
+Pastikan setiap kolom terpisah dengan jelas menggunakan pipe (|) dan data tersusun rapi.`;
 
         // Add user data context if available
         if (userContext && userContext.hasData) {
+            console.log('📊 Adding user data context to AI prompt');
+            console.log('User context:', userContext);
             systemPrompt += `\n\n**DATA AKTIVITAS PENGGUNA YANG SUDAH DIINPUT:**\n`;
             systemPrompt += `Total Aktivitas: ${userContext.totalActivities}\n`;
             
@@ -309,6 +341,9 @@ Berikan jawaban yang:
             });
             
             systemPrompt += `\n**PENTING:** Gunakan data aktivitas di atas untuk memberikan analisis dan rekomendasi yang lebih personal dan relevan. Jika user menanyakan tentang data mereka, histori, atau minta analisis, langsung gunakan data ini tanpa perlu user menjelaskan lagi.`;
+        } else {
+            console.log('⚠️ No user data context available');
+            console.log('UserContext:', userContext);
         }
         
         systemPrompt += `\n\nJawab dalam bahasa Indonesia yang natural dan mudah dipahami.`;

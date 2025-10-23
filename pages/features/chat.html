@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Assistant - Greenomics</title>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.gstatic.com https://generativelanguage.googleapis.com https://esm.run; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://firestore.googleapis.com https://firebase.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://generativelanguage.googleapis.com https://content-firebaseappcheck.googleapis.com https://www.gstatic.com https://apis.google.com https://esm.run https://cdn.jsdelivr.net https://cdnjs.cloudflare.com http://127.0.0.1:* http://localhost:* ws://127.0.0.1:* ws://localhost:*; frame-src 'self' https://accounts.google.com https://*.firebaseapp.com; worker-src 'self' blob:; manifest-src 'self';">
+    <link rel="icon" href="../../assets/icons/tittle.png">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.gstatic.com https://generativelanguage.googleapis.com https://esm.run https://apis.google.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://firestore.googleapis.com https://firebase.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://generativelanguage.googleapis.com https://content-firebaseappcheck.googleapis.com https://www.gstatic.com https://apis.google.com https://esm.run https://cdn.jsdelivr.net https://cdnjs.cloudflare.com http://127.0.0.1:* http://localhost:* ws://127.0.0.1:* ws://localhost:*; frame-src 'self' https://accounts.google.com https://*.firebaseapp.com; worker-src 'self' blob:; manifest-src 'self';">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -74,15 +75,41 @@
         .quick-notification {
             transition: opacity 0.3s ease-out, transform 0.3s ease-out;
         }
+        
+        /* Toast notification animations */
+        @keyframes slideIn {
+            from { 
+                transform: translateX(100%); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateX(0); 
+                opacity: 1; 
+            }
+        }
+        
+        @keyframes slideOut {
+            from { 
+                transform: translateX(0); 
+                opacity: 1; 
+            }
+            to { 
+                transform: translateX(100%); 
+                opacity: 0; 
+            }
+        }
+        
+        .animate-slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .animate-slide-out {
+            animation: slideOut 0.3s ease-in;
+        }
 
 
-        /* Secara default, tampilkan chat AI Assistant */
-        .quiz-section { display: none; }
+        /* Chat section always visible */
         .chat-section { display: flex; }
-    
-        /* Saat body dalam mode quiz, sembunyikan chat dan tampilkan quiz */
-        body.quiz-mode .quiz-section { display: flex; }
-        body.quiz-mode .chat-section { display: none; }
         
         /* Pastikan chat messages tidak tertutup navbar */
         .chat-section {
@@ -141,21 +168,6 @@
         .message-content em { font-style: italic; }
 
         
-        /* Sembunyikan navigasi bawah saat mode quiz aktif */
-        body.quiz-mode #bottom-nav {
-            display: none;
-        }
-        /* Hapus padding bawah dari container utama saat mode quiz */
-        body.quiz-mode #app-container {
-            padding-bottom: 0;
-        }
-        
-        /* Ensure proper layout */
-        .quiz-section, .chat-section { 
-            height: 100%; 
-            flex-direction: column; 
-        }
-        
         /* Progress bar animation */
         .progress-bar-transition {
             transition: width 0.5s ease-in-out;
@@ -179,106 +191,25 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5m7-7l-7 7 7 7"/></svg>
                         </a>
                         <div class="flex-1">
-                            <h1 class="text-xl font-bold">🌱 AI Greenomics Assistant</h1>
+                            <h1 class="text-xl font-bold flex items-center">
+                                <img src="../../assets/icons/tittle.png" alt="Greenomics" class="w-5 h-5 mr-2">
+                                AI Greenomics Assistant
+                            </h1>
                             <p class="text-green-200 text-sm" id="header-status">Konsultan Green Accounting</p>
                         </div>
                     </div>
                     
-                    <div class="flex bg-white/20 rounded-full p-1">
-                        <button id="chat-mode-btn" class="px-4 py-2 rounded-full text-sm font-medium transition-all bg-white text-green-600">
-                            🤖 AI Assistant
-                        </button>
-                        <button id="quiz-mode-btn" class="px-4 py-2 rounded-full text-sm font-medium transition-all text-white hover:bg-white/10">
-                            📊 Green Quiz
-                        </button>
-                    </div>
                 </div>
             </div>
 
             <div class="flex-grow overflow-hidden mt-6">
 
-
-                <div class="quiz-section">
-                    <div class="bg-white border-b border-gray-200 p-4 flex-shrink-0">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-sm text-indigo-600 font-medium" id="aspect-name">Empati</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                            <div class="bg-gradient-to-r from-indigo-500 to-purple-600 h-3 rounded-full progress-bar-transition" id="progress-bar" style="width: 1.4%"></div>
-                        </div>
-                        <div class="text-xs text-gray-500 mt-1 text-center" id="progress-percentage">1.4%</div>
-                    </div>
-
-                    <div class="flex-grow p-6 overflow-y-auto">
-                        <div class="max-w-2xl lg:max-w-4xl mx-auto space-y-6">
-                            <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                                <div class="flex items-center gap-3 mb-4">
-                                    <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
-                                        <span class="text-indigo-600 font-bold text-sm" id="question-number">1</span>
-                                    </div>
-                                    <h2 class="text-lg font-semibold text-gray-800" id="question-title">Pertanyaan Empati</h2>
-                                </div>
-                                <div class="bg-indigo-50 rounded-xl p-4">
-                                    <p class="text-gray-700 leading-relaxed" id="question-text">
-                                        Bagaimana Anda merespons perasaan orang lain dalam situasi sosial, misalnya dengan kata-kata, sentuhan, atau ekspresi wajah?
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                                <label class="block text-sm font-medium text-gray-700 mb-3">
-                                    <span class="flex items-center gap-2">
-                                        ✏️ Jawaban Anda:
-                                        <span class="text-xs text-gray-500">(minimal 10 karakter)</span>
-                                    </span>
-                                </label>
-                                <textarea 
-                                    id="answer-input" 
-                                    class="w-full p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none transition-all" 
-                                    rows="6" 
-                                    placeholder="Ceritakan pengalaman konkret Anda dengan detail. Jelaskan perasaan, motivasi, dan tindakan yang Anda lakukan...">
-                                </textarea>
-                                
-                                <div class="flex justify-between items-center mt-4">
-                                    <div class="flex items-center gap-4">
-                                        <button 
-                                            id="prev-question-btn" 
-                                            class="bg-gray-200 text-gray-800 px-5 py-3 rounded-xl hover:bg-gray-300 transition-all font-medium text-sm" 
-                                            style="display: none;">
-                                            &larr; Kembali
-                                        </button>
-                                        <div class="text-sm text-gray-500">
-                                            <span id="char-count">0</span> karakter
-                                        </div>
-                                    </div>
-                                    <button 
-                                        id="submit-answer-btn" 
-                                        class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 sm:px-6 py-3 rounded-xl hover:shadow-lg transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
-                                        disabled>
-                                        Submit Jawaban
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-indigo-100">
-                                <p class="text-sm text-indigo-700 mb-3 font-medium">💡 Butuh bantuan?</p>
-                                <div class="space-y-2">
-                                    <button onclick="quickAskAI()" class="w-full text-left text-sm text-indigo-600 hover:text-indigo-800 underline transition-colors">
-                                        🤖 Tanya AI tentang pertanyaan ini
-                                    </button>
-                                    <button onclick="explainCurrentAspect()" class="w-full text-left text-sm text-gray-600 hover:text-gray-800 underline transition-colors">
-                                        📚 Penjelasan aspek "<span id="current-aspect-display">Empati</span>"
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="chat-section">
                     <div id="chat-messages" class="flex-grow p-6 pt-8 pb-32 space-y-4 overflow-y-auto chat-scroll">
                         <div class="flex items-start space-x-3">
-                            <div class="w-10 h-10 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center text-white text-lg font-bold flex-shrink-0">🌱</div>
+                            <div class="w-10 h-10 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center text-white text-lg font-bold flex-shrink-0">
+                                <img src="../../assets/icons/tittle.png" alt="AI" class="w-6 h-6">
+                            </div>
                             <div class="bg-white rounded-2xl rounded-tl-none p-4 shadow-lg max-w-md">
                                 <div class="text-gray-800 text-sm">
                                     Halo! Saya AI Assistant Greenomics, konsultan ahli Green Accounting untuk UMKM. Saya bisa membantu Anda dengan:
@@ -360,80 +291,128 @@
                     </div>
                 </div>
             </div> 
-            <div id="results-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                <div class="bg-white rounded-2xl shadow-xl w-full max-w-4xl xl:max-w-6xl max-h-[90vh] overflow-y-auto">
-                    <div class="p-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-2xl font-bold text-gray-800">Hasil Quiz Anda</h2>
-                            <button onclick="closeResults()" class="p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                            </button>
-                        </div>
-                        <div class="border-b border-gray-200 mb-4">
-                            <nav class="-mb-px flex space-x-8">
-                                <button id="results-tab-btn" onclick="showResultsTab()" 
-                                  class="border-indigo-500 text-indigo-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
-                                  Ringkasan Hasil
-                                </button>
-                              
-                                <button id="history-tab-btn" onclick="showQuizHistory()" 
-                                  class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
-                                  Riwayat Quiz
-                                </button>
-                            </nav>
-                        </div>                          
-                        <!-- Ringkasan Hasil -->
-                        <div id="results-content">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div>
-                                <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6 text-center mb-6">
-                                <h3 class="text-lg font-semibold text-gray-700 mb-2">Skor Keseluruhan</h3>
-                                <div class="text-5xl font-bold text-indigo-600" id="overall-score">0/100</div>
-                                <p class="mt-2 text-base font-medium text-indigo-500" id="overall-category">-</p>
-                                </div>
-                                <div class="relative h-80 w-full">
-                                <canvas id="results-chart"></canvas>
-                                </div>
-                                <p class="text-xs text-center text-gray-500 mt-2" id="overall-interpretation">
-                                Interpretasi akan muncul di sini.
-                                </p>
-                            </div>
-                            <div class="max-h-[50vh] overflow-y-auto pr-2">
-                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Rincian per Aspek</h3>
-                                <div id="detailed-results" class="space-y-3"></div>
-                            </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Riwayat Quiz -->
-                        <div id="history-content" class="hidden">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Riwayat Pengerjaan Quiz</h3>
-                            <div id="quiz-history-container" class="space-y-4 max-h-[60vh] overflow-y-auto"></div>
-                          </div>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-3 justify-end border-t p-6 bg-gray-50 rounded-b-2xl">
-                        <button onclick="discussResults()" class="px-5 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium">Diskusi dengan AI</button>
-                        <button onclick="exportToPDF()" class="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium">📄 Ekspor ke PDF</button>
-                        <button onclick="restartQuiz()" class="px-5 py-2.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium">Ulangi Quiz</button>
-                    </div>
-                </div>
-            </div>
         </div> 
     </div> 
     <div id="bottom-nav" class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 p-3 z-40 shadow-lg">
         <div class="flex justify-around items-center max-w-lg mx-auto">
             <a href="../../index.html" class="nav-button flex flex-col items-center space-y-1 text-gray-500 hover:text-green-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span class="text-xs font-medium">Dashboard</span></a>
             <a href="chat.html" class="nav-button active flex flex-col items-center space-y-1 text-gray-500 hover:text-green-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423z" /></svg><span class="text-xs font-medium">AI Assistant</span></a>
-            <a href="./materi.html" class="nav-button flex flex-col items-center space-y-1 text-gray-500 hover:text-green-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg><span class="text-xs font-medium">Input Data</span></a>
+            <a href="./accounting.html" class="nav-button flex flex-col items-center space-y-1 text-gray-500 hover:text-green-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg><span class="text-xs font-medium">Input Data</span></a>
             <a href="./forum.html" class="nav-button flex flex-col items-center space-y-1 text-gray-500 hover:text-green-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg><span class="text-xs font-medium">Reports</span></a>
             <a href="./profil.html" class="nav-button flex flex-col items-center space-y-1 text-gray-500 hover:text-green-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="text-xs font-medium">Profil</span></a>
         </div>
     </div>
+    
+    <!-- Global functions script - must be loaded before module scripts -->
+    <script>
+        // Define sendQuickAction function globally FIRST
+        window.sendQuickAction = async function(actionType) {
+            console.log('🚀 Quick Action:', actionType);
+            
+            // Emoji untuk setiap action
+            const actionEmojis = {
+                'analisis': '📊',
+                'produk': '♻️',
+                'profit': '💰',
+                'ringkasan': '📋'
+            };
+            
+            // Definisikan pesan untuk setiap action
+            const actionMessages = {
+                'analisis': 'Tolong analisis semua data aktivitas lingkungan yang sudah saya input. Berikan insight tentang:\n• Jenis limbah yang paling banyak\n• Eco-score rata-rata saya\n• Area yang perlu ditingkatkan\n• Rekomendasi aksi selanjutnya',
+                
+                'produk': 'Berdasarkan semua data limbah yang sudah saya input, tolong berikan saran produk yang bisa dibuat:\n• Produk apa yang paling profitable?\n• Bahan baku yang dibutuhkan dari limbah saya\n• Estimasi harga jual\n• Target pasar yang cocok',
+                
+                'profit': 'Hitung potensi profit dari semua data limbah yang sudah saya input:\n• Total nilai ekonomi yang bisa dihasilkan\n• ROI jika dibuat menjadi produk\n• Perbandingan profit per jenis limbah\n• Rekomendasi fokus bisnis',
+                
+                'ringkasan': 'Tampilkan ringkasan lengkap dari semua aktivitas lingkungan yang sudah saya input:\n• Total aktivitas per jenis limbah\n• Total berat/volume per material\n• Total nilai ekonomi keseluruhan\n• Timeline aktivitas saya'
+            };
+            
+            // Dapatkan pesan yang sesuai
+            const message = actionMessages[actionType];
+            
+            if (!message) {
+                console.error('❌ Unknown action type:', actionType);
+                return;
+            }
+            
+            // Tampilkan loading notification kecil
+            const emoji = actionEmojis[actionType] || '📤';
+            if (window.showQuickNotification) {
+                window.showQuickNotification(`${emoji} Mengirim pertanyaan...`, 'info');
+            }
+            
+            // Kirim pesan otomatis
+            const chatInput = document.getElementById('chat-input');
+            if (chatInput) {
+                // Set message ke input field (agar user bisa lihat)
+                chatInput.value = message;
+                
+                // Auto-resize textarea jika ada banyak baris
+                chatInput.style.height = 'auto';
+                chatInput.style.height = chatInput.scrollHeight + 'px';
+                
+                // Trigger send dengan delay kecil untuk smooth UX
+                setTimeout(() => {
+                    const sendBtn = document.getElementById('send-chat-btn');
+                    if (sendBtn) {
+                        console.log(`📤 Sending ${actionType} query to AI...`);
+                        sendBtn.click();
+                        
+                        // Clear notification setelah berhasil kirim
+                        setTimeout(() => {
+                            const notification = document.querySelector('.quick-notification');
+                            if (notification) notification.remove();
+                        }, 1000);
+                    } else {
+                        console.error('❌ Send button not found');
+                    }
+                }, 300);
+            } else {
+                console.error('❌ Chat input not found');
+            }
+        };
+        
+        // Quick notification function (non-intrusive) - Make it global
+        window.showQuickNotification = function(message, type = 'info') {
+            // Remove existing notification jika ada
+            const existing = document.querySelector('.quick-notification');
+            if (existing) existing.remove();
+            
+            const notification = document.createElement('div');
+            notification.className = 'quick-notification fixed bottom-24 right-4 px-4 py-2 rounded-lg shadow-lg text-white text-sm z-50 animate-fade-in';
+            
+            // Color based on type
+            const colors = {
+                'info': 'bg-blue-500',
+                'success': 'bg-green-500',
+                'error': 'bg-red-500'
+            };
+            
+            notification.classList.add(colors[type] || colors.info);
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Auto-remove setelah 2 detik
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translateY(10px)';
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, 2000);
+        };
+        
+        console.log('✅ Global functions defined');
+    </script>
+    
     <script type="module">
     import authInstance from '../../assets/js/auth.js';
     import { auth } from '../../config/firebase-init.js';
     import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
     import { setupChatListeners } from '../../assets/js/chat/chat-logic.js';
+    import aiAutoNotificationService from '../../assets/js/core/ai-auto-notification.js';
     
     // Check authentication before loading page
     onAuthStateChanged(auth, async (user) => {
@@ -469,124 +448,7 @@
     // Make function globally available
     window.askQuickQuestion = askQuickQuestion;
     
-    // Smart Quick Action Function - Context-aware messages
-    async function sendQuickAction(actionType) {
-        console.log('🚀 Quick Action:', actionType);
-        
-        // Emoji untuk setiap action
-        const actionEmojis = {
-            'analisis': '📊',
-            'produk': '♻️',
-            'profit': '💰',
-            'ringkasan': '📋'
-        };
-        
-        // Definisikan pesan untuk setiap action
-        const actionMessages = {
-            'analisis': 'Tolong analisis semua data aktivitas lingkungan yang sudah saya input. Berikan insight tentang:\n• Jenis limbah yang paling banyak\n• Eco-score rata-rata saya\n• Area yang perlu ditingkatkan\n• Rekomendasi aksi selanjutnya',
-            
-            'produk': 'Berdasarkan semua data limbah yang sudah saya input, tolong berikan saran produk yang bisa dibuat:\n• Produk apa yang paling profitable?\n• Bahan baku yang dibutuhkan dari limbah saya\n• Estimasi harga jual\n• Target pasar yang cocok',
-            
-            'profit': 'Hitung potensi profit dari semua data limbah yang sudah saya input:\n• Total nilai ekonomi yang bisa dihasilkan\n• ROI jika dibuat menjadi produk\n• Perbandingan profit per jenis limbah\n• Rekomendasi fokus bisnis',
-            
-            'ringkasan': 'Tampilkan ringkasan lengkap dari semua aktivitas lingkungan yang sudah saya input:\n• Total aktivitas per jenis limbah\n• Total berat/volume per material\n• Total nilai ekonomi keseluruhan\n• Timeline aktivitas saya'
-        };
-        
-        // Dapatkan pesan yang sesuai
-        const message = actionMessages[actionType];
-        
-        if (!message) {
-            console.error('❌ Unknown action type:', actionType);
-            return;
-        }
-        
-        // Tampilkan loading notification kecil
-        const emoji = actionEmojis[actionType] || '📤';
-        showQuickNotification(`${emoji} Mengirim pertanyaan...`, 'info');
-        
-        // Kirim pesan otomatis
-        const chatInput = document.getElementById('chat-input');
-        if (chatInput) {
-            // Set message ke input field (agar user bisa lihat)
-            chatInput.value = message;
-            
-            // Auto-resize textarea jika ada banyak baris
-            chatInput.style.height = 'auto';
-            chatInput.style.height = chatInput.scrollHeight + 'px';
-            
-            // Trigger send dengan delay kecil untuk smooth UX
-            setTimeout(() => {
-                const sendBtn = document.getElementById('send-chat-btn');
-                if (sendBtn) {
-                    console.log(`📤 Sending ${actionType} query to AI...`);
-                    sendBtn.click();
-                    
-                    // Clear notification setelah berhasil kirim
-                    setTimeout(() => {
-                        const notification = document.querySelector('.quick-notification');
-                        if (notification) notification.remove();
-                    }, 1000);
-                } else {
-                    console.error('❌ Send button not found');
-                }
-            }, 300);
-        } else {
-            console.error('❌ Chat input not found');
-        }
-    }
-    
-    // Quick notification function (non-intrusive)
-    function showQuickNotification(message, type = 'info') {
-        // Remove existing notification jika ada
-        const existing = document.querySelector('.quick-notification');
-        if (existing) existing.remove();
-        
-        const notification = document.createElement('div');
-        notification.className = 'quick-notification fixed bottom-24 right-4 px-4 py-2 rounded-lg shadow-lg text-white text-sm z-50 animate-fade-in';
-        
-        // Color based on type
-        const colors = {
-            'info': 'bg-blue-500',
-            'success': 'bg-green-500',
-            'error': 'bg-red-500'
-        };
-        
-        notification.classList.add(colors[type] || colors.info);
-        notification.textContent = message;
-        
-        document.body.appendChild(notification);
-        
-        // Auto-remove setelah 2 detik
-        setTimeout(() => {
-            if (notification.parentElement) {
-                notification.style.opacity = '0';
-                notification.style.transform = 'translateY(10px)';
-                setTimeout(() => notification.remove(), 300);
-            }
-        }, 2000);
-    }
-    
-    // Make function globally available
-    window.sendQuickAction = sendQuickAction;
-    
-    // Mode switching functions
-    function switchToChatMode() {
-        document.body.classList.remove('quiz-mode');
-        document.getElementById('header-status').textContent = 'Konsultan Green Accounting';
-        document.getElementById('chat-mode-btn').classList.add('bg-white', 'text-green-600');
-        document.getElementById('chat-mode-btn').classList.remove('text-white', 'hover:bg-white/10');
-        document.getElementById('quiz-mode-btn').classList.remove('bg-white', 'text-green-600');
-        document.getElementById('quiz-mode-btn').classList.add('text-white', 'hover:bg-white/10');
-    }
-    
-    function switchToQuizMode() {
-        document.body.classList.add('quiz-mode');
-        document.getElementById('header-status').textContent = 'Green Accounting Quiz';
-        document.getElementById('quiz-mode-btn').classList.add('bg-white', 'text-green-600');
-        document.getElementById('quiz-mode-btn').classList.remove('text-white', 'hover:bg-white/10');
-        document.getElementById('chat-mode-btn').classList.remove('bg-white', 'text-green-600');
-        document.getElementById('chat-mode-btn').classList.add('text-white', 'hover:bg-white/10');
-    }
+    // Functions are now defined in the global script above
     
     // Add message to chat function
     function addMessageToChat(message, sender, isLoading = false) {
@@ -851,6 +713,97 @@ Silakan tanya apapun tentang data yang baru saja Anda input! 😊`;
             console.error('Error checking latest activity:', error);
         }
     }
+
+    /**
+     * Setup listener untuk AI Auto Notification
+     * Mendengarkan event dari sistem auto-notification
+     */
+    function setupAIAutoNotificationListener() {
+        console.log('🔔 Setting up AI auto notification listener...');
+        
+        // Listen untuk custom event dari auto-notification service
+        document.addEventListener('aiAutoNotification', async (event) => {
+            console.log('📢 Received AI auto notification event:', event.detail);
+            
+            const { analysis, activityData, timestamp } = event.detail;
+            
+            // Tampilkan notifikasi visual di chat
+            showAutoNotificationToast(activityData);
+            
+            // Tambahkan pesan AI ke chat setelah delay singkat
+            setTimeout(() => {
+                addMessageToChat(analysis, 'assistant');
+            }, 2000);
+        });
+        
+        // Check untuk notifikasi yang tersimpan saat page load
+        checkStoredAutoNotifications();
+    }
+
+    /**
+     * Tampilkan toast notification untuk auto-notification
+     * @param {Object} activityData - Data aktivitas
+     */
+    function showAutoNotificationToast(activityData) {
+        // Buat toast notification element
+        const toast = document.createElement('div');
+        toast.className = 'fixed top-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50 max-w-sm animate-slide-in';
+        toast.innerHTML = `
+            <div class="flex items-center space-x-3">
+                <div class="text-2xl">🤖</div>
+                <div>
+                    <div class="font-semibold">AI Menganalisis Aktivitas Anda!</div>
+                    <div class="text-sm opacity-90">Material: ${activityData.material}</div>
+                    <div class="text-sm opacity-90">Jumlah: ${activityData.jumlah}</div>
+                </div>
+            </div>
+        `;
+        
+        // Tambahkan ke body
+        document.body.appendChild(toast);
+        
+        // Auto remove setelah 5 detik
+        setTimeout(() => {
+            toast.classList.add('animate-slide-out');
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }, 5000);
+    }
+
+    /**
+     * Check untuk notifikasi auto yang tersimpan di sessionStorage
+     */
+    function checkStoredAutoNotifications() {
+        try {
+            const notifications = JSON.parse(sessionStorage.getItem('aiNotifications') || '[]');
+            const unreadNotifications = notifications.filter(n => !n.isRead);
+            
+            if (unreadNotifications.length > 0) {
+                console.log(`📬 Found ${unreadNotifications.length} unread AI notifications`);
+                
+                // Tampilkan notifikasi terbaru
+                const latestNotification = unreadNotifications[0];
+                
+                // Tampilkan toast
+                showAutoNotificationToast(latestNotification.activityData);
+                
+                // Tambahkan ke chat setelah delay
+                setTimeout(() => {
+                    addMessageToChat(latestNotification.message, 'assistant');
+                    
+                    // Mark as read
+                    if (typeof aiAutoNotificationService !== 'undefined') {
+                        aiAutoNotificationService.markNotificationAsRead(latestNotification.id);
+                    }
+                }, 2000);
+            }
+        } catch (error) {
+            console.error('❌ Error checking stored notifications:', error);
+        }
+    }
     
     document.addEventListener('DOMContentLoaded', () => {
         console.log('🚀 Initializing chat page...');
@@ -860,6 +813,9 @@ Silakan tanya apapun tentang data yang baru saja Anda input! 😊`;
         
         // Check for latest activity and show notification
         checkLatestActivity();
+        
+        // Setup AI Auto Notification listener
+        setupAIAutoNotificationListener();
         
         // Setup chat listeners
         if (typeof setupChatListeners === 'function') {
@@ -930,50 +886,6 @@ Silakan tanya apapun tentang data yang baru saja Anda input! 😊`;
             });
         }
         
-        // Add event listeners for mode switching
-        const chatModeBtn = document.getElementById('chat-mode-btn');
-        const quizModeBtn = document.getElementById('quiz-mode-btn');
-        
-        if (chatModeBtn) {
-            chatModeBtn.addEventListener('click', switchToChatMode);
-        }
-        
-        if (quizModeBtn) {
-            quizModeBtn.addEventListener('click', switchToQuizMode);
-        }
-        
-        // Add test buttons for debugging
-        const testBtn = document.createElement('button');
-        testBtn.textContent = '🧪 Test Send';
-        testBtn.className = 'fixed top-4 right-4 bg-red-500 text-white px-3 py-1 rounded text-xs z-50';
-        testBtn.onclick = () => {
-            console.log('🧪 Test button clicked');
-            const input = document.getElementById('chat-input');
-            if (input) {
-                input.value = 'Test message from debug button';
-                sendMessage();
-            }
-        };
-        document.body.appendChild(testBtn);
-        
-        // Add AI connection test button
-        const aiTestBtn = document.createElement('button');
-        aiTestBtn.textContent = '🤖 Test AI';
-        aiTestBtn.className = 'fixed top-12 right-4 bg-blue-500 text-white px-3 py-1 rounded text-xs z-50';
-        aiTestBtn.onclick = async () => {
-            console.log('🤖 Testing AI connection...');
-            try {
-                const { getChatResponse } = await import('../../assets/js/core/gemini-service.js');
-                const response = await getChatResponse('Hello, test message');
-                console.log('✅ AI Response:', response);
-                addMessageToChat('AI Test: ' + response, 'assistant');
-            } catch (error) {
-                console.error('❌ AI Test Error:', error);
-                addMessageToChat('AI Test Error: ' + error.message, 'assistant');
-            }
-        };
-        document.body.appendChild(aiTestBtn);
-        
         console.log('✅ Chat page initialized');
     });
     </script>
@@ -985,8 +897,5 @@ Silakan tanya apapun tentang data yang baru saja Anda input! 😊`;
     <!-- Di index.html dan profil.html -->
     <script type="module" src="../../assets/js/auth.js"></script>
     <script type="module" src="../../assets/js/core/user-stats.js"></script>
-    <!-- Di chat.html (halaman quiz) -->
-    <script type="module" src="../../assets/js/quiz/quiz-firestore-service.js"></script>
-    <script type="module" src="../../assets/js/quiz/test-logic.js"></script>
 </body>
 </html>

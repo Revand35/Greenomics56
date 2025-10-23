@@ -45,8 +45,8 @@
         <div class="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 text-white p-6 rounded-b-3xl shadow-xl">
             <div class="flex justify-between items-center">
                 <div>
-                    <h1 class="text-2xl font-bold mb-1">📊 Input Data Green Accounting</h1>
-                    <p class="text-green-100 text-sm">Catat aktivitas lingkungan UMKM Anda</p>
+                    <h1 class="text-2xl font-bold mb-1">Data Green Accounting</h1>
+                    <p class="text-green-100 text-sm">Catat aktivitas limbah yang anda buat</p>
                 </div>
                 <button id="add-data-button" class="bg-white/20 hover:bg-white/30 p-3 rounded-full transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14m-7-7h14"/></svg>
@@ -55,29 +55,10 @@
         </div>
         
         <div class="p-6 space-y-6">
-            <!-- Quick Stats -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div class="bg-white rounded-xl p-4 shadow-md text-center">
-                    <div class="text-2xl font-bold text-green-600 stat-pulse">250</div>
-                    <div class="text-xs text-gray-500">kg Limbah</div>
-                </div>
-                <div class="bg-white rounded-xl p-4 shadow-md text-center">
-                    <div class="text-2xl font-bold text-blue-600 stat-pulse">Rp 1.2M</div>
-                    <div class="text-xs text-gray-500">Nilai Ekonomi</div>
-                </div>
-                <div class="bg-white rounded-xl p-4 shadow-md text-center">
-                    <div class="text-2xl font-bold text-purple-600 stat-pulse">87</div>
-                    <div class="text-xs text-gray-500">Eco-Score</div>
-                </div>
-                <div class="bg-white rounded-xl p-4 shadow-md text-center">
-                    <div class="text-2xl font-bold text-orange-600 stat-pulse">15%</div>
-                    <div class="text-xs text-gray-500">Efisiensi</div>
-                </div>
-            </div>
 
             <!-- Input Form -->
             <div class="bg-white rounded-2xl p-6 shadow-lg">
-                <h2 class="text-xl font-bold text-gray-800 mb-6">📝 Tambah Aktivitas Lingkungan</h2>
+                <h2 class="text-xl font-bold text-gray-800 mb-6">Tambah Aktivitas Lingkungan</h2>
                 
                 <form id="environmental-activity-form" class="space-y-6">
                     <!-- Activity Type -->
@@ -149,14 +130,14 @@
 
                     <!-- Submit Button -->
                     <button type="submit" class="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all">
-                        💰 Hitung Nilai Ekonomi
+                        Hitung Nilai Ekonomi
                     </button>
                 </form>
             </div>
 
             <!-- Recent Activities -->
             <div class="bg-white rounded-2xl p-6 shadow-lg">
-                <h2 class="text-xl font-bold text-gray-800 mb-6">📋 Aktivitas Terbaru</h2>
+                <h2 class="text-xl font-bold text-gray-800 mb-6">Hasil aktivitas yang anda buat</h2>
                 <div id="recent-activities" class="space-y-4">
                     <!-- Sample activities -->
                     <div class="flex items-center justify-between p-4 bg-green-50 rounded-xl">
@@ -230,7 +211,7 @@
                 </svg>
                 AI Assistant
             </a>
-            <a href="./materi.html" data-page="materi" class="nav-button active flex flex-col items-center text-gray-500 text-xs font-medium">
+            <a href="./accounting.html" data-page="accounting" class="nav-button active flex flex-col items-center text-gray-500 text-xs font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
@@ -262,7 +243,7 @@
     <script>
         function setActiveNav() {
             document.querySelectorAll('.nav-button').forEach(button => {
-                if (button.dataset.page === 'materi') {
+                if (button.dataset.page === 'accounting') {
                     button.classList.add('active');
                 }
             });
@@ -609,6 +590,8 @@
         <script type="module">
             // Import Firebase Service untuk Environmental Activities
             import { saveEnvironmentalActivity, getUserActivities, getActivityStats } from '../../assets/js/core/environmental-activity-service.js';
+            // Import AI Auto Notification Service
+            import aiAutoNotificationService from '../../assets/js/core/ai-auto-notification.js';
             
             // Form submission handler dengan Firebase Firestore
             document.getElementById('environmental-activity-form').addEventListener('submit', async function(e) {
@@ -651,13 +634,28 @@
                         activityType: formData.activityType
                     }));
                     
+                    // Trigger AI Auto Notification
+                    console.log('🤖 Triggering AI auto notification...');
+                    await aiAutoNotificationService.triggerAutoNotification({
+                        activityType: formData.activityType,
+                        materialType: formData.materialType,
+                        amount: formData.amount,
+                        unit: formData.unit,
+                        action: formData.action,
+                        cost: formData.cost,
+                        notes: formData.notes,
+                        economicValue: savedActivity.economicValue,
+                        ecoScore: savedActivity.ecoScore
+                    });
+                    
                     // Tampilkan notifikasi sukses
                     showSuccessNotification(
                         `✅ Aktivitas berhasil disimpan ke Firebase! 
                         Nilai ekonomi: Rp ${savedActivity.economicValue.toLocaleString()}
                         Eco-Score: +${savedActivity.ecoScore}
                         📝 Data tersimpan di cloud database
-                        💡 Buka AI Assistant untuk konsultasi lanjutan!`
+                        🤖 AI sedang menganalisis aktivitas Anda...
+                        💡 Buka AI Assistant untuk melihat analisis!`
                     );
                     
                     // Update UI

@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Platform panduan bijak untuk pendidik dengan AI Gemini",
-  "main": "index.html",
+  "main": "index-redirect.html",
   "scripts": {
     "start": "live-server",
+    "start-login": "live-server --entry-file=login.html",
+    "start-dashboard": "live-server --entry-file=dashboard.html",
     "build": "echo 'No build step required for static site'",
     "deploy": ".\\node_modules\\.bin\\firebase deploy",
     "test": "echo 'No tests specified'"

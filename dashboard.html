@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Greenomics</title>
+
+    <meta name="theme-color" content="#10b981">
+    <meta name="description" content="Platform Digital Green Accounting untuk UMKM">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.gstatic.com https://generativelanguage.googleapis.com https://apis.google.com https://esm.run;
+        style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com https://cdnjs.cloudflare.com;
+        font-src 'self' https://fonts.gstatic.com;
+        img-src 'self' data: https: blob:;
+        connect-src 'self' https://firestore.googleapis.com https://firebase.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://generativelanguage.googleapis.com https://content-firebaseappcheck.googleapis.com https://www.gstatic.com https://apis.google.com https://esm.run https://cdn.jsdelivr.net https://cdnjs.cloudflare.com http://127.0.0.1:* http://localhost:* ws://127.0.0.1:* ws://localhost:*;
+        frame-src 'self' https://accounts.google.com https://*.firebaseapp.com;
+        worker-src 'self' blob:;
+        manifest-src 'self';
+    ">
+
+    <link rel="manifest" href="/manifest.json">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .hover-scale:hover { transform: scale(1.03); }
+        .nav-button.active { color: #10b981; }
+        .stat-pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        /* Ensure proper spacing and no overlap */
+        #app-container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        #bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+        }
+        
+        .green-gradient {
+            background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+            position: relative;
+            z-index: 10;
+        }
+        
+        /* Reduce overall scale for better proportions */
+        body {
+            font-size: 14px;
+        }
+        
+        .text-xs { font-size: 0.75rem; }
+        .text-sm { font-size: 0.875rem; }
+        .text-base { font-size: 1rem; }
+        .text-lg { font-size: 1.125rem; }
+        .text-xl { font-size: 1.25rem; }
+        .text-2xl { font-size: 1.5rem; }
+        .text-3xl { font-size: 1.875rem; }
+        .eco-score-ring {
+            stroke-dasharray: 251.2;
+            stroke-dashoffset: 251.2;
+            transition: stroke-dashoffset 1s ease-in-out;
+        }
+        .motivation-notification {
+            animation: slideInRight 0.5s ease-out;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-100">
+
+    <div id="app-container" class="pb-20">
+
+        <!-- Header with Green Stats -->
+        <div class="green-gradient text-white p-6 rounded-b-3xl shadow-xl mb-6">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h1 class="text-lg font-bold flex items-center">
+                        <img src="./assets/icons/tittle.png" alt="Greenomics" class="w-5 h-5 mr-2">
+                        Greenomics
+                    </h1>
+                    <p class="text-green-100 text-xs mt-1">Digital Green Accounting untuk UMKM</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <!-- AI Assistant Button -->
+                    <a href="pages/features/chat.html" class="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-full text-white text-xs font-semibold transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423z" />
+                        </svg>
+                        AI Assistant
+                    </a>
+                    <!-- Admin Dashboard Button (Only visible for admin) -->
+                    <a href="pages/admin/admin-dashboard.html" id="admin-dashboard-btn" class="hidden bg-white/20 hover:bg-white/30 px-3 py-2 rounded-full text-white text-xs font-semibold transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z" />
+                        </svg>
+                        Dashboard
+                    </a>
+                    <div class="relative">
+                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path d="M14 9V5a3 3 0 0 0-6 0v4" />
+                                <rect x="2" y="9" width="20" height="12" rx="2" ry="2" />
+                            </svg>
+                        </div>
+                        <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-green-700"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="px-6 pb-6 space-y-6">
+
+            <!-- UMKM Profile Section -->
+            <div class="bg-white rounded-2xl p-4 shadow-md flex items-center space-x-3">
+                <div id="user-avatar" class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-xl text-green-600 font-bold">🏢</div>
+                <div class="flex-1">
+                    <h3 id="user-name" class="text-sm font-semibold text-gray-800">Loading...</h3>
+                    <p id="user-profession" class="text-gray-500 text-xs mb-1">UMKM - Loading...</p>
+                    <div class="flex flex-wrap text-xs text-gray-600 gap-2">
+                        <span><strong>Email:</strong> <span id="user-email">Loading...</span></span>
+                        <span><strong>Bidang:</strong> <span id="user-role">Loading...</span></span>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-xs text-gray-500 mb-1">Eco-Score</div>
+                    <div class="relative w-12 h-12">
+                        <svg class="w-12 h-12 transform -rotate-90" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="40" stroke="#e5e7eb" stroke-width="8" fill="none"/>
+                            <circle cx="50" cy="50" r="40" stroke="#10b981" stroke-width="8" fill="none" 
+                                    class="eco-score-ring" stroke-dasharray="251.2" stroke-dashoffset="32.7"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-xs font-bold text-gray-800">87</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions Grid -->
+            <div class="grid grid-cols-2 gap-4">
+                <a href="pages/features/accounting.html" class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-4 rounded-2xl shadow-lg hover-scale transition-all">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-sm">Input Data</h3>
+                            <p class="text-white/80 text-xs">Aktivitas Lingkungan</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="pages/features/chat.html" class="bg-gradient-to-br from-green-500 to-green-600 text-white p-4 rounded-2xl shadow-lg hover-scale transition-all">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-sm">AI Assistant</h3>
+                            <p class="text-white/80 text-xs">Konsultan Green</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="pages/features/forum.html" class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-4 rounded-2xl shadow-lg hover-scale transition-all">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-sm">Reports</h3>
+                            <p class="text-white/80 text-xs">Analisis Data</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="pages/features/profil.html" class="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-4 rounded-2xl shadow-lg hover-scale transition-all">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-sm">Profil</h3>
+                            <p class="text-white/80 text-xs">Pengaturan</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Recent Activities -->
+            <div class="bg-white rounded-2xl p-4 shadow-md">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-semibold text-gray-800">Aktivitas Terbaru</h3>
+                    <a href="pages/features/accounting.html" class="text-green-600 text-xs font-medium">Lihat Semua</a>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-3 p-2 bg-green-50 rounded-lg">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <span class="text-green-600 text-xs">♻️</span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-xs font-medium text-gray-800">Plastik Didaur Ulang</p>
+                            <p class="text-xs text-gray-500">25 kg - Rp 50.000</p>
+                        </div>
+                        <div class="text-xs text-gray-400">2 jam lalu</div>
+                    </div>
+                    <div class="flex items-center space-x-3 p-2 bg-blue-50 rounded-lg">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                            <span class="text-blue-600 text-xs">📄</span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-xs font-medium text-gray-800">Kertas Dikumpulkan</p>
+                            <p class="text-xs text-gray-500">15 kg - Rp 22.500</p>
+                        </div>
+                        <div class="text-xs text-gray-400">1 hari lalu</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Motivation Notification -->
+            <div id="motivation-notification" class="hidden bg-gradient-to-r from-green-400 to-emerald-500 text-white p-4 rounded-2xl shadow-lg motivation-notification">
+                <div class="flex items-center space-x-3">
+                    <div class="text-2xl">🎉</div>
+                    <div>
+                        <h4 class="font-semibold text-sm">Selamat!</h4>
+                        <p class="text-white/90 text-xs">Eco-Score Anda meningkat menjadi 87!</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div id="bottom-nav" class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 p-3 z-40 shadow-lg">
+        <div class="flex justify-around items-center max-w-lg mx-auto">
+            <a href="dashboard.html" class="nav-button active flex flex-col items-center space-y-1 text-gray-500 hover:text-green-600 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                </svg>
+                <span class="text-xs font-medium">Dashboard</span>
+            </a>
+            <a href="pages/features/chat.html" class="nav-button flex flex-col items-center space-y-1 text-gray-500 hover:text-green-600 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423z" />
+                </svg>
+                <span class="text-xs font-medium">AI Assistant</span>
+            </a>
+            <a href="pages/features/accounting.html" class="nav-button flex flex-col items-center space-y-1 text-gray-500 hover:text-green-600 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span class="text-xs font-medium">Input Data</span>
+            </a>
+            <a href="pages/features/forum.html" class="nav-button flex flex-col items-center space-y-1 text-gray-500 hover:text-green-600 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <span class="text-xs font-medium">Reports</span>
+            </a>
+            <a href="pages/features/profil.html" class="nav-button flex flex-col items-center space-y-1 text-gray-500 hover:text-green-600 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span class="text-xs font-medium">Profil</span>
+            </a>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Firebase directly from CDN for reliability
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+        
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyD43R9_h0qZc5TFTrBn_Zt76Il3jDKP7kw",
+            authDomain: "greenomics-id.firebaseapp.com",
+            projectId: "greenomics-id",
+            storageBucket: "greenomics-id.firebasestorage.app",
+            messagingSenderId: "5727343643",
+            appId: "1:5727343643:web:0b84a6197ee989aa5dd4be"
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        function setActiveNav() {
+            const currentPage = window.location.pathname.split('/').pop();
+            let pageKey = 'home';
+            if (currentPage.includes('chat')) pageKey = 'chat';
+            else if (currentPage.includes('forum')) pageKey = 'forum';
+            else if (currentPage.includes('materi')) pageKey = 'materi';
+            else if (currentPage.includes('profil')) pageKey = 'profile';
+
+            document.querySelectorAll('.nav-button').forEach(button => {
+                button.classList.remove('active');
+            });
+
+            const activeButton = document.querySelector(`[href*="${pageKey}"]`);
+            if (activeButton) {
+                activeButton.classList.add('active');
+            }
+        }
+
+        async function updateUserProfile(user) {
+            try {
+                console.log('updateUserProfile called with user:', user);
+                
+                if (user) {
+                    // Use Firebase user directly instead of authInstance
+                    document.getElementById('user-name').textContent = user.displayName || 'User';
+                    document.getElementById('user-email').textContent = user.email || 'user@example.com';
+                    document.getElementById('user-role').textContent = 'user'; // Default role
+
+                    const profession = 'UMKM'; // Default profession
+                    document.getElementById('user-profession').textContent = profession;
+
+                    const avatar = document.getElementById('user-avatar');
+                    if (avatar) {
+                        avatar.textContent = profession === 'UMKM' ? '🏢' : '👤';
+                    }
+
+                    // Show admin dashboard button if user is admin (check from custom claims or user data)
+                    const adminDashboardBtn = document.getElementById('admin-dashboard-btn');
+                    if (adminDashboardBtn) {
+                        // For now, hide admin button - can be enabled later with proper admin setup
+                        adminDashboardBtn.classList.add('hidden');
+                    }
+                } else {
+                    console.log('No user, redirecting to login');
+                    // Redirect to login if not authenticated
+                    window.location.href = './login.html';
+                }
+
+            } catch (error) {
+                console.error('Error updating user profile:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Dashboard DOM loaded');
+            setActiveNav();
+            
+            // Initialize Green Accounting features
+            initializeEcoScore();
+            initializeMotivationNotifications();
+            
+            // Check authentication status
+            console.log('🔐 Setting up auth state listener...');
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    await updateUserProfile(user);
+                    console.log('✅ Profile update complete');
+                } else {
+                    console.log('❌ No user, redirecting to login');
+                    // Redirect to login if not authenticated
+                    console.log('❌ No user, redirecting to login');
+                    window.location.href = './login.html';
+                }
+            });
+            
+            // Additional check after a short delay to ensure authInstance is ready
+            setTimeout(async () => {
+                console.log('⏰ Checking auth status after delay...');
+                const currentUser = auth.currentUser;
+                if (currentUser) {
+                    console.log('✅ User found after delay, updating profile...');
+                    await updateUserProfile(currentUser);
+                } else {
+                    console.log('❌ No user found after delay');
+                }
+            }, 1000);
+        });
+
+        // Initialize Eco-Score animation
+        function initializeEcoScore() {
+            const ecoScoreElement = document.querySelector('[data-stat="eco-score"]');
+            if (ecoScoreElement) {
+                const score = parseInt(ecoScoreElement.textContent);
+                const ring = document.querySelector('.eco-score-ring');
+                if (ring) {
+                    const circumference = 251.2;
+                    const offset = circumference - (score / 100) * circumference;
+                    ring.style.strokeDashoffset = offset;
+                }
+            }
+        }
+
+        // Initialize motivation notifications
+        function initializeMotivationNotifications() {
+            // Show motivation notification after 2 seconds
+            setTimeout(() => {
+                const notification = document.getElementById('motivation-notification');
+                if (notification) {
+                    notification.classList.remove('hidden');
+                    
+                    // Hide after 5 seconds
+                    setTimeout(() => {
+                        notification.classList.add('hidden');
+                    }, 5000);
+                }
+            }, 2000);
+        }
+    </script>
+    
+    <!-- Import additional modules -->
+    <script type="module" src="assets/js/core/user-stats.js"></script>
+</body>
+</html>
