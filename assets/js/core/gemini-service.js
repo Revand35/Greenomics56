@@ -1,5 +1,6 @@
 // gemini-service.js - Prioritize gemini-2.0-flash with safe fallbacks
 import { geminiApiKey, appConfig } from "../../../config/config.js";
+import { getUserActivities, getActivityStats } from './environmental-activity-service.js';
 
 // Cache & state
 let genAI = null;
@@ -169,6 +170,65 @@ function getErrorMessage(error) {
     return { message: "Terjadi kesalahan. Silakan coba lagi dalam beberapa saat.", type: 'general', waitTime: 3000 };
 }
 
+/**
+ * Fetch user's environmental activities data from Firestore
+ * @returns {Promise<Object>} User data context
+ */
+async function getUserDataContext() {
+    try {
+        console.log('📊 Fetching user data context from Firestore...');
+        
+        // Get recent activities and stats
+        const [activities, stats] = await Promise.all([
+            getUserActivities(10).catch(err => {
+                console.warn('Could not fetch activities:', err);
+                return [];
+            }),
+            getActivityStats().catch(err => {
+                console.warn('Could not fetch stats:', err);
+                return null;
+            })
+        ]);
+
+        if (!activities || activities.length === 0) {
+            console.log('No activities data available');
+            return null;
+        }
+
+        // Format activities data
+        const activitiesContext = activities.map((act, index) => ({
+            no: index + 1,
+            type: act.activityType,
+            material: act.materialType,
+            amount: `${act.amount} ${act.unit}`,
+            action: act.action,
+            economicValue: `Rp ${act.economicValue?.toLocaleString()}`,
+            ecoScore: act.ecoScore,
+            date: act.timestamp || act.createdAt,
+            notes: act.notes || '-'
+        }));
+
+        const context = {
+            hasData: true,
+            totalActivities: stats?.totalActivities || activities.length,
+            recentActivities: activitiesContext,
+            stats: stats ? {
+                totalWaste: `${stats.totalWasteAmount} kg`,
+                totalEconomicValue: `Rp ${stats.totalEconomicValue?.toLocaleString()}`,
+                averageEcoScore: stats.averageEcoScore,
+                breakdown: stats.activityBreakdown
+            } : null
+        };
+
+        console.log('✅ User data context fetched:', context);
+        return context;
+
+    } catch (error) {
+        console.error('❌ Error fetching user data context:', error);
+        return null;
+    }
+}
+
 // Main function to get chat response
 export async function getChatResponse(prompt, chatHistory = [], retryCount = 0) {
     try {
@@ -195,7 +255,10 @@ export async function getChatResponse(prompt, chatHistory = [], retryCount = 0) 
             { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_ONLY_HIGH" },
         ];
 
-        const systemPrompt = `Anda adalah AI asisten ahli Green Accounting dan Konsultan Lingkungan untuk UMKM. Anda membantu pengguna dalam:
+        // Fetch user data context from Firestore
+        const userContext = await getUserDataContext();
+        
+        let systemPrompt = `Anda adalah AI asisten ahli Green Accounting dan Konsultan Lingkungan untuk UMKM. Anda membantu pengguna dalam:
 
 1. **Kalkulasi Limbah & Nilai Ekonomi:**
    - Menghitung nilai ekonomi dari limbah
@@ -222,9 +285,33 @@ Berikan jawaban yang:
 - Berdasarkan data dan fakta lingkungan
 - Menggunakan contoh nyata dari industri
 - Ramah dan mendukung
-- Fokus pada profitabilitas dan sustainability
+- Fokus pada profitabilitas dan sustainability`;
 
-Jawab dalam bahasa Indonesia yang natural dan mudah dipahami.`;
+        // Add user data context if available
+        if (userContext && userContext.hasData) {
+            systemPrompt += `\n\n**DATA AKTIVITAS PENGGUNA YANG SUDAH DIINPUT:**\n`;
+            systemPrompt += `Total Aktivitas: ${userContext.totalActivities}\n`;
+            
+            if (userContext.stats) {
+                systemPrompt += `\nStatistik:\n`;
+                systemPrompt += `- Total Limbah Dikelola: ${userContext.stats.totalWaste}\n`;
+                systemPrompt += `- Total Nilai Ekonomi: ${userContext.stats.totalEconomicValue}\n`;
+                systemPrompt += `- Rata-rata Eco-Score: ${userContext.stats.averageEcoScore}\n`;
+            }
+            
+            systemPrompt += `\nAktivitas Terbaru (10 terakhir):\n`;
+            userContext.recentActivities.forEach((act, index) => {
+                systemPrompt += `${index + 1}. ${act.material} (${act.type}) - ${act.amount}, ${act.action}\n`;
+                systemPrompt += `   Nilai Ekonomi: ${act.economicValue}, Eco-Score: ${act.ecoScore}\n`;
+                if (act.notes && act.notes !== '-') {
+                    systemPrompt += `   Catatan: ${act.notes}\n`;
+                }
+            });
+            
+            systemPrompt += `\n**PENTING:** Gunakan data aktivitas di atas untuk memberikan analisis dan rekomendasi yang lebih personal dan relevan. Jika user menanyakan tentang data mereka, histori, atau minta analisis, langsung gunakan data ini tanpa perlu user menjelaskan lagi.`;
+        }
+        
+        systemPrompt += `\n\nJawab dalam bahasa Indonesia yang natural dan mudah dipahami.`;
 
         const history = [
             { role: "user", parts: [{ text: systemPrompt }] },
@@ -668,12 +755,17 @@ export function getQuotaStatus() {
     };
 }
 
+// Export functions for window access
 window.getChatResponse = getChatResponse;
 window.getResponseWithContext = getResponseWithContext;
 window.getQuotaStatus = getQuotaStatus;
 window.analyzeWasteData = analyzeWasteData;
 window.calculateWasteEconomicValue = calculateWasteEconomicValue;
 window.generateProductSuggestions = generateProductSuggestions;
+window.getUserDataContext = getUserDataContext;
+
+// Export for module usage
+export { getUserDataContext };
 
 console.log('✅ Improved Gemini service module loaded (2.0-flash prioritized)');
 console.log(`📊 Current quota: ${dailyRequestCount}/${FREE_TIER_LIMITS.DAILY} requests used today`);

@@ -16,7 +16,7 @@
         style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com;
         font-src 'self' https://fonts.gstatic.com;
         img-src 'self' data: https: blob:;
-        connect-src 'self' https://firestore.googleapis.com https://firebase.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://generativelanguage.googleapis.com https://apis.google.com;
+        connect-src 'self' https://firestore.googleapis.com https://firebase.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://generativelanguage.googleapis.com;
         frame-src 'self' https://accounts.google.com https://*.firebaseapp.com https://*.google.com;
         worker-src 'self' blob:;
         manifest-src 'self';
@@ -122,36 +122,8 @@
 
     <!-- Firebase SDK -->
     <script type="module">
-        // Import Firebase modules
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyC7vfSi6iGzWSkyWJTX1lvTG-k8P1HZL9s",
-            authDomain: "greenomics-7639d.firebaseapp.com",
-            projectId: "greenomics-7639d",
-            storageBucket: "greenomics-7639d.firebasestorage.app",
-            messagingSenderId: "381392746735",
-            appId: "1:381392746735:web:c9873f430a5b04c4f5031a"
-        };
-
-        // Initialize Firebase
-        console.log('Initializing Firebase...');
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        console.log('Firebase initialized:', { app, auth, db });
-
-        // Google Auth Provider with account chooser
-        const provider = new GoogleAuthProvider();
-        provider.addScope('email');
-        provider.addScope('profile');
-        provider.setCustomParameters({
-            prompt: 'select_account' // Force account selection every time
-        });
-        console.log('Google Auth Provider created with account chooser:', provider);
+        import authInstance from './assets/js/auth.js';
+        import { showNotification } from './config/config.js';
 
         // Get elements
         const googleLoginBtn = document.getElementById('googleLoginBtn');
@@ -203,74 +175,6 @@
             successMessage.classList.add('hidden');
         }
 
-        // Create or update user in Firestore
-        async function createOrUpdateUser(user) {
-            try {
-                const userRef = doc(db, 'users', user.uid);
-                const userDoc = await getDoc(userRef);
-                
-                const userData = {
-                    uid: user.uid,
-                    email: user.email,
-                    displayName: user.displayName,
-                    photoURL: user.photoURL,
-                    lastLogin: serverTimestamp(),
-                    role: 'user'
-                };
-
-                if (!userDoc.exists()) {
-                    // New user - create document
-                    await setDoc(userRef, {
-                        ...userData,
-                        createdAt: serverTimestamp(),
-                        stats: {
-                            forumPosts: 0,
-                            quizCompleted: 0,
-                            activeDays: 1
-                        }
-                    });
-                    console.log('New user created:', userData);
-                } else {
-                    // Existing user - update last login
-                    await setDoc(userRef, {
-                        ...userData,
-                        stats: userDoc.data().stats || {
-                            forumPosts: 0,
-                            quizCompleted: 0,
-                            activeDays: 1
-                        }
-                    }, { merge: true });
-                    console.log('Existing user updated:', userData);
-                }
-
-                return userData;
-                
-            } catch (error) {
-                console.error('Error creating/updating user:', error);
-                // Return basic user data even if Firestore fails
-                return {
-                    uid: user.uid,
-                    email: user.email,
-                    displayName: user.displayName,
-                    photoURL: user.photoURL,
-                    role: 'user'
-                };
-            }
-        }
-
-        // Wait for DOM to be ready
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM loaded, setting up event listeners...');
-            
-            // Verify elements exist
-            if (!googleLoginBtn) {
-                console.error('Google login button not found!');
-                return;
-            }
-            
-            console.log('Google login button found:', googleLoginBtn);
-        });
-
         // Google Login Handler
         googleLoginBtn.addEventListener('click', async () => {
             try {
@@ -318,21 +222,19 @@
         });
 
         // Check if user is already logged in
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                console.log('User already logged in, but staying on login page for account selection');
-                // Don't show anything, just keep login button visible for account selection
-                if (googleLoginBtn) {
-                    googleLoginBtn.style.display = 'flex';
-                    loginBtnText.textContent = 'Masuk dengan Google';
+        window.addEventListener('load', async () => {
+            try {
+                const user = await authInstance.waitForAuth();
+                if (user) {
+                    console.log('User already logged in:', user);
+                    showSuccess('Anda sudah masuk. Mengalihkan ke dashboard...');
+                    
+                    setTimeout(() => {
+                        window.location.href = '../index.html';
+                    }, 1500);
                 }
-            } else {
-                // User not logged in
+            } catch (error) {
                 console.log('No user logged in');
-                if (googleLoginBtn) {
-                    googleLoginBtn.style.display = 'flex';
-                    loginBtnText.textContent = 'Masuk dengan Google';
-                }
             }
         });
 

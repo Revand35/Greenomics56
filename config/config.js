@@ -9,7 +9,7 @@ export const firebaseConfig = {
 };
 
 // Gemini API Key
-export const geminiApiKey = "AIzaSyAkIyXZk5Xk36eG4hrQ0aKlRlkg6B5gaw8";
+export const geminiApiKey = "AIzaSyBKCLB3d6ucJOMjnShtQogMFh6OHVL2Mck";
 
 // App Configuration
 export const appConfig = {

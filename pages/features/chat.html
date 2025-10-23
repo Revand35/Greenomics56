@@ -54,6 +54,26 @@
             0% { background-color: #10b981; } 
             50%, 100% { background-color: #d1fae5; } 
         }
+        
+        /* Quick notification animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .quick-notification {
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
 
 
         /* Secara default, tampilkan chat AI Assistant */
@@ -301,23 +321,34 @@
                             </div>
                         </div>
                         
+                        <!-- User Data Summary Card (akan diisi otomatis dari Firestore) -->
+                        <div id="user-data-summary" class="hidden mt-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="font-semibold text-blue-900 text-sm">📊 Ringkasan Data Aktivitas Anda</h3>
+                                <button onclick="toggleDataSummary()" class="text-blue-600 text-xs">Tutup</button>
+                            </div>
+                            <div id="data-summary-content" class="text-xs text-gray-700 space-y-1">
+                                <!-- Content will be loaded from Firestore -->
+                            </div>
+                        </div>
+                        
                         <!-- Quick Action Cards -->
                         <div class="grid grid-cols-2 gap-3 mt-4">
-                            <button onclick="askQuickQuestion('Analisis limbah terbaru saya')" class="bg-green-50 hover:bg-green-100 p-3 rounded-lg text-left transition-colors">
-                                <div class="text-green-600 font-medium text-sm">📊 Analisis Limbah</div>
-                                <div class="text-xs text-gray-600 mt-1">Hitung nilai ekonomi limbah</div>
+                            <button onclick="sendQuickAction('analisis')" class="bg-green-50 hover:bg-green-100 p-3 rounded-lg text-left transition-colors border-2 border-transparent hover:border-green-200 active:scale-95 transform transition-transform">
+                                <div class="text-green-600 font-medium text-sm">📊 Analisis Data Saya</div>
+                                <div class="text-xs text-gray-600 mt-1">Analisis aktivitas yang sudah diinput</div>
                             </button>
-                            <button onclick="askQuickQuestion('Saran produk dari limbah plastik')" class="bg-blue-50 hover:bg-blue-100 p-3 rounded-lg text-left transition-colors">
-                                <div class="text-blue-600 font-medium text-sm">♻️ Produk Daur Ulang</div>
-                                <div class="text-xs text-gray-600 mt-1">Ide bisnis circular economy</div>
+                            <button onclick="sendQuickAction('produk')" class="bg-blue-50 hover:bg-blue-100 p-3 rounded-lg text-left transition-colors border-2 border-transparent hover:border-blue-200 active:scale-95 transform transition-transform">
+                                <div class="text-blue-600 font-medium text-sm">♻️ Saran Produk</div>
+                                <div class="text-xs text-gray-600 mt-1">Produk dari limbah saya</div>
                             </button>
-                            <button onclick="askQuickQuestion('Cara menghitung profit dari limbah')" class="bg-purple-50 hover:bg-purple-100 p-3 rounded-lg text-left transition-colors">
+                            <button onclick="sendQuickAction('profit')" class="bg-purple-50 hover:bg-purple-100 p-3 rounded-lg text-left transition-colors border-2 border-transparent hover:border-purple-200 active:scale-95 transform transition-transform">
                                 <div class="text-purple-600 font-medium text-sm">💰 Hitung Profit</div>
-                                <div class="text-xs text-gray-600 mt-1">ROI pengolahan limbah</div>
+                                <div class="text-xs text-gray-600 mt-1">ROI dari data saya</div>
                             </button>
-                            <button onclick="askQuickQuestion('Tampilkan histori data input saya')" class="bg-orange-50 hover:bg-orange-100 p-3 rounded-lg text-left transition-colors">
-                                <div class="text-orange-600 font-medium text-sm">📋 Histori Data</div>
-                                <div class="text-xs text-gray-600 mt-1">Lihat data input sebelumnya</div>
+                            <button onclick="sendQuickAction('ringkasan')" class="bg-orange-50 hover:bg-orange-100 p-3 rounded-lg text-left transition-colors border-2 border-transparent hover:border-orange-200 active:scale-95 transform transition-transform">
+                                <div class="text-orange-600 font-medium text-sm">📋 Ringkasan Data</div>
+                                <div class="text-xs text-gray-600 mt-1">Lihat semua data input</div>
                             </button>
                         </div>
                     </div>
@@ -466,6 +497,106 @@
     
     // Make function globally available
     window.askQuickQuestion = askQuickQuestion;
+    
+    // Smart Quick Action Function - Context-aware messages
+    async function sendQuickAction(actionType) {
+        console.log('🚀 Quick Action:', actionType);
+        
+        // Emoji untuk setiap action
+        const actionEmojis = {
+            'analisis': '📊',
+            'produk': '♻️',
+            'profit': '💰',
+            'ringkasan': '📋'
+        };
+        
+        // Definisikan pesan untuk setiap action
+        const actionMessages = {
+            'analisis': 'Tolong analisis semua data aktivitas lingkungan yang sudah saya input. Berikan insight tentang:\n• Jenis limbah yang paling banyak\n• Eco-score rata-rata saya\n• Area yang perlu ditingkatkan\n• Rekomendasi aksi selanjutnya',
+            
+            'produk': 'Berdasarkan semua data limbah yang sudah saya input, tolong berikan saran produk yang bisa dibuat:\n• Produk apa yang paling profitable?\n• Bahan baku yang dibutuhkan dari limbah saya\n• Estimasi harga jual\n• Target pasar yang cocok',
+            
+            'profit': 'Hitung potensi profit dari semua data limbah yang sudah saya input:\n• Total nilai ekonomi yang bisa dihasilkan\n• ROI jika dibuat menjadi produk\n• Perbandingan profit per jenis limbah\n• Rekomendasi fokus bisnis',
+            
+            'ringkasan': 'Tampilkan ringkasan lengkap dari semua aktivitas lingkungan yang sudah saya input:\n• Total aktivitas per jenis limbah\n• Total berat/volume per material\n• Total nilai ekonomi keseluruhan\n• Timeline aktivitas saya'
+        };
+        
+        // Dapatkan pesan yang sesuai
+        const message = actionMessages[actionType];
+        
+        if (!message) {
+            console.error('❌ Unknown action type:', actionType);
+            return;
+        }
+        
+        // Tampilkan loading notification kecil
+        const emoji = actionEmojis[actionType] || '📤';
+        showQuickNotification(`${emoji} Mengirim pertanyaan...`, 'info');
+        
+        // Kirim pesan otomatis
+        const chatInput = document.getElementById('chat-input');
+        if (chatInput) {
+            // Set message ke input field (agar user bisa lihat)
+            chatInput.value = message;
+            
+            // Auto-resize textarea jika ada banyak baris
+            chatInput.style.height = 'auto';
+            chatInput.style.height = chatInput.scrollHeight + 'px';
+            
+            // Trigger send dengan delay kecil untuk smooth UX
+            setTimeout(() => {
+                const sendBtn = document.getElementById('send-chat-btn');
+                if (sendBtn) {
+                    console.log(`📤 Sending ${actionType} query to AI...`);
+                    sendBtn.click();
+                    
+                    // Clear notification setelah berhasil kirim
+                    setTimeout(() => {
+                        const notification = document.querySelector('.quick-notification');
+                        if (notification) notification.remove();
+                    }, 1000);
+                } else {
+                    console.error('❌ Send button not found');
+                }
+            }, 300);
+        } else {
+            console.error('❌ Chat input not found');
+        }
+    }
+    
+    // Quick notification function (non-intrusive)
+    function showQuickNotification(message, type = 'info') {
+        // Remove existing notification jika ada
+        const existing = document.querySelector('.quick-notification');
+        if (existing) existing.remove();
+        
+        const notification = document.createElement('div');
+        notification.className = 'quick-notification fixed bottom-24 right-4 px-4 py-2 rounded-lg shadow-lg text-white text-sm z-50 animate-fade-in';
+        
+        // Color based on type
+        const colors = {
+            'info': 'bg-blue-500',
+            'success': 'bg-green-500',
+            'error': 'bg-red-500'
+        };
+        
+        notification.classList.add(colors[type] || colors.info);
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        // Auto-remove setelah 2 detik
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateY(10px)';
+                setTimeout(() => notification.remove(), 300);
+            }
+        }, 2000);
+    }
+    
+    // Make function globally available
+    window.sendQuickAction = sendQuickAction;
     
     // Mode switching functions
     function switchToChatMode() {
@@ -636,8 +767,128 @@
         }
     }
     
+    // Function to load and display user data summary
+    async function loadUserDataSummary() {
+        try {
+            console.log('📊 Loading user data summary...');
+            
+            // Import getUserDataContext from gemini-service
+            const { getUserDataContext } = await import('../../assets/js/core/gemini-service.js');
+            const userContext = await getUserDataContext();
+            
+            if (userContext && userContext.hasData) {
+                const summaryCard = document.getElementById('user-data-summary');
+                const summaryContent = document.getElementById('data-summary-content');
+                
+                let html = '<div class="space-y-2">';
+                html += `<p><strong class="text-blue-900">Total Aktivitas:</strong> ${userContext.totalActivities}</p>`;
+                
+                if (userContext.stats) {
+                    html += `<p><strong class="text-blue-900">Total Limbah:</strong> ${userContext.stats.totalWaste}</p>`;
+                    html += `<p><strong class="text-blue-900">Nilai Ekonomi:</strong> ${userContext.stats.totalEconomicValue}</p>`;
+                    html += `<p><strong class="text-blue-900">Rata-rata Eco-Score:</strong> ${userContext.stats.averageEcoScore}/10</p>`;
+                }
+                
+                html += '<p class="text-xs text-gray-600 mt-2 pt-2 border-t border-blue-200">💡 AI sudah memiliki akses ke data aktivitas Anda. Tanya apapun tentang limbah Anda!</p>';
+                html += '</div>';
+                
+                summaryContent.innerHTML = html;
+                summaryCard.classList.remove('hidden');
+                
+                console.log('✅ User data summary loaded');
+            } else {
+                console.log('ℹ️ No user data available yet');
+            }
+        } catch (error) {
+            console.error('❌ Error loading user data summary:', error);
+        }
+    }
+    
+    // Function to toggle data summary visibility
+    function toggleDataSummary() {
+        const summaryCard = document.getElementById('user-data-summary');
+        summaryCard.classList.toggle('hidden');
+    }
+    
+    // Make function globally accessible
+    window.toggleDataSummary = toggleDataSummary;
+    window.loadUserDataSummary = loadUserDataSummary;
+    
+    // Function to check and show latest activity notification
+    async function checkLatestActivity() {
+        try {
+            const latestActivityStr = sessionStorage.getItem('latestActivity');
+            
+            if (latestActivityStr) {
+                const activity = JSON.parse(latestActivityStr);
+                const activityTime = new Date(activity.timestamp);
+                const now = new Date();
+                const diffMinutes = (now - activityTime) / (1000 * 60);
+                
+                // Tampilkan notifikasi jika aktivitas dalam 5 menit terakhir
+                if (diffMinutes < 5) {
+                    console.log('📢 Latest activity detected:', activity);
+                    
+                    // Mapping material names ke Indonesia
+                    const materialNames = {
+                        'plastic': 'plastik',
+                        'paper': 'kertas',
+                        'metal': 'logam',
+                        'organic': 'organik',
+                        'electricity': 'listrik',
+                        'water': 'air'
+                    };
+                    
+                    const actionNames = {
+                        'recycled': 'didaur ulang',
+                        'reduced': 'dikurangi',
+                        'reused': 'digunakan ulang',
+                        'disposed': 'dibuang',
+                        'conserved': 'dihemat'
+                    };
+                    
+                    const materialName = materialNames[activity.material] || activity.material;
+                    const actionName = actionNames[activity.action] || activity.action;
+                    
+                    // Buat pesan AI otomatis
+                    const aiMessage = `🎉 Saya lihat Anda baru saja menginput data **${materialName}** sebanyak **${activity.amount} ${activity.unit}** yang ${actionName}!
+
+📊 **Detail Aktivitas:**
+• Material: ${materialName.charAt(0).toUpperCase() + materialName.slice(1)}
+• Jumlah: ${activity.amount} ${activity.unit}
+• Aksi: ${actionName.charAt(0).toUpperCase() + actionName.slice(1)}
+• Nilai Ekonomi: Rp ${activity.economicValue?.toLocaleString() || 0}
+• Eco-Score: ${activity.ecoScore}/10
+
+💡 **Apa yang bisa saya bantu?**
+• Ingin analisis lebih detail tentang ${materialName} ini?
+• Butuh saran produk yang bisa dibuat?
+• Mau hitung potensi profit dari ${materialName} Anda?
+
+Silakan tanya apapun tentang data yang baru saja Anda input! 😊`;
+
+                    // Tampilkan pesan AI
+                    setTimeout(() => {
+                        addMessageToChat(aiMessage, 'assistant');
+                    }, 1000);
+                    
+                    // Clear session storage setelah ditampilkan
+                    sessionStorage.removeItem('latestActivity');
+                }
+            }
+        } catch (error) {
+            console.error('Error checking latest activity:', error);
+        }
+    }
+    
     document.addEventListener('DOMContentLoaded', () => {
         console.log('🚀 Initializing chat page...');
+        
+        // Load user data summary
+        loadUserDataSummary();
+        
+        // Check for latest activity and show notification
+        checkLatestActivity();
         
         // Setup chat listeners
         if (typeof setupChatListeners === 'function') {

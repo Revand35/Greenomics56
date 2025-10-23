@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Firebase Input Data - Greenomics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">🧪 Test Firebase Environmental Activities</h1>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">🔐 Authentication Status</h2>
+            <div id="auth-status" class="space-y-2">
+                <p>Loading...</p>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">✍️ Test Save Activity</h2>
+            <button id="test-save" class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 mb-4">
+                💾 Test Save Sample Activity
+            </button>
+            <div id="save-result" class="p-4 bg-gray-50 rounded font-mono text-sm"></div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">📋 User Activities</h2>
+            <button id="test-load" class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 mb-4">
+                📖 Load User Activities
+            </button>
+            <div id="activities-list" class="space-y-2"></div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">📊 Statistics</h2>
+            <button id="test-stats" class="bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-600 mb-4">
+                📈 Calculate Statistics
+            </button>
+            <div id="stats-display" class="p-4 bg-gray-50 rounded font-mono text-sm"></div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4">📝 Console Logs</h2>
+            <div id="console-logs" class="bg-gray-900 text-green-400 p-4 rounded font-mono text-sm max-h-96 overflow-y-auto">
+                <p>Console logs will appear here...</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth } from './config/firebase-init.js';
+        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+        import { 
+            saveEnvironmentalActivity, 
+            getUserActivities, 
+            getActivityStats 
+        } from './assets/js/core/environmental-activity-service.js';
+
+        const authStatus = document.getElementById('auth-status');
+        const saveResult = document.getElementById('save-result');
+        const activitiesList = document.getElementById('activities-list');
+        const statsDisplay = document.getElementById('stats-display');
+        const consoleLogs = document.getElementById('console-logs');
+
+        let logCount = 0;
+
+        // Override console.log to capture logs
+        const originalLog = console.log;
+        const originalError = console.error;
+
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addLog(args.join(' '), 'info');
+        };
+
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addLog(args.join(' '), 'error');
+        };
+
+        function addLog(message, type = 'info') {
+            logCount++;
+            const timestamp = new Date().toLocaleTimeString();
+            const colors = {
+                info: 'text-green-400',
+                error: 'text-red-400',
+                success: 'text-blue-400'
+            };
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = `mb-1 ${colors[type]}`;
+            logEntry.innerHTML = `[${timestamp}] ${message}`;
+            
+            consoleLogs.appendChild(logEntry);
+            consoleLogs.scrollTop = consoleLogs.scrollHeight;
+        }
+
+        // Check auth status
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                authStatus.innerHTML = `
+                    <p class="text-green-600 font-semibold">✅ User Authenticated</p>
+                    <p><strong>Name:</strong> ${user.displayName}</p>
+                    <p><strong>Email:</strong> ${user.email}</p>
+                    <p><strong>UID:</strong> ${user.uid}</p>
+                `;
+                addLog(`✅ User authenticated: ${user.email}`, 'success');
+            } else {
+                authStatus.innerHTML = `
+                    <p class="text-red-600 font-semibold">❌ Not Authenticated</p>
+                    <p>Please <a href="./login.html" class="text-blue-600 underline">login</a> first</p>
+                `;
+                addLog('❌ User not authenticated', 'error');
+            }
+        });
+
+        // Test Save Activity
+        document.getElementById('test-save').addEventListener('click', async () => {
+            saveResult.textContent = 'Saving...';
+            
+            try {
+                const testData = {
+                    activityType: 'recycling',
+                    materialType: 'plastic',
+                    amount: Math.floor(Math.random() * 100) + 20, // Random 20-120
+                    unit: 'kg',
+                    action: 'recycled',
+                    notes: `Test activity created at ${new Date().toLocaleString()}`
+                };
+                
+                console.log('🧪 Testing save with data:', testData);
+                
+                const result = await saveEnvironmentalActivity(testData);
+                
+                saveResult.innerHTML = `
+                    <div class="text-green-600 font-semibold mb-2">✅ Success!</div>
+                    <pre class="whitespace-pre-wrap">${JSON.stringify(result, null, 2)}</pre>
+                `;
+                
+                console.log('✅ Save test successful:', result);
+                
+            } catch (error) {
+                saveResult.innerHTML = `
+                    <div class="text-red-600 font-semibold mb-2">❌ Error!</div>
+                    <p>${error.message}</p>
+                `;
+                console.error('❌ Save test failed:', error);
+            }
+        });
+
+        // Test Load Activities
+        document.getElementById('test-load').addEventListener('click', async () => {
+            activitiesList.innerHTML = '<p class="text-gray-500">Loading...</p>';
+            
+            try {
+                console.log('🧪 Testing load activities...');
+                
+                const activities = await getUserActivities(10);
+                
+                if (activities.length === 0) {
+                    activitiesList.innerHTML = '<p class="text-gray-500">No activities found</p>';
+                } else {
+                    activitiesList.innerHTML = activities.map((activity, index) => `
+                        <div class="p-3 bg-gray-50 rounded border border-gray-200">
+                            <p class="font-semibold">${index + 1}. ${activity.materialType} - ${activity.action}</p>
+                            <p class="text-sm text-gray-600">Amount: ${activity.amount} ${activity.unit}</p>
+                            <p class="text-sm text-gray-600">Economic Value: Rp ${activity.economicValue?.toLocaleString()}</p>
+                            <p class="text-sm text-gray-600">Eco-Score: ${activity.ecoScore}</p>
+                            <p class="text-xs text-gray-400">ID: ${activity.id}</p>
+                        </div>
+                    `).join('');
+                }
+                
+                console.log(`✅ Load test successful: ${activities.length} activities`);
+                
+            } catch (error) {
+                activitiesList.innerHTML = `
+                    <div class="text-red-600">❌ Error: ${error.message}</div>
+                `;
+                console.error('❌ Load test failed:', error);
+            }
+        });
+
+        // Test Statistics
+        document.getElementById('test-stats').addEventListener('click', async () => {
+            statsDisplay.textContent = 'Calculating...';
+            
+            try {
+                console.log('🧪 Testing statistics...');
+                
+                const stats = await getActivityStats();
+                
+                statsDisplay.innerHTML = `
+                    <div class="space-y-2">
+                        <p><strong>Total Activities:</strong> ${stats.totalActivities}</p>
+                        <p><strong>Total Waste Amount:</strong> ${stats.totalWasteAmount} kg</p>
+                        <p><strong>Total Economic Value:</strong> Rp ${stats.totalEconomicValue.toLocaleString()}</p>
+                        <p><strong>Average Eco-Score:</strong> ${stats.averageEcoScore}</p>
+                        <p><strong>Activity Breakdown:</strong></p>
+                        <pre class="pl-4">${JSON.stringify(stats.activityBreakdown, null, 2)}</pre>
+                        <p><strong>Action Breakdown:</strong></p>
+                        <pre class="pl-4">${JSON.stringify(stats.actionBreakdown, null, 2)}</pre>
+                    </div>
+                `;
+                
+                console.log('✅ Stats test successful:', stats);
+                
+            } catch (error) {
+                statsDisplay.innerHTML = `
+                    <div class="text-red-600">❌ Error: ${error.message}</div>
+                `;
+                console.error('❌ Stats test failed:', error);
+            }
+        });
+
+        console.log('🚀 Test page loaded');
+    </script>
+</body>
+</html>
+
