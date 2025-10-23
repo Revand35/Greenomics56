@@ -799,8 +799,38 @@ window.calculateWasteEconomicValue = calculateWasteEconomicValue;
 window.generateProductSuggestions = generateProductSuggestions;
 window.getUserDataContext = getUserDataContext;
 
+/**
+ * Analyze environmental activity for Green Accounting
+ * @param {string} prompt - The analysis prompt
+ * @returns {Promise<string>} - AI analysis result
+ */
+async function analyzeEnvironmentalActivity(prompt) {
+    try {
+        console.log('🤖 Starting environmental activity analysis...');
+        
+        // Check quota
+        if (dailyRequestCount >= FREE_TIER_LIMITS.DAILY) {
+            throw new Error('Daily quota exceeded. Please try again tomorrow.');
+        }
+        
+        // Increment counter
+        dailyRequestCount++;
+        localStorage.setItem('gemini_daily_count', dailyRequestCount.toString());
+        
+        // Use the existing generateResponse function
+        const response = await generateResponse(prompt, 'environmental-analysis');
+        
+        console.log('✅ Environmental activity analysis completed');
+        return response;
+        
+    } catch (error) {
+        console.error('❌ Error in environmental activity analysis:', error);
+        throw error;
+    }
+}
+
 // Export for module usage
-export { getUserDataContext };
+export { getUserDataContext, analyzeEnvironmentalActivity };
 
 console.log('✅ Improved Gemini service module loaded (2.0-flash prioritized)');
 console.log(`📊 Current quota: ${dailyRequestCount}/${FREE_TIER_LIMITS.DAILY} requests used today`);

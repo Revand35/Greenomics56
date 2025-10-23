@@ -418,7 +418,12 @@
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             console.log('User authenticated:', user.displayName);
-            // User is authenticated, continue loading
+            // User is authenticated, now load data summary
+            try {
+                await loadUserDataSummary();
+            } catch (error) {
+                console.error('Error loading user data summary after authentication:', error);
+            }
         } else {
             // Redirect to login if not authenticated
             window.location.href = '../../login.html';
@@ -613,6 +618,11 @@
                 const summaryCard = document.getElementById('user-data-summary');
                 const summaryContent = document.getElementById('data-summary-content');
                 
+                if (!summaryCard || !summaryContent) {
+                    console.log('ℹ️ Summary card elements not found');
+                    return;
+                }
+                
                 let html = '<div class="space-y-2">';
                 html += `<p><strong class="text-blue-900">Total Aktivitas:</strong> ${userContext.totalActivities}</p>`;
                 
@@ -634,6 +644,7 @@
             }
         } catch (error) {
             console.error('❌ Error loading user data summary:', error);
+            // Don't show error to user, just log it
         }
     }
     
@@ -807,9 +818,6 @@ Silakan tanya apapun tentang data yang baru saja Anda input! 😊`;
     
     document.addEventListener('DOMContentLoaded', () => {
         console.log('🚀 Initializing chat page...');
-        
-        // Load user data summary
-        loadUserDataSummary();
         
         // Check for latest activity and show notification
         checkLatestActivity();
