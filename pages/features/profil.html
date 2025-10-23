@@ -116,11 +116,8 @@
 
         <!-- Account Management -->
         <div class="bg-white rounded-2xl p-6 shadow-md mb-6">
-            <h3 class="text-lg font-bold text-gray-800 mb-4">🧪 Testing Account</h3>
+            <h3 class="text-lg font-bold text-gray-800 mb-4">⚙️ Kelola Akun</h3>
             <div class="space-y-3">
-                <button id="loadRandomAccountBtn" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">
-                    👤 Load Testing Account
-                </button>
                 <button id="refreshProfileBtn" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">
                     🔄 Refresh Data
                 </button>
@@ -147,25 +144,25 @@
                 </svg>
                 Dashboard
             </a>
-            <a href="../features/chat.html" data-page="chat" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
+            <a href="features/chat.html" data-page="chat" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423z" />
                 </svg>
                 AI Assistant
             </a>
-            <a href="../features/materi.html" data-page="materi" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
+            <a href="features/materi.html" data-page="materi" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 Input Data
             </a>
-            <a href="../features/forum.html" data-page="forum" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
+            <a href="features/forum.html" data-page="forum" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
                 Reports
             </a>
-            <a href="features/profil.html" data-page="profile" class="nav-button active flex flex-col items-center text-green-600 text-xs font-medium">
+            <a href="../../pages/features/profil.html" data-page="profile" class="nav-button active flex flex-col items-center text-green-600 text-xs font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
                     <circle cx="12" cy="7" r="4" />
@@ -181,25 +178,58 @@
         import { auth } from '../../config/firebase-init.js';
         import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
         import { showNotification } from '../../config/config.js';
+        import { getTestingAccountWithData, updateTestingAccountStats, getTestingAccountDataSummary } from '../../assets/js/core/testing-account-service.js';
 
         // Get elements
         const logoutBtn = document.getElementById('logoutBtn');
         const refreshProfileBtn = document.getElementById('refreshProfileBtn');
         const deleteAccountBtn = document.getElementById('deleteAccountBtn');
-        const loadRandomAccountBtn = document.getElementById('loadRandomAccountBtn');
 
         // Current user data
         let currentUserData = null;
 
+        // Load testing account with real data
+        async function loadTestingAccount() {
+            try {
+                const testingAccount = await getTestingAccountWithData();
+                currentUserData = testingAccount;
+                updateUserProfile(testingAccount);
+                
+                const dataSummary = getTestingAccountDataSummary(testingAccount);
+                if (dataSummary.hasData) {
+                    showNotification(`✅ Akun testing: ${testingAccount.displayName} - ${dataSummary.message}`, 'success');
+                } else {
+                    showNotification(`ℹ️ Akun testing: ${testingAccount.displayName} - ${dataSummary.message}`, 'info');
+                }
+            } catch (error) {
+                console.error('Error loading testing account:', error);
+                showNotification('❌ Gagal memuat akun testing', 'error');
+            }
+        }
+
         // Update user profile display
         function updateUserProfile(userData) {
+            console.log('updateUserProfile called with:', userData);
             if (userData) {
                 console.log('Updating profile with user data:', userData);
                 
                 // Basic info
-                document.getElementById('userName').textContent = userData.displayName || 'User';
-                document.getElementById('userEmail').textContent = userData.email || 'user@example.com';
-                document.getElementById('userRole').textContent = userData.role || 'user';
+                const userName = document.getElementById('userName');
+                const userEmail = document.getElementById('userEmail');
+                const userRole = document.getElementById('userRole');
+                
+                if (userName) {
+                    userName.textContent = userData.displayName || 'User';
+                    console.log('Updated userName:', userData.displayName);
+                }
+                if (userEmail) {
+                    userEmail.textContent = userData.email || 'user@example.com';
+                    console.log('Updated userEmail:', userData.email);
+                }
+                if (userRole) {
+                    userRole.textContent = userData.role || 'user';
+                    console.log('Updated userRole:', userData.role);
+                }
                 
                 // Detailed info
                 document.getElementById('userId').textContent = userData.uid || 'N/A';
@@ -237,32 +267,31 @@
         // Logout handler
         logoutBtn.addEventListener('click', async () => {
             try {
-                await authInstance.signOut();
+                await auth.signOut();
                 showNotification('Logout berhasil!', 'success');
-                window.location.href = '../login.html';
+                window.location.href = '../../login.html';
             } catch (error) {
                 console.error('Logout error:', error);
                 showNotification('Gagal logout: ' + error.message, 'error');
             }
         });
 
-        // Load testing account handler (disabled for real auth)
+        // Load testing account handler
         loadRandomAccountBtn.addEventListener('click', () => {
-            showNotification('Fitur testing account tidak tersedia dalam mode autentikasi', 'info');
+            loadTestingAccount();
         });
 
         // Refresh profile handler
         refreshProfileBtn.addEventListener('click', async () => {
             if (currentUserData) {
-                // Update with latest data from Firebase
-                const userData = authInstance.getCurrentUser();
-                if (userData) {
-                    currentUserData = userData;
-                    updateUserProfile(userData);
-                    showNotification('Profil diperbarui dengan data terbaru!', 'success');
-                }
+                // Update with latest data
+                const updatedAccount = await updateTestingAccountStats(currentUserData);
+                currentUserData = updatedAccount;
+                updateUserProfile(updatedAccount);
+                showNotification('Profil diperbarui dengan data terbaru!', 'success');
             } else {
-                showNotification('Tidak ada data pengguna yang tersedia', 'warning');
+                // Load fresh testing account
+                await loadTestingAccount();
             }
         });
 
@@ -274,21 +303,23 @@
         });
 
         // Initialize page
+        console.log('🚀 Profil page script loaded');
+        
         document.addEventListener('DOMContentLoaded', () => {
-            // Check authentication status first
+            // Load testing account by default
+            loadTestingAccount();
+            
+            // Check authentication status (optional for testing)
             onAuthStateChanged(auth, async (user) => {
+                console.log('🔐 Auth state changed, user:', user);
+                
                 if (user) {
-                    // User is authenticated - use real Firebase data
-                    console.log('User authenticated:', user);
-                    const userData = authInstance.getCurrentUser();
-                    if (userData) {
-                        currentUserData = userData;
-                        updateUserProfile(userData);
-                    }
+                    // If user is authenticated, you can choose to use real data or keep mock data
+                    // const userData = authInstance.getCurrentUser();
+                    // updateUserProfile(userData);
                 } else {
-                    // User not authenticated - redirect to login
-                    console.log('User not authenticated, redirecting to login');
-                    window.location.href = '../../login.html';
+                    // For testing, we'll keep using mock accounts instead of redirecting
+                    // window.location.href = '../login.html';
                 }
             });
         });
