@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Auth - Greenomics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-100 p-8">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6">🔐 Test Authentication Status</h1>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-lg font-semibold mb-4">Current Auth Status</h2>
+            <div id="auth-status" class="text-sm">
+                <p>Loading...</p>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-lg font-semibold mb-4">User Data</h2>
+            <div id="user-data" class="text-sm">
+                <p>Loading...</p>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-lg font-semibold mb-4">Actions</h2>
+            <div class="space-x-4">
+                <button id="check-auth" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    Check Auth Status
+                </button>
+                <button id="go-dashboard" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                    Go to Dashboard
+                </button>
+                <button id="go-profile" class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
+                    Go to Profile
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import authInstance from './assets/js/auth.js';
+        import { auth } from './config/firebase-init.js';
+        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+
+        const authStatus = document.getElementById('auth-status');
+        const userData = document.getElementById('user-data');
+        const checkAuthBtn = document.getElementById('check-auth');
+        const goDashboardBtn = document.getElementById('go-dashboard');
+        const goProfileBtn = document.getElementById('go-profile');
+
+        function updateDisplay() {
+            const isAuth = authInstance.isUserAuthenticated();
+            const currentUser = authInstance.getCurrentUser();
+            
+            authStatus.innerHTML = `
+                <p><strong>Authenticated:</strong> ${isAuth ? '✅ Yes' : '❌ No'}</p>
+                <p><strong>Firebase User:</strong> ${auth.currentUser ? '✅ Yes' : '❌ No'}</p>
+                <p><strong>Timestamp:</strong> ${new Date().toLocaleTimeString()}</p>
+            `;
+            
+            if (currentUser) {
+                userData.innerHTML = `
+                    <p><strong>Name:</strong> ${currentUser.displayName || 'N/A'}</p>
+                    <p><strong>Email:</strong> ${currentUser.email || 'N/A'}</p>
+                    <p><strong>UID:</strong> ${currentUser.uid || 'N/A'}</p>
+                    <p><strong>Role:</strong> ${currentUser.role || 'N/A'}</p>
+                `;
+            } else {
+                userData.innerHTML = '<p>No user data available</p>';
+            }
+        }
+
+        // Listen for auth state changes
+        onAuthStateChanged(auth, (user) => {
+            console.log('Auth state changed in test:', user ? 'User logged in' : 'User logged out');
+            updateDisplay();
+        });
+
+        // Event listeners
+        checkAuthBtn.addEventListener('click', updateDisplay);
+        goDashboardBtn.addEventListener('click', () => {
+            window.location.href = './index.html';
+        });
+        goProfileBtn.addEventListener('click', () => {
+            window.location.href = './pages/features/profil.html';
+        });
+
+        // Initial display
+        updateDisplay();
+    </script>
+</body>
+</html>

@@ -607,27 +607,27 @@
         </script>
         
         <script type="module">
-            // Import Local Storage Service
-            import { saveActivityToLocalStorage, getActivityStatsFromLocalStorage, getActivitiesFromLocalStorage, saveInputToHistory } from '../../assets/js/core/local-storage-service.js';
+            // Import Firebase Service untuk Environmental Activities
+            import { saveEnvironmentalActivity, getUserActivities, getActivityStats } from '../../assets/js/core/environmental-activity-service.js';
             
-            // Form submission handler dengan Local Storage
+            // Form submission handler dengan Firebase Firestore
             document.getElementById('environmental-activity-form').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
                 // Tampilkan loading state
                 const submitButton = this.querySelector('button[type="submit"]');
                 const originalText = submitButton.textContent;
-                submitButton.textContent = 'Menyimpan...';
+                submitButton.textContent = '💾 Menyimpan ke Firebase...';
                 submitButton.disabled = true;
                 
                 try {
-                const formData = {
-                    activityType: document.getElementById('activity-type').value,
-                    materialType: document.getElementById('material-type').value,
-                    amount: document.getElementById('amount').value,
-                    unit: document.getElementById('unit').value,
-                    action: document.getElementById('action').value,
-                    cost: document.getElementById('cost').value,
+                    const formData = {
+                        activityType: document.getElementById('activity-type').value,
+                        materialType: document.getElementById('material-type').value,
+                        amount: document.getElementById('amount').value,
+                        unit: document.getElementById('unit').value,
+                        action: document.getElementById('action').value,
+                        cost: document.getElementById('cost').value,
                         notes: document.getElementById('notes').value
                     };
                     
@@ -636,26 +636,36 @@
                         throw new Error('Mohon lengkapi semua field yang wajib diisi');
                     }
                     
-                    // Simpan ke Local Storage
-                    const savedActivity = await saveActivityToLocalStorage(formData);
+                    // Simpan ke Firebase Firestore
+                    const savedActivity = await saveEnvironmentalActivity(formData);
                     
-                    // Simpan ke histori untuk digunakan ulang
-                    await saveInputToHistory(formData);
+                    // Simpan info aktivitas terbaru untuk AI notification
+                    sessionStorage.setItem('latestActivity', JSON.stringify({
+                        material: formData.materialType,
+                        amount: formData.amount,
+                        unit: formData.unit,
+                        action: formData.action,
+                        economicValue: savedActivity.economicValue,
+                        ecoScore: savedActivity.ecoScore,
+                        timestamp: new Date().toISOString(),
+                        activityType: formData.activityType
+                    }));
                     
                     // Tampilkan notifikasi sukses
                     showSuccessNotification(
-                        `✅ Aktivitas berhasil disimpan ke database! 
+                        `✅ Aktivitas berhasil disimpan ke Firebase! 
                         Nilai ekonomi: Rp ${savedActivity.economicValue.toLocaleString()}
                         Eco-Score: +${savedActivity.ecoScore}
-                        📝 Data tersimpan di histori untuk konsultasi AI`
+                        📝 Data tersimpan di cloud database
+                        💡 Buka AI Assistant untuk konsultasi lanjutan!`
                     );
                     
                     // Update UI
                     await updateStatsDisplay();
                     addToRecentActivities(savedActivity);
                 
-                // Reset form
-                this.reset();
+                    // Reset form
+                    this.reset();
                     
                 } catch (error) {
                     console.error('Error saving activity:', error);
@@ -667,10 +677,10 @@
                 }
             });
             
-            // Update stats display dari Local Storage
+            // Update stats display dari Firebase Firestore
             async function updateStatsDisplay() {
                 try {
-                    const stats = await getActivityStatsFromLocalStorage();
+                    const stats = await getActivityStats();
                     
                     // Update stat cards
                     const wasteAmountElement = document.querySelector('.stat-pulse');
@@ -695,17 +705,17 @@
                         efficiencyElement.textContent = `${efficiency}%`;
                     }
                     
-                    console.log('📊 Stats display updated from Local Storage:', stats);
+                    console.log('📊 Stats display updated from Firebase:', stats);
                     
                 } catch (error) {
                     console.error('Error updating stats display:', error);
                 }
             }
             
-            // Load recent activities dari Local Storage
+            // Load recent activities dari Firebase Firestore
             async function loadRecentActivities() {
                 try {
-                    const activities = await getActivitiesFromLocalStorage(5); // Ambil 5 aktivitas terbaru
+                    const activities = await getUserActivities(5); // Ambil 5 aktivitas terbaru
                     const activitiesContainer = document.getElementById('recent-activities');
                     
                     // Clear existing activities
@@ -737,22 +747,31 @@
                 const notification = document.createElement('div');
                 notification.className = 'fixed top-20 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50 max-w-sm';
                 notification.innerHTML = `
-                    <div class="flex items-start space-x-2">
-                        <div class="text-lg">🎉</div>
-                        <div>
-                            <p class="text-sm font-medium whitespace-pre-line">${message}</p>
-                            <button onclick="this.parentElement.parentElement.parentElement.remove()" class="text-xs text-green-100 hover:text-white mt-1">Tutup</button>
+                    <div class="flex flex-col space-y-2">
+                        <div class="flex items-start space-x-2">
+                            <div class="text-lg">🎉</div>
+                            <div>
+                                <p class="text-sm font-medium whitespace-pre-line">${message}</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2 mt-2">
+                            <a href="../features/chat.html" class="flex-1 bg-white text-green-600 px-3 py-2 rounded-lg text-xs font-semibold hover:bg-green-50 transition-colors text-center">
+                                🤖 Konsultasi AI
+                            </a>
+                            <button onclick="this.parentElement.parentElement.parentElement.remove()" class="px-3 py-2 bg-green-600 text-white rounded-lg text-xs hover:bg-green-700">
+                                Tutup
+                            </button>
                         </div>
                     </div>
                 `;
                 document.body.appendChild(notification);
                 
-                // Auto remove after 5 seconds
+                // Auto remove after 10 seconds (lebih lama untuk beri waktu klik)
                 setTimeout(() => {
                     if (notification.parentElement) {
                         notification.remove();
                     }
-                }, 5000);
+                }, 10000);
             }
             
             // Show error notification
@@ -836,7 +855,7 @@
                     await loadRecentActivities();
                 } catch (error) {
                     console.error('Error initializing page:', error);
-                    showErrorNotification('Gagal memuat data dari database');
+                    showErrorNotification('Gagal memuat data dari Firebase');
                 }
             });
         </script>

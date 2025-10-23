@@ -388,10 +388,33 @@
 
         async function updateUserProfile(user) {
             try {
+                console.log('updateUserProfile called with user:', user);
+                
                 if (user) {
-                    const userData = authInstance.getCurrentUser();
+                    // Try to get user data from authInstance first
+                    let userData = null;
+                    try {
+                        userData = authInstance.getCurrentUser();
+                        console.log('User data from authInstance:', userData);
+                    } catch (error) {
+                        console.log('authInstance not ready, using Firebase user directly');
+                    }
+                    
+                    // If authInstance is not ready, use Firebase user directly
+                    if (!userData) {
+                        userData = {
+                            uid: user.uid,
+                            email: user.email,
+                            displayName: user.displayName,
+                            photoURL: user.photoURL,
+                            role: 'user' // Default role
+                        };
+                        console.log('Using Firebase user data directly:', userData);
+                    }
                     
                     if (userData) {
+                        console.log('Updating UI with user data:', userData);
+                        
                         document.getElementById('user-name').textContent = userData.displayName || 'User';
                         document.getElementById('user-email').textContent = userData.email || 'user@example.com';
                         document.getElementById('user-role').textContent = userData.role || 'user';
@@ -416,8 +439,13 @@
                         if (adminDashboardBtn && userData.role === 'admin') {
                             adminDashboardBtn.classList.remove('hidden');
                         }
+                        
+                        console.log('✅ User profile updated successfully');
+                    } else {
+                        console.error('No user data available');
                     }
                 } else {
+                    console.log('No user, redirecting to login');
                     // Redirect to login if not authenticated
                     window.location.href = './login.html';
                 }
@@ -428,6 +456,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Dashboard DOM loaded');
             setActiveNav();
             
             // Initialize Green Accounting features
@@ -436,13 +465,32 @@
             
             // Check authentication status
             onAuthStateChanged(auth, async (user) => {
+                console.log('🔐 Auth state changed in dashboard:', user ? 'User logged in' : 'User logged out');
                 if (user) {
+                    console.log('👤 User details:', {
+                        uid: user.uid,
+                        email: user.email,
+                        displayName: user.displayName
+                    });
                     await updateUserProfile(user);
                 } else {
+                    console.log('❌ No user, redirecting to login');
                     // Redirect to login if not authenticated
                     window.location.href = './login.html';
                 }
             });
+            
+            // Additional check after a short delay to ensure authInstance is ready
+            setTimeout(async () => {
+                console.log('⏰ Checking auth status after delay...');
+                const currentUser = auth.currentUser;
+                if (currentUser) {
+                    console.log('✅ User found after delay, updating profile...');
+                    await updateUserProfile(currentUser);
+                } else {
+                    console.log('❌ No user found after delay');
+                }
+            }, 1000);
         });
 
         // Initialize Eco-Score animation

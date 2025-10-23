@@ -12,12 +12,12 @@
     <!-- Content Security Policy -->
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
-        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://www.gstatic.com https://generativelanguage.googleapis.com;
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://www.gstatic.com https://generativelanguage.googleapis.com https://apis.google.com;
         style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com;
         font-src 'self' https://fonts.gstatic.com;
         img-src 'self' data: https: blob:;
-        connect-src 'self' https://firestore.googleapis.com https://firebase.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://generativelanguage.googleapis.com;
-        frame-src 'self' https://accounts.google.com https://*.firebaseapp.com https://*.google.com;
+        connect-src 'self' https://firestore.googleapis.com https://firebase.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://generativelanguage.googleapis.com https://apis.google.com;
+        frame-src 'self' https://accounts.google.com https://greenomics-7639d.firebaseapp.com https://*.google.com https://*.googleapis.com;
         worker-src 'self' blob:;
         manifest-src 'self';
     ">
@@ -106,10 +106,32 @@
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Firebase SDK -->
     <script type="module">
-        import authInstance from './assets/js/auth.js';
-        import { showNotification } from './config/config.js';
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vfSi6iGzWSkyWJTX1lvTG-k8P1HZL9s",
+            authDomain: "greenomics-7639d.firebaseapp.com",
+            projectId: "greenomics-7639d",
+            storageBucket: "greenomics-7639d.firebasestorage.app",
+            messagingSenderId: "381392746735",
+            appId: "1:381392746735:web:c9873f430a5b04c4f5031a"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Google Auth Provider
+        const provider = new GoogleAuthProvider();
+        provider.addScope('email');
+        provider.addScope('profile');
 
         // Get elements
         const googleLoginBtn = document.getElementById('googleLoginBtn');
@@ -153,6 +175,61 @@
             successMessage.classList.add('hidden');
         }
 
+        // Create or update user in Firestore
+        async function createOrUpdateUser(user) {
+            try {
+                const userRef = doc(db, 'users', user.uid);
+                const userDoc = await getDoc(userRef);
+                
+                const userData = {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: user.displayName,
+                    photoURL: user.photoURL,
+                    lastLogin: serverTimestamp(),
+                    role: 'user'
+                };
+
+                if (!userDoc.exists()) {
+                    // New user - create document
+                    await setDoc(userRef, {
+                        ...userData,
+                        createdAt: serverTimestamp(),
+                        stats: {
+                            forumPosts: 0,
+                            quizCompleted: 0,
+                            activeDays: 1
+                        }
+                    });
+                    console.log('New user created:', userData);
+                } else {
+                    // Existing user - update last login
+                    await setDoc(userRef, {
+                        ...userData,
+                        stats: userDoc.data().stats || {
+                            forumPosts: 0,
+                            quizCompleted: 0,
+                            activeDays: 1
+                        }
+                    }, { merge: true });
+                    console.log('Existing user updated:', userData);
+                }
+
+                return userData;
+                
+            } catch (error) {
+                console.error('Error creating/updating user:', error);
+                // Return basic user data even if Firestore fails
+                return {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: user.displayName,
+                    photoURL: user.photoURL,
+                    role: 'user'
+                };
+            }
+        }
+
         // Google Login Handler
         googleLoginBtn.addEventListener('click', async () => {
             try {
@@ -160,41 +237,54 @@
                 hideMessages();
                 
                 console.log('Starting Google Login...');
-                const result = await authInstance.signInWithGoogle();
                 
-                if (result.success) {
-                    showSuccess('Login berhasil! Mengalihkan ke dashboard...');
-                    showNotification('Login berhasil! Selamat datang!', 'success');
-                    
-                    // Redirect to dashboard after 2 seconds
-                    setTimeout(() => {
-                        window.location.href = '../index.html';
-                    }, 2000);
-                }
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+                
+                console.log('Google Login successful:', user);
+                
+                // Create or update user in Firestore
+                await createOrUpdateUser(user);
+                
+                showSuccess('Login berhasil! Mengalihkan ke dashboard...');
+                
+                // Redirect to dashboard after 2 seconds
+                setTimeout(() => {
+                    window.location.href = './index.html';
+                }, 2000);
                 
             } catch (error) {
                 console.error('Login error:', error);
-                showError(error.message);
-                showNotification(error.message, 'error');
+                
+                let errorMessage = 'Terjadi kesalahan saat login';
+                
+                if (error.code === 'auth/popup-blocked') {
+                    errorMessage = 'Popup diblokir oleh browser. Silakan izinkan popup untuk situs ini.';
+                } else if (error.code === 'auth/popup-closed-by-user') {
+                    errorMessage = 'Login dibatalkan oleh pengguna.';
+                } else if (error.code === 'auth/operation-not-allowed') {
+                    errorMessage = 'Google Sign-in tidak diaktifkan. Hubungi administrator.';
+                } else if (error.code === 'auth/unauthorized-domain') {
+                    errorMessage = 'Domain tidak diizinkan. Hubungi administrator.';
+                } else if (error.message) {
+                    errorMessage = error.message;
+                }
+                
+                showError(errorMessage);
             } finally {
                 setLoadingState(false);
             }
         });
 
         // Check if user is already logged in
-        window.addEventListener('load', async () => {
-            try {
-                const user = await authInstance.waitForAuth();
-                if (user) {
-                    console.log('User already logged in:', user);
-                    showSuccess('Anda sudah masuk. Mengalihkan ke dashboard...');
-                    
-                    setTimeout(() => {
-                        window.location.href = '../index.html';
-                    }, 1500);
-                }
-            } catch (error) {
-                console.log('No user logged in');
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                console.log('User already logged in:', user);
+                showSuccess('Anda sudah masuk. Mengalihkan ke dashboard...');
+                
+                setTimeout(() => {
+                    window.location.href = './index.html';
+                }, 1500);
             }
         });
 
@@ -204,6 +294,8 @@
                 googleLoginBtn.click();
             }
         });
+
+        console.log('✅ Login page loaded successfully');
     </script>
 </body>
 </html>
