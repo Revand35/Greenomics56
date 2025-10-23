@@ -24,10 +24,17 @@
             z-index: 1000; 
             transition: width 0.3s ease;
         }
+        .stat-pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
     </style>
     <script type="module" src="../../assets/js/auth.js"></script>
 </head>
-<body class="min-h-screen bg-white">
+<body class="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-100">
 
     <!-- Reading Progress Bar -->
     <div id="reading-progress" class="reading-progress" style="width: 0%"></div>
@@ -38,8 +45,8 @@
         <div class="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 text-white p-6 rounded-b-3xl shadow-xl">
             <div class="flex justify-between items-center">
                 <div>
-                    <h1 class="text-2xl font-bold mb-1">📊 Input Data Green Accounting</h1>
-                    <p class="text-green-100 text-sm">Catat aktivitas lingkungan UMKM Anda</p>
+                    <h1 class="text-2xl font-bold mb-1">Data Green Accounting</h1>
+                    <p class="text-green-100 text-sm">Catat aktivitas limbah yang anda buat</p>
                 </div>
                 <button id="add-data-button" class="bg-white/20 hover:bg-white/30 p-3 rounded-full transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14m-7-7h14"/></svg>
@@ -48,34 +55,15 @@
         </div>
         
         <div class="p-6 space-y-6">
-            <!-- Quick Stats -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div class="bg-white rounded-xl p-4 shadow-md text-center">
-                    <div class="text-2xl font-bold text-green-600 stat-pulse">250</div>
-                    <div class="text-xs text-gray-500">kg Limbah</div>
-                </div>
-                <div class="bg-white rounded-xl p-4 shadow-md text-center">
-                    <div class="text-2xl font-bold text-blue-600 stat-pulse">Rp 1.2M</div>
-                    <div class="text-xs text-gray-500">Nilai Ekonomi</div>
-                </div>
-                <div class="bg-white rounded-xl p-4 shadow-md text-center">
-                    <div class="text-2xl font-bold text-purple-600 stat-pulse">87</div>
-                    <div class="text-xs text-gray-500">Eco-Score</div>
-                </div>
-                <div class="bg-white rounded-xl p-4 shadow-md text-center">
-                    <div class="text-2xl font-bold text-orange-600 stat-pulse">15%</div>
-                    <div class="text-xs text-gray-500">Efisiensi</div>
-                </div>
-            </div>
 
             <!-- Input Form -->
             <div class="bg-white rounded-2xl p-6 shadow-lg">
-                <h2 class="text-xl font-bold text-gray-800 mb-6">📝 Tambah Aktivitas Lingkungan</h2>
+                <h2 class="text-xl font-bold text-gray-800 mb-6">Tambah Aktivitas Lingkungan</h2>
                 
                 <form id="environmental-activity-form" class="space-y-6">
                     <!-- Activity Type -->
                     <div>
-                        <label class="block text-sm font-medium text-green-700 mb-2">Jenis Aktivitas</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Aktivitas</label>
                         <select id="activity-type" class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                             <option value="">Pilih jenis aktivitas</option>
                             <option value="waste">Pengelolaan Limbah</option>
@@ -88,7 +76,7 @@
 
                     <!-- Material/Resource -->
                     <div>
-                        <label class="block text-sm font-medium text-green-700 mb-2">Material/Sumber Daya</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Material/Sumber Daya</label>
                         <select id="material-type" class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                             <option value="">Pilih material</option>
                             <option value="plastic">Plastik</option>
@@ -102,7 +90,7 @@
 
                     <!-- Amount -->
                     <div>
-                        <label class="block text-sm font-medium text-green-700 mb-2">Jumlah</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Jumlah</label>
                         <div class="flex">
                             <input type="number" id="amount" placeholder="0" class="flex-1 p-3 border border-gray-200 rounded-l-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                             <select id="unit" class="p-3 border border-gray-200 border-l-0 rounded-r-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
@@ -117,7 +105,7 @@
 
                     <!-- Action -->
                     <div>
-                        <label class="block text-sm font-medium text-green-700 mb-2">Aksi</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Aksi</label>
                         <select id="action" class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                             <option value="">Pilih aksi</option>
                             <option value="recycled">Daur Ulang</option>
@@ -130,13 +118,13 @@
 
                     <!-- Cost -->
                     <div>
-                        <label class="block text-sm font-medium text-green-700 mb-2">Biaya (Opsional)</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Biaya (Opsional)</label>
                         <input type="number" id="cost" placeholder="0" class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     </div>
 
                     <!-- Notes -->
                     <div>
-                        <label class="block text-sm font-medium text-green-700 mb-2">Catatan</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Catatan</label>
                         <textarea id="notes" rows="3" placeholder="Tambahkan catatan tentang aktivitas ini..." class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"></textarea>
                     </div>
 
@@ -149,7 +137,7 @@
 
             <!-- Recent Activities -->
             <div class="bg-white rounded-2xl p-6 shadow-lg">
-                <h2 class="text-xl font-bold text-gray-800 mb-6">📋 Aktivitas Terbaru</h2>
+                <h2 class="text-xl font-bold text-gray-800 mb-6">Hasil aktivitas yang anda buat</h2>
                 <div id="recent-activities" class="space-y-4">
                     <!-- Sample activities -->
                     <div class="flex items-center justify-between p-4 bg-green-50 rounded-xl">
@@ -209,33 +197,33 @@
     </div>
 
     <!-- Bottom Navigation -->
-    <div id="bottom-nav" class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-green-200 p-3 z-40 shadow-lg">
+    <div id="bottom-nav" class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 p-3 z-40 shadow-lg">
         <div class="flex justify-around items-center max-w-lg mx-auto">
-            <a href="../../index.html" data-page="home" class="nav-button flex flex-col items-center text-green-500 text-xs font-medium">
+            <a href="../../index.html" data-page="home" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 </svg>
                 Dashboard
             </a>
-            <a href="./chat.html" data-page="chat" class="nav-button flex flex-col items-center text-green-500 text-xs font-medium">
+            <a href="./chat.html" data-page="chat" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423z" />
                 </svg>
                 AI Assistant
             </a>
-            <a href="./materi.html" data-page="materi" class="nav-button active flex flex-col items-center text-gray-500 text-xs font-medium">
+            <a href="./accounting.html" data-page="accounting" class="nav-button active flex flex-col items-center text-gray-500 text-xs font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 Input Data
             </a>
-            <a href="./forum.html" data-page="forum" class="nav-button flex flex-col items-center text-green-500 text-xs font-medium">
+            <a href="./forum.html" data-page="forum" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
                 Reports
             </a>
-            <a href="./profil.html" data-page="profile" class="nav-button flex flex-col items-center text-green-500 text-xs font-medium">
+            <a href="./profil.html" data-page="profile" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
                     <circle cx="12" cy="7" r="4" />
@@ -692,10 +680,30 @@
                 try {
                     const stats = await getActivityStats();
                     
-                    // Stats cards have been removed from UI
-                    // This function is kept for compatibility but does nothing now
+                    // Update stat cards
+                    const wasteAmountElement = document.querySelector('.stat-pulse');
+                    if (wasteAmountElement) {
+                        wasteAmountElement.textContent = `${stats.totalWasteAmount}`;
+                    }
                     
-                    console.log('📊 Stats display updated from Local Storage:', stats);
+                    const economicValueElement = document.querySelectorAll('.stat-pulse')[1];
+                    if (economicValueElement) {
+                        economicValueElement.textContent = `Rp ${(stats.totalEconomicValue / 1000000).toFixed(1)}M`;
+                    }
+                    
+                    const ecoScoreElement = document.querySelectorAll('.stat-pulse')[2];
+                    if (ecoScoreElement) {
+                        ecoScoreElement.textContent = `${stats.averageEcoScore}`;
+                    }
+                    
+                    const efficiencyElement = document.querySelectorAll('.stat-pulse')[3];
+                    if (efficiencyElement) {
+                        const efficiency = stats.totalActivities > 0 ? 
+                            Math.round((stats.averageEcoScore / 100) * 100) : 0;
+                        efficiencyElement.textContent = `${efficiency}%`;
+                    }
+                    
+                    console.log('📊 Stats display updated from Firebase:', stats);
                     
                 } catch (error) {
                     console.error('Error updating stats display:', error);
@@ -707,12 +715,6 @@
                 try {
                     const activities = await getUserActivities(5); // Ambil 5 aktivitas terbaru
                     const activitiesContainer = document.getElementById('recent-activities');
-                    
-                    // Element removed from UI, function kept for compatibility
-                    if (!activitiesContainer) {
-                        console.log('Recent activities section has been removed from UI');
-                        return;
-                    }
                     
                     // Clear existing activities
                     activitiesContainer.innerHTML = '';
@@ -796,13 +798,6 @@
             // Add to recent activities (updated untuk Firebase data)
             function addToRecentActivities(activityData) {
                 const activitiesContainer = document.getElementById('recent-activities');
-                
-                // Element removed from UI, function kept for compatibility
-                if (!activitiesContainer) {
-                    console.log('Recent activities section has been removed from UI');
-                    return;
-                }
-                
                 const activityElement = document.createElement('div');
                 
                 const icons = {
