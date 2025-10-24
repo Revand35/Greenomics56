@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Assistant - Greenomics</title>
-    <link rel="icon" href="../../assets/icons/tittle.png">
+    <link rel="icon" href="../../assets/icons/logo.png">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.gstatic.com https://generativelanguage.googleapis.com https://esm.run https://apis.google.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://firestore.googleapis.com https://firebase.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://generativelanguage.googleapis.com https://content-firebaseappcheck.googleapis.com https://www.gstatic.com https://apis.google.com https://esm.run https://cdn.jsdelivr.net https://cdnjs.cloudflare.com http://127.0.0.1:* http://localhost:* ws://127.0.0.1:* ws://localhost:*; frame-src 'self' https://accounts.google.com https://*.firebaseapp.com; worker-src 'self' blob:; manifest-src 'self';">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -118,8 +118,11 @@
         }
         
         #chat-messages {
-            padding-top: 3rem !important;
+            padding-top: 1rem !important;
             padding-bottom: 8rem !important;
+            min-height: calc(100vh - 200px);
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
         }
         
         /* Pastikan input text tidak tertutup bottom navigation */
@@ -131,7 +134,8 @@
             z-index: 40;
         }
 
-        .chat-bubble {
+        /* Chat bubble styles - unified */
+        .chat-bubble, .message-bubble {
         max-width: 80%;
         padding: 12px 16px;
         border-radius: 16px;
@@ -140,7 +144,7 @@
         margin-bottom: 0.5rem; /* jarak antar bubble */
         }
 
-        .chat-bubble.user {
+        .chat-bubble.user, .message-bubble.user {
         background: linear-gradient(to right, #10b981, #059669);
         color: white;
         border-bottom-right-radius: 4px;
@@ -148,7 +152,7 @@
         align-self: flex-end; /* pastikan rata kanan */
         }
 
-        .chat-bubble.ai {
+        .chat-bubble.ai, .message-bubble.ai {
         background: #ffffff;
         color: #1f2937;
         border-bottom-left-radius: 4px;
@@ -174,10 +178,157 @@
         }
         
         /* Better scrollbar for chat */
-        .chat-scroll::-webkit-scrollbar { width: 6px; }
-        .chat-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
-        .chat-scroll::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
-        .chat-scroll::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+        .chat-scroll::-webkit-scrollbar { width: 8px; }
+        .chat-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .chat-scroll::-webkit-scrollbar-thumb { background: #10b981; border-radius: 4px; }
+        .chat-scroll::-webkit-scrollbar-thumb:hover { background: #059669; }
+        
+        /* Firefox scrollbar */
+        .chat-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: #10b981 #f1f1f1;
+        }
+        
+        /* Scrollable message content */
+        .message-content {
+            scrollbar-width: thin;
+            scrollbar-color: #c1c1c1 #f1f1f1;
+            scroll-behavior: smooth;
+            transition: all 0.3s ease;
+        }
+        
+        .message-content::-webkit-scrollbar { width: 4px; }
+        .message-content::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 2px; }
+        .message-content::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 2px; }
+        .message-content::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+        
+        /* Smooth message bubble animations */
+        .message-bubble {
+            animation: slideInUp 0.4s ease-out;
+            transform-origin: bottom;
+            transition: all 0.3s ease;
+        }
+        
+        .message-bubble.user {
+            animation: slideInRight 0.4s ease-out;
+        }
+        
+        .message-bubble.ai {
+            animation: slideInLeft 0.4s ease-out;
+        }
+        
+        .message-bubble:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .message-bubble.user:hover {
+            transform: translateY(-2px) translateX(5px);
+        }
+        
+        .message-bubble.ai:hover {
+            transform: translateY(-2px) translateX(-5px);
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+        
+        /* Smooth scrolling for chat container */
+        .chat-scroll {
+            scroll-behavior: smooth;
+        }
+        
+        /* Loading animation improvements */
+        .dot-flashing {
+            animation: dotFlashing 1.2s infinite linear alternate;
+        }
+        
+        @keyframes dotFlashing {
+            0% { 
+                background-color: #10b981; 
+                transform: scale(1);
+            }
+            50%, 100% { 
+                background-color: #d1fae5; 
+                transform: scale(1.1);
+            }
+        }
+        
+        /* Typing animation for AI responses */
+        .typing-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #10b981;
+            animation: typingPulse 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        .typing-dot:nth-child(3) { animation-delay: 0s; }
+        
+        @keyframes typingPulse {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        /* Smooth content reveal animation */
+        .content-reveal {
+            animation: contentReveal 0.6s ease-out;
+        }
+        
+        @keyframes contentReveal {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-100">
@@ -192,7 +343,7 @@
                         </a>
                         <div class="flex-1">
                             <h1 class="text-xl font-bold flex items-center">
-                                <img src="../../assets/icons/tittle.png" alt="Greenomics" class="w-5 h-5 mr-2">
+                                <img src="../../assets/icons/logo.png" alt="Greenomics" class="w-5 h-5 mr-2">
                                 AI Greenomics Assistant
                             </h1>
                             <p class="text-green-200 text-sm" id="header-status">Konsultan Green Accounting</p>
@@ -208,7 +359,7 @@
                     <div id="chat-messages" class="flex-grow p-6 pt-8 pb-32 space-y-4 overflow-y-auto chat-scroll">
                         <div class="flex items-start space-x-3">
                             <div class="w-10 h-10 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center text-white text-lg font-bold flex-shrink-0">
-                                <img src="../../assets/icons/tittle.png" alt="AI" class="w-6 h-6">
+                                <img src="../../assets/icons/logo.png" alt="AI" class="w-6 h-6">
                             </div>
                             <div class="bg-white rounded-2xl rounded-tl-none p-4 shadow-lg max-w-md">
                                 <div class="text-gray-800 text-sm">
@@ -455,8 +606,10 @@
     
     // Functions are now defined in the global script above
     
-    // Add message to chat function
+    // Add message to chat function - improved formatting
     function addMessageToChat(message, sender, isLoading = false) {
+        console.log('📝 Adding message to chat:', { message, sender, isLoading });
+        
         const chatMessages = document.getElementById('chat-messages');
         if (!chatMessages) {
             console.error('❌ Chat messages container not found');
@@ -464,52 +617,221 @@
         }
         
         const messageId = 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         
-        const messageEl = document.createElement('div');
-        messageEl.id = messageId;
-        messageEl.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'} mb-4`;
+        let messageHTML = '';
         
-        const messageContent = document.createElement('div');
-        messageContent.className = `max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
-            sender === 'user' 
-                ? 'bg-green-500 text-white' 
-                : 'bg-gray-100 text-gray-800'
-        }`;
-        
-        if (isLoading) {
-            messageContent.innerHTML = `
-                <div class="flex items-center space-x-2">
-                    <div class="dot-flashing"></div>
-                    <span>${message}</span>
+        if (sender === 'user') {
+            messageHTML = `
+                <div class="flex items-end justify-end mb-4 space-x-2 message-bubble user">
+                    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-2xl rounded-br-none p-4 shadow-lg max-w-2xl">
+                        <p class="text-sm whitespace-pre-wrap">${escapeHtml(message)}</p>
+                        <span class="timestamp">${timestamp}</span>
+                    </div>
+                    <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A9.969 9.969 0 0112 15c2.21 0 4.232.72 5.879 1.926M15 12a3 3 0 10-6 0 3 3 0 006 0z"/>
+                        </svg>
+                    </div>
                 </div>
             `;
         } else {
-            messageContent.textContent = message;
+            messageHTML = `
+                <div id="${messageId}" class="flex items-start mb-4 space-x-2 message-bubble ai">
+                    <div class="w-10 h-10 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <img src="../../assets/icons/logo.png" alt="AI" class="w-6 h-6">
+                    </div>
+                    <div class="bg-white rounded-2xl rounded-tl-none p-4 shadow-lg max-w-2xl">
+                        <div class="text-gray-800 text-sm message-content max-h-96 overflow-y-auto">
+                            ${isLoading ? '<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>' : formatAIMessage(message)}
+                        </div>
+                        <span class="timestamp">${timestamp}</span>
+                    </div>
+                </div>
+            `;
         }
         
-        messageEl.appendChild(messageContent);
-        chatMessages.appendChild(messageEl);
+        // Insert message HTML
+        chatMessages.insertAdjacentHTML('beforeend', messageHTML);
+        console.log('✅ Message HTML inserted');
         
-        // Scroll to bottom
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        // Force scroll to bottom after a short delay
+        setTimeout(() => {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            console.log('📜 Scrolled to bottom, scrollHeight:', chatMessages.scrollHeight);
+        }, 50);
+        
+        // Additional scroll fix for better compatibility
+        setTimeout(() => {
+            chatMessages.scrollTo({
+                top: chatMessages.scrollHeight,
+                behavior: 'smooth'
+            });
+        }, 100);
         
         return messageId;
     }
     
-    // Fallback response function for testing
+    // Format AI message with enhanced markdown support
+    function formatAIMessage(msg) {
+        return msg
+            .replace(/\*\*(.*?)\*\*/g, '<strong class="text-gray-900 font-semibold">$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em class="text-gray-700 italic">$1</em>')
+            .replace(/## (.*?)(?=\n|$)/g, '<h3 class="text-lg font-bold text-gray-800 mt-4 mb-2 border-b border-gray-200 pb-1">$1</h3>')
+            .replace(/### (.*?)(?=\n|$)/g, '<h4 class="text-md font-semibold text-gray-800 mt-3 mb-2">$1</h4>')
+            .replace(/• (.*?)(?=\n|$)/g, '<div class="flex items-start mb-1"><span class="text-green-500 mr-2">•</span><span>$1</span></div>')
+            .replace(/\n\n/g, '<div class="my-3"></div>')
+            .replace(/\n/g, '<br>');
+    }
+    
+    // Escape HTML to prevent XSS
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    // Update message function - compatible with chat-logic.js
+    function updateMessage(messageId, newText) {
+        const messageElement = document.getElementById(messageId);
+        if (!messageElement) return;
+        const textElement = messageElement.querySelector('.message-content');
+        if (textElement) {
+            // Add smooth transition for content update
+            textElement.style.opacity = '0.7';
+            textElement.style.transform = 'scale(0.98)';
+            
+            setTimeout(() => {
+                textElement.innerHTML = formatAIMessage(newText);
+                textElement.classList.add('content-reveal');
+                textElement.style.opacity = '1';
+                textElement.style.transform = 'scale(1)';
+                
+                // Smooth scroll to bottom after update
+                const chatContainer = document.getElementById('chat-messages');
+                if (chatContainer) {
+                    chatContainer.scrollTo({
+                        top: chatContainer.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                }
+            }, 150);
+        }
+    }
+    
+    // Enhanced fallback response function
     function getFallbackResponse(message) {
+        const lowerMessage = message.toLowerCase();
+        
+        // Check for specific keywords and provide targeted responses
+        if (lowerMessage.includes('analisis') || lowerMessage.includes('analisis limbah')) {
+            return `## 📊 **Analisis Limbah**
+
+Saya siap membantu menganalisis data limbah Anda! Untuk analisis yang akurat:
+
+**📋 Data yang Dibutuhkan:**
+• Jenis limbah (plastik, kertas, organik, dll.)
+• Jumlah/volume limbah
+• Frekuensi produksi
+• Lokasi pengolahan
+
+**💡 Yang Bisa Saya Analisis:**
+• **Nilai Ekonomi** - Potensi profit dari limbah
+• **Eco-Score** - Dampak lingkungan
+• **Saran Produk** - Ide bisnis circular economy
+• **ROI Calculation** - Return on investment
+
+Silakan input data aktivitas di halaman "Input Data" untuk analisis yang lebih detail!`;
+        }
+        
+        if (lowerMessage.includes('produk') || lowerMessage.includes('daur ulang')) {
+            return `## ♻️ **Saran Produk Daur Ulang**
+
+Berdasarkan jenis limbah yang Anda miliki, saya bisa memberikan saran produk yang profitable:
+
+**🔄 Produk Populer:**
+• **Plastik** → Pot, tas, furniture
+• **Kertas** → Kertas daur ulang, kerajinan
+• **Organik** → Kompos, biogas, pupuk
+• **Logam** → Kerajinan, furniture
+
+**💰 Potensi Profit:**
+• Margin: 30-70%
+• Payback: 3-6 bulan
+• Market: Lokal & ekspor
+
+Input data limbah Anda untuk saran yang lebih spesifik!`;
+        }
+        
+        if (lowerMessage.includes('profit') || lowerMessage.includes('roi')) {
+            return `## 💰 **Analisis Profit & ROI**
+
+Saya bisa menghitung potensi profit dari pengolahan limbah Anda:
+
+**📈 Kalkulasi yang Tersedia:**
+• **ROI** - Return on Investment
+• **Payback Period** - Waktu balik modal
+• **Annual Profit** - Profit tahunan
+• **Break-even Point** - Titik impas
+
+**🎯 Faktor yang Mempengaruhi:**
+• Jenis & kualitas limbah
+• Biaya produksi
+• Harga pasar
+• Volume produksi
+
+Input data aktivitas untuk kalkulasi yang akurat!`;
+        }
+        
+        // Default responses
         const responses = [
-            "Halo! Saya adalah AI Assistant Green Accounting. Bagaimana saya bisa membantu Anda dengan analisis limbah dan green accounting?",
-            "Terima kasih atas pertanyaan Anda. Saya siap membantu menganalisis data limbah dan memberikan saran green accounting untuk UMKM Anda.",
-            "Saya dapat membantu Anda dengan:\n- Analisis nilai ekonomi limbah\n- Saran produk daur ulang\n- Kalkulasi profit dari pengolahan limbah\n- Strategi green accounting\n\nApa yang ingin Anda ketahui?",
-            "Untuk mendapatkan analisis yang lebih akurat, silakan input data aktivitas lingkungan terlebih dahulu di halaman 'Input Data'.",
-            "Saya siap membantu Anda dengan konsultasi green accounting. Silakan ajukan pertanyaan spesifik tentang limbah atau sustainability."
+            `## 🤖 **AI Assistant Greenomics**
+
+Halo! Saya AI Assistant Green Accounting untuk UMKM. Saya bisa membantu Anda dengan:
+
+**📊 Analisis Limbah:**
+• Hitung nilai ekonomi limbah
+• Analisis eco-score
+• Saran produk daur ulang
+
+**💡 Konsultasi Bisnis:**
+• Strategi circular economy
+• Kalkulasi ROI
+• Tips green accounting
+
+**🚀 Quick Actions:**
+• Klik tombol di atas untuk analisis cepat
+• Input data di halaman "Input Data"
+• Tanya apapun tentang limbah Anda!
+
+Apa yang ingin Anda ketahui?`,
+
+            `## 🌱 **Green Accounting Consultant**
+
+Terima kasih atas pertanyaan Anda! Saya siap membantu dengan:
+
+**🔍 Analisis Data:**
+• Evaluasi aktivitas lingkungan
+• Perhitungan nilai ekonomi
+• Assessment dampak lingkungan
+
+**💼 Strategi Bisnis:**
+• Circular economy implementation
+• Waste-to-profit strategies
+• Sustainability reporting
+
+**📋 Next Steps:**
+1. Input data aktivitas di "Input Data"
+2. Klik quick action buttons
+3. Tanya spesifik tentang limbah Anda
+
+Mari mulai analisis green accounting Anda!`
         ];
         
         return responses[Math.floor(Math.random() * responses.length)];
     }
     
-    // Send message function
+    // Send message function - enhanced to properly display AI responses
     async function sendMessage() {
         console.log('📤 sendMessage called');
         const input = document.getElementById('chat-input');
@@ -526,82 +848,63 @@
         
         console.log('📤 Sending message:', message);
         
-        // Clear input
+        // Clear input immediately
         input.value = '';
         input.style.height = '48px';
         
-        // Add message to chat
-        addMessageToChat(message, 'user');
+        // Add user message to chat FIRST
+        console.log('👤 Adding user message to chat...');
+        const userMessageId = addMessageToChat(message, 'user');
+        console.log('✅ User message added with ID:', userMessageId);
         
-        // Show loading
-        const loadingId = addMessageToChat('Thinking...', 'assistant', true);
+        // Show loading message
+        console.log('🤖 Adding loading message...');
+        const loadingId = addMessageToChat('🤖 AI sedang berpikir...', 'assistant', true);
+        console.log('✅ Loading message added with ID:', loadingId);
         
         try {
-            // Call the chat interaction
+            // Use the handleChatInteraction from chat-logic.js
             if (window.handleChatInteraction) {
                 console.log('🔄 Calling window.handleChatInteraction...');
-                const response = await window.handleChatInteraction(message);
-                console.log('✅ Response received:', response);
+                
+                // Remove loading message first
+                const loadingEl = document.getElementById(loadingId);
+                if (loadingEl) {
+                    loadingEl.remove();
+                    console.log('🗑️ Loading message removed');
+                }
+                
+                // Call handleChatInteraction (it will add its own loading and response)
+                await window.handleChatInteraction(message);
+                console.log('✅ Message processed by chat-logic.js');
+            } else {
+                console.error('❌ handleChatInteraction not found, using fallback');
                 
                 // Remove loading message
                 const loadingEl = document.getElementById(loadingId);
                 if (loadingEl) {
                     loadingEl.remove();
+                    console.log('🗑️ Loading message removed');
                 }
                 
-                // Add response
+                // Fallback: add response manually
+                console.log('🔄 Adding fallback response...');
+                const response = getFallbackResponse(message);
                 addMessageToChat(response, 'assistant');
-            } else {
-                console.error('❌ handleChatInteraction not found, trying direct call');
-                
-                // Try direct call to chat logic
-                try {
-                    console.log('🔄 Importing chat logic directly...');
-                    const { handleChatInteraction } = await import('../../assets/js/chat/chat-logic.js');
-                    console.log('✅ Chat logic imported, calling handleChatInteraction...');
-                    const response = await handleChatInteraction(message);
-                    console.log('✅ Response received via direct import:', response);
-                    
-                    // Remove loading message
-                    const loadingEl = document.getElementById(loadingId);
-                    if (loadingEl) {
-                        loadingEl.remove();
-                    }
-                    
-                    // Add response
-                    addMessageToChat(response, 'assistant');
-                } catch (importError) {
-                    console.error('❌ Error importing chat logic:', importError);
-                    console.log('🔄 Using fallback response');
-                    
-                    // Use fallback response
-                    const response = getFallbackResponse(message);
-                    
-                    // Remove loading message
-                    const loadingEl = document.getElementById(loadingId);
-                    if (loadingEl) {
-                        loadingEl.remove();
-                    }
-                    
-                    // Add fallback response
-                    addMessageToChat(response, 'assistant');
-                }
+                console.log('✅ Fallback response added');
             }
         } catch (error) {
             console.error('❌ Error sending message:', error);
-            console.log('🔄 Using fallback response due to error');
-            
-            // Use fallback response
-            const response = getFallbackResponse(message);
             
             // Remove loading message
             const loadingEl = document.getElementById(loadingId);
             if (loadingEl) {
                 loadingEl.remove();
+                console.log('🗑️ Loading message removed due to error');
             }
             
-            // Add fallback response
-            addMessageToChat(response, 'assistant');
+            // Show error message
+            addMessageToChat('Maaf, terjadi kesalahan saat memproses pesan Anda. Silakan coba lagi.', 'assistant');
         }
     }
     
@@ -654,9 +957,12 @@
         summaryCard.classList.toggle('hidden');
     }
     
-    // Make function globally accessible
+    // Make functions globally accessible
     window.toggleDataSummary = toggleDataSummary;
     window.loadUserDataSummary = loadUserDataSummary;
+    window.addMessageToChat = addMessageToChat;
+    window.updateMessage = updateMessage;
+    window.formatAIMessage = formatAIMessage;
     
     // Function to check and show latest activity notification
     async function checkLatestActivity() {
@@ -816,8 +1122,33 @@ Silakan tanya apapun tentang data yang baru saja Anda input! 😊`;
         }
     }
     
+    // Function to ensure proper chat container sizing
+    function ensureChatContainerSizing() {
+        const chatMessages = document.getElementById('chat-messages');
+        if (chatMessages) {
+            // Set proper height for chat container
+            const viewportHeight = window.innerHeight;
+            const headerHeight = 120; // Approximate header height
+            const inputHeight = 100; // Approximate input area height
+            const navHeight = 80; // Approximate bottom nav height
+            
+            const availableHeight = viewportHeight - headerHeight - inputHeight - navHeight;
+            chatMessages.style.height = `${Math.max(availableHeight, 400)}px`;
+            chatMessages.style.maxHeight = `${Math.max(availableHeight, 400)}px`;
+            
+            console.log('📏 Chat container sized:', {
+                viewportHeight,
+                availableHeight,
+                chatHeight: chatMessages.style.height
+            });
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         console.log('🚀 Initializing chat page...');
+        
+        // Ensure proper chat container sizing
+        ensureChatContainerSizing();
         
         // Check for latest activity and show notification
         checkLatestActivity();
@@ -832,7 +1163,25 @@ Silakan tanya apapun tentang data yang baru saja Anda input! 😊`;
             console.log('⚠️ setupChatListeners not available, using manual setup');
         }
         
-        // Debug: Check if send button exists and add manual listener
+        // Wait a bit for scripts to load, then check handleChatInteraction
+        setTimeout(() => {
+            if (window.handleChatInteraction) {
+                console.log('✅ handleChatInteraction is available');
+            } else {
+                console.log('⚠️ handleChatInteraction not available, will use fallback');
+                // Try to import it manually
+                import('../../assets/js/chat/chat-logic.js').then(module => {
+                    if (module.handleChatInteraction) {
+                        window.handleChatInteraction = module.handleChatInteraction;
+                        console.log('✅ handleChatInteraction imported manually');
+                    }
+                }).catch(err => {
+                    console.error('❌ Failed to import handleChatInteraction:', err);
+                });
+            }
+        }, 1000);
+        
+        // Setup send button listener
         const sendBtn = document.getElementById('send-chat-btn');
         const chatInput = document.getElementById('chat-input');
         
@@ -840,25 +1189,19 @@ Silakan tanya apapun tentang data yang baru saja Anda input! 😊`;
         console.log('🔍 Chat input:', chatInput);
         
         if (sendBtn) {
-            console.log('✅ Send button found, adding manual listener');
+            console.log('✅ Send button found, adding listener');
             
-            // Remove any existing listeners first
-            sendBtn.replaceWith(sendBtn.cloneNode(true));
-            const newSendBtn = document.getElementById('send-chat-btn');
-            
-            newSendBtn.addEventListener('click', async (e) => {
+            // Add click listener
+            sendBtn.addEventListener('click', async (e) => {
                 console.log('🔄 Send button clicked!');
-                console.log('🔍 Event details:', e);
                 e.preventDefault();
                 e.stopPropagation();
                 
                 const input = document.getElementById('chat-input');
-                console.log('🔍 Input element:', input);
                 console.log('🔍 Input value:', input?.value);
                 
                 if (input && input.value.trim()) {
                     console.log('📤 Sending message:', input.value);
-                    // Call the send function directly
                     try {
                         await sendMessage();
                         console.log('✅ Message sent successfully');
@@ -867,16 +1210,16 @@ Silakan tanya apapun tentang data yang baru saja Anda input! 😊`;
                     }
                 } else {
                     console.log('⚠️ No message to send');
-                    // Show a brief message
-                    const originalText = newSendBtn.innerHTML;
-                    newSendBtn.innerHTML = '⚠️';
+                    // Visual feedback
+                    const originalText = sendBtn.innerHTML;
+                    sendBtn.innerHTML = '⚠️';
                     setTimeout(() => {
-                        newSendBtn.innerHTML = originalText;
+                        sendBtn.innerHTML = originalText;
                     }, 1000);
                 }
             });
             
-            console.log('✅ Manual listener added to send button');
+            console.log('✅ Send button listener added');
         } else {
             console.error('❌ Send button not found!');
         }
@@ -893,6 +1236,11 @@ Silakan tanya apapun tentang data yang baru saja Anda input! 😊`;
                 }
             });
         }
+        
+        // Add window resize listener
+        window.addEventListener('resize', () => {
+            ensureChatContainerSizing();
+        });
         
         console.log('✅ Chat page initialized');
     });
