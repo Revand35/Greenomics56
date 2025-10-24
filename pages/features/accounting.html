@@ -137,7 +137,7 @@
 
             <!-- Recent Activities -->
             <div class="bg-white rounded-2xl p-6 shadow-lg">
-                <h2 class="text-xl font-bold text-gray-800 mb-6">Hasil aktivitas yang anda buat</h2>
+                <h2 class="text-xl font-bold text-gray-800 mb-6">Hasil Aktivitas</h2>
                 <div id="recent-activities" class="space-y-4">
                     <!-- Sample activities -->
                     <div class="flex items-center justify-between p-4 bg-green-50 rounded-xl">
@@ -174,7 +174,7 @@
 
     <!-- Calculation Results Modal -->
     <div id="calculation-results-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
             <!-- Header -->
             <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
                 <h2 class="text-xl font-bold text-gray-800">📊 Hasil Perhitungan Nilai Ekonomi</h2>
@@ -193,10 +193,10 @@
 
             <!-- Action Buttons -->
             <div class="px-6 py-4 border-t border-gray-200 flex space-x-3">
-                <button onclick="closeCalculationResults()" class="flex-1 bg-gray-500 text-white py-3 rounded-xl font-semibold hover:bg-gray-600 transition-colors">
+                <button onclick="closeCalculationResults()" class="flex-1 bg-gray-500 text-white py-3 rounded-xl font-semibold hover:bg-gray-600 transition-all duration-200 transform hover:scale-105">
                     ✏️ Edit Data
                 </button>
-                <button id="save-to-firestore-btn" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all">
+                <button id="save-to-firestore-btn" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-200 transform hover:scale-105">
                     💾 Simpan ke Database
                 </button>
             </div>
@@ -265,7 +265,6 @@
     </div>
 
     <!-- Scripts -->
-    <script src="../../assets/js/materials/materi-search.js" defer></script>
 
     <!-- Import User Stats System (replaces realtime-stats and material-tracker) -->
     <script type="module" src="../../assets/js/core/user-stats.js"></script>
@@ -442,23 +441,7 @@
             import { auth } from '../../config/firebase-init.js';
             import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
             
-            // Authentication flow: Wait for user to be authenticated before loading data
-            // This prevents the "User belum login" errors we were seeing
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    console.log('User authenticated:', user.displayName);
-                    // User is authenticated, now load stats and activities
-                    try {
-                        await updateStatsDisplay();
-                        await loadRecentActivities();
-                    } catch (error) {
-                        console.error('Error loading data after authentication:', error);
-                    }
-                } else {
-                    // Redirect to login if not authenticated
-                    window.location.href = '../../login.html';
-                }
-            });
+            // Authentication will be handled in the main script block below
             
             // Materials functionality has been disabled
             // This function is kept for compatibility but does nothing
@@ -538,12 +521,169 @@
             import environmentalService from '../../assets/js/core/environmental-activity-service.js';
             // Import AI Auto Notification Service
             import aiAutoNotificationService from '../../assets/js/core/ai-auto-notification.js';
+            // Import Firebase Auth functions (needed for authentication callback in this script block)
+            import { auth } from '../../config/firebase-init.js';
+            import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
             
             // Destructure the functions from the service
             const { saveEnvironmentalActivity, getUserActivities, getActivityStats, calculateEconomicValue, calculateEcoScore } = environmentalService;
             
             // Global variable to store current calculation data
             let currentCalculationData = null;
+            
+            // ===== FUNCTION DEFINITIONS (must be before authentication callback) =====
+            // All functions are defined here to avoid hoisting issues
+            
+            // Update stats display dari Firebase Firestore
+            async function updateStatsDisplay() {
+                try {
+                    const stats = await getActivityStats();
+                    
+                    // Update stat cards if they exist
+                    const wasteAmountElement = document.querySelector('.stat-pulse');
+                    if (wasteAmountElement) {
+                        wasteAmountElement.textContent = `${stats.totalWasteAmount}`;
+                    }
+                    
+                    const economicValueElement = document.querySelectorAll('.stat-pulse')[1];
+                    if (economicValueElement) {
+                        economicValueElement.textContent = `Rp ${(stats.totalEconomicValue / 1000000).toFixed(1)}M`;
+                    }
+                    
+                    const ecoScoreElement = document.querySelectorAll('.stat-pulse')[2];
+                    if (ecoScoreElement) {
+                        ecoScoreElement.textContent = `${stats.averageEcoScore}`;
+                    }
+                    
+                    const efficiencyElement = document.querySelectorAll('.stat-pulse')[3];
+                    if (efficiencyElement) {
+                        const efficiency = stats.totalActivities > 0 ? 
+                            Math.round((stats.averageEcoScore / 100) * 100) : 0;
+                        efficiencyElement.textContent = `${efficiency}%`;
+                    }
+                    
+                    console.log('📊 Stats display updated from Firebase:', stats);
+                    
+                } catch (error) {
+                    console.error('Error updating stats display:', error);
+                    // Don't show error notification for stats - it's not critical
+                }
+            }
+            
+            // Load recent activities dari Firebase Firestore
+            async function loadRecentActivities() {
+                try {
+                    const activities = await getUserActivities(5); // Ambil 5 aktivitas terbaru
+                    const activitiesContainer = document.getElementById('recent-activities');
+                    
+                    if (!activitiesContainer) {
+                        console.log('Recent activities container not found');
+                        return;
+                    }
+                    
+                    // Clear existing activities
+                    activitiesContainer.innerHTML = '';
+                    
+                    if (activities.length === 0) {
+                        activitiesContainer.innerHTML = `
+                            <div class="text-center py-8 text-gray-500">
+                                <div class="text-4xl mb-2">📝</div>
+                                <p>Belum ada aktivitas yang dicatat</p>
+                                <p class="text-sm">Mulai catat aktivitas lingkungan Anda!</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    // Add activities to UI
+                    activities.forEach(activity => {
+                        addToRecentActivities(activity);
+                    });
+                    
+                } catch (error) {
+                    console.error('Error loading recent activities:', error);
+                    // Show friendly message instead of error
+                    const activitiesContainer = document.getElementById('recent-activities');
+                    if (activitiesContainer) {
+                        activitiesContainer.innerHTML = `
+                            <div class="text-center py-8 text-gray-500">
+                                <div class="text-4xl mb-2">📝</div>
+                                <p>Belum ada aktivitas yang dicatat</p>
+                                <p class="text-sm">Mulai catat aktivitas lingkungan Anda!</p>
+                            </div>
+                        `;
+                    }
+                }
+            }
+            
+            // Add to recent activities (updated untuk Firebase data)
+            function addToRecentActivities(activityData) {
+                const activitiesContainer = document.getElementById('recent-activities');
+                const activityElement = document.createElement('div');
+                
+                const icons = {
+                    'waste': '🗑️',
+                    'energy': '⚡',
+                    'water': '💧',
+                    'carbon': '🌍',
+                    'recycling': '♻️'
+                };
+                
+                const icon = icons[activityData.activityType] || '📊';
+                
+                // Format timestamp
+                const timestamp = activityData.timestamp?.toDate ? 
+                    activityData.timestamp.toDate() : 
+                    new Date(activityData.timestamp || activityData.createdAt);
+                
+                const timeAgo = getTimeAgo(timestamp);
+                
+                activityElement.className = 'flex items-center justify-between p-4 bg-green-50 rounded-xl';
+                activityElement.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold">${icon}</div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">${activityData.materialType.charAt(0).toUpperCase() + activityData.materialType.slice(1)} ${activityData.action.charAt(0).toUpperCase() + activityData.action.slice(1)}</h3>
+                            <p class="text-sm text-gray-600">${activityData.amount} ${activityData.unit} • Rp ${activityData.economicValue.toLocaleString()}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-semibold text-green-600">+${activityData.ecoScore} Eco-Score</p>
+                        <p class="text-xs text-gray-500">${timeAgo}</p>
+                    </div>
+                `;
+                
+                activitiesContainer.insertBefore(activityElement, activitiesContainer.firstChild);
+            }
+            
+            // Helper function untuk format waktu
+            function getTimeAgo(date) {
+                const now = new Date();
+                const diffInSeconds = Math.floor((now - date) / 1000);
+                
+                if (diffInSeconds < 60) return 'Baru saja';
+                if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} menit lalu`;
+                if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} jam lalu`;
+                return `${Math.floor(diffInSeconds / 86400)} hari lalu`;
+            }
+            
+            // Authentication flow: Wait for user to be authenticated before loading data
+            // This prevents the "User belum login" errors we were seeing
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    console.log('User authenticated:', user.displayName);
+                    // User is authenticated, now load stats and activities
+                    try {
+                        await updateStatsDisplay();
+                        await loadRecentActivities();
+                    } catch (error) {
+                        console.error('Error loading data after authentication:', error);
+                    }
+                } else {
+                    // Redirect to login if not authenticated
+                    window.location.href = '../../login.html';
+                }
+            });
             
             // Form submission handler - Calculate first, then show results
             // This creates a two-step process: Calculate → Review → Save
@@ -596,8 +736,8 @@
                         timestamp: new Date().toISOString()
                     };
                     
-                    // Tampilkan hasil perhitungan
-                    showCalculationResults(currentCalculationData);
+                    // Tampilkan hasil perhitungan dengan AI Gemini
+                    await showCalculationResults(currentCalculationData);
                     
                 } catch (error) {
                     console.error('Error calculating:', error);
@@ -682,9 +822,178 @@
                 }
             });
             
-            // Show calculation results in modal
-            function showCalculationResults(data) {
+            // Show calculation results in modal with AI Gemini integration
+            async function showCalculationResults(data) {
                 const modal = document.getElementById('calculation-results-modal');
+                const contentElement = document.getElementById('calculation-results-content');
+                
+                // Show loading state first
+                contentElement.innerHTML = `
+                    <div class="text-center py-10">
+                        <div class="relative">
+                            <div class="animate-spin rounded-full h-16 w-16 border-4 border-green-200 border-t-green-500 mx-auto mb-4"></div>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="text-2xl">🤖</div>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 font-medium">AI Gemini sedang menganalisis aktivitas Anda...</p>
+                        <p class="text-sm text-gray-500 mt-2">Menghitung dampak lingkungan dan nilai ekonomi yang akurat</p>
+                        <div class="mt-4 flex justify-center space-x-1">
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-bounce"></div>
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                        </div>
+                    </div>
+                `;
+                
+                // Show modal immediately with loading state
+                modal.classList.remove('hidden');
+                
+                try {
+                    // Get AI analysis from Gemini
+                    const aiAnalysis = await getAIAnalysis(data);
+                    
+                    // Activity type icons
+                    const activityIcons = {
+                        'waste': '🗑️',
+                        'energy': '⚡',
+                        'water': '💧',
+                        'carbon': '🌍',
+                        'recycling': '♻️'
+                    };
+                    
+                    // Action descriptions
+                    const actionDescriptions = {
+                        'recycled': 'Daur Ulang',
+                        'reduced': 'Dikurangi',
+                        'reused': 'Digunakan Ulang',
+                        'disposed': 'Dibuang',
+                        'conserved': 'Dihasilkan'
+                    };
+                    
+                    const icon = activityIcons[data.activityType] || '📊';
+                    const actionDesc = actionDescriptions[data.action] || data.action;
+                    
+                    // Use AI-enhanced values or fallback to calculated values
+                    const finalEconomicValue = aiAnalysis.economicValue || data.economicValue;
+                    const finalEcoScore = aiAnalysis.ecoScore || data.ecoScore;
+                    
+                    // Calculate environmental impact
+                    const impactLevel = finalEcoScore >= 8 ? 'Tinggi' : finalEcoScore >= 6 ? 'Sedang' : 'Rendah';
+                    const impactColor = finalEcoScore >= 8 ? 'text-green-600' : finalEcoScore >= 6 ? 'text-yellow-600' : 'text-red-600';
+                    
+                    contentElement.innerHTML = `
+                        <!-- Activity Summary -->
+                        <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 mb-6">
+                            <div class="flex items-center space-x-4 mb-4">
+                                <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-white text-2xl">
+                                    ${icon}
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-800">${data.materialType.charAt(0).toUpperCase() + data.materialType.slice(1)} ${actionDesc}</h3>
+                                    <p class="text-gray-600">${data.amount} ${data.unit}</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Key Metrics -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-white rounded-lg p-4 text-center">
+                                    <div class="text-2xl font-bold text-green-600">Rp ${finalEconomicValue.toLocaleString()}</div>
+                                    <div class="text-sm text-gray-600">Nilai Ekonomi</div>
+                                    ${aiAnalysis.economicValue ? '<div class="text-xs text-green-500 mt-1">🤖 AI Enhanced</div>' : ''}
+                                </div>
+                                <div class="bg-white rounded-lg p-4 text-center">
+                                    <div class="text-2xl font-bold ${impactColor}">${finalEcoScore}/10</div>
+                                    <div class="text-sm text-gray-600">Eco-Score</div>
+                                    ${aiAnalysis.ecoScore ? '<div class="text-xs text-green-500 mt-1">🤖 AI Enhanced</div>' : ''}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Detailed Breakdown -->
+                        <div class="space-y-4">
+                            <h4 class="font-semibold text-gray-800 mb-3">📋 Detail Perhitungan</h4>
+                            
+                            <div class="bg-gray-50 rounded-lg p-4 space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Jenis Aktivitas:</span>
+                                    <span class="font-medium">${data.activityType.charAt(0).toUpperCase() + data.activityType.slice(1)}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Material:</span>
+                                    <span class="font-medium">${data.materialType.charAt(0).toUpperCase() + data.materialType.slice(1)}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Jumlah:</span>
+                                    <span class="font-medium">${data.amount} ${data.unit}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Aksi:</span>
+                                    <span class="font-medium">${actionDesc}</span>
+                                </div>
+                                ${data.cost && parseFloat(data.cost) > 0 ? `
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Biaya Input:</span>
+                                    <span class="font-medium">Rp ${parseFloat(data.cost).toLocaleString()}</span>
+                                </div>
+                                ` : ''}
+                            </div>
+                            
+                            <!-- AI Analysis -->
+                            ${aiAnalysis.analysis ? `
+                            <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-4 border-l-4 border-purple-400">
+                                <div class="flex items-center mb-2">
+                                    <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm mr-3">
+                                        🤖
+                                    </div>
+                                    <h5 class="font-semibold text-gray-800">Analisis AI Gemini</h5>
+                                </div>
+                                <p class="text-sm text-gray-700 leading-relaxed">${aiAnalysis.analysis}</p>
+                                <div class="mt-2 text-xs text-purple-600 font-medium">
+                                    ✨ Dihitung dengan teknologi AI terdepan
+                                </div>
+                            </div>
+                            ` : ''}
+                            
+                            <!-- Environmental Impact -->
+                            <div class="bg-blue-50 rounded-lg p-4">
+                                <h5 class="font-semibold text-gray-800 mb-2">🌱 Dampak Lingkungan</h5>
+                                <div class="flex items-center space-x-2">
+                                    <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                        <div class="bg-green-500 h-2 rounded-full" style="width: ${(finalEcoScore / 10) * 100}%"></div>
+                                    </div>
+                                    <span class="text-sm font-medium ${impactColor}">${impactLevel}</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-2">
+                                    ${finalEcoScore >= 8 ? 'Aktivitas ini sangat baik untuk lingkungan!' : 
+                                      finalEcoScore >= 6 ? 'Aktivitas ini cukup baik untuk lingkungan.' : 
+                                      'Aktivitas ini memiliki dampak lingkungan yang perlu diperhatikan.'}
+                                </p>
+                            </div>
+                            
+                            ${data.notes ? `
+                            <div class="bg-yellow-50 rounded-lg p-4">
+                                <h5 class="font-semibold text-gray-800 mb-2">📝 Catatan</h5>
+                                <p class="text-gray-700">${data.notes}</p>
+                            </div>
+                            ` : ''}
+                        </div>
+                    `;
+                    
+                    // Update the calculation data with AI-enhanced values
+                    currentCalculationData.economicValue = finalEconomicValue;
+                    currentCalculationData.ecoScore = finalEcoScore;
+                    currentCalculationData.aiAnalysis = aiAnalysis;
+                    
+                } catch (error) {
+                    console.error('Error getting AI analysis:', error);
+                    // Fallback to original calculation if AI fails
+                    showFallbackResults(data);
+                }
+            }
+            
+            // Fallback function if AI analysis fails
+            function showFallbackResults(data) {
                 const contentElement = document.getElementById('calculation-results-content');
                 
                 // Activity type icons
@@ -791,9 +1100,57 @@
                         ` : ''}
                     </div>
                 `;
-                
-                // Show modal
-                modal.classList.remove('hidden');
+            }
+            
+            // Get AI analysis from Gemini
+            async function getAIAnalysis(data) {
+                try {
+                    // Import Gemini service
+                    const { analyzeEnvironmentalActivity } = await import('../../assets/js/core/gemini-service.js');
+                    
+                    const prompt = `
+                    Analisis aktivitas lingkungan berikut untuk Green Accounting:
+                    
+                    Jenis Aktivitas: ${data.activityType}
+                    Material: ${data.materialType}
+                    Jumlah: ${data.amount} ${data.unit}
+                    Aksi: ${data.action}
+                    Biaya Input: ${data.cost ? 'Rp ' + data.cost : 'Tidak ada'}
+                    Catatan: ${data.notes || 'Tidak ada'}
+                    
+                    Hitung dan berikan:
+                    1. Nilai ekonomi yang lebih akurat berdasarkan kondisi pasar saat ini
+                    2. Eco-score (1-10) berdasarkan dampak lingkungan
+                    3. Analisis singkat tentang dampak lingkungan aktivitas ini
+                    
+                    Format jawaban dalam JSON:
+                    {
+                        "economicValue": angka_nilai_ekonomi,
+                        "ecoScore": angka_eco_score_1_10,
+                        "analysis": "analisis_singkat_dampak_lingkungan"
+                    }
+                    `;
+                    
+                    const response = await analyzeEnvironmentalActivity(prompt);
+                    
+                    // Parse AI response
+                    const aiResult = JSON.parse(response);
+                    
+                    return {
+                        economicValue: aiResult.economicValue || data.economicValue,
+                        ecoScore: aiResult.ecoScore || data.ecoScore,
+                        analysis: aiResult.analysis || ''
+                    };
+                    
+                } catch (error) {
+                    console.error('Error getting AI analysis:', error);
+                    // Return original values if AI fails
+                    return {
+                        economicValue: data.economicValue,
+                        ecoScore: data.ecoScore,
+                        analysis: ''
+                    };
+                }
             }
             
             // Close calculation results modal
@@ -805,88 +1162,6 @@
             
             // Make functions global
             window.closeCalculationResults = closeCalculationResults;
-            
-            // Update stats display dari Firebase Firestore
-            async function updateStatsDisplay() {
-                try {
-                    const stats = await getActivityStats();
-                    
-                    // Update stat cards if they exist
-                    const wasteAmountElement = document.querySelector('.stat-pulse');
-                    if (wasteAmountElement) {
-                        wasteAmountElement.textContent = `${stats.totalWasteAmount}`;
-                    }
-                    
-                    const economicValueElement = document.querySelectorAll('.stat-pulse')[1];
-                    if (economicValueElement) {
-                        economicValueElement.textContent = `Rp ${(stats.totalEconomicValue / 1000000).toFixed(1)}M`;
-                    }
-                    
-                    const ecoScoreElement = document.querySelectorAll('.stat-pulse')[2];
-                    if (ecoScoreElement) {
-                        ecoScoreElement.textContent = `${stats.averageEcoScore}`;
-                    }
-                    
-                    const efficiencyElement = document.querySelectorAll('.stat-pulse')[3];
-                    if (efficiencyElement) {
-                        const efficiency = stats.totalActivities > 0 ? 
-                            Math.round((stats.averageEcoScore / 100) * 100) : 0;
-                        efficiencyElement.textContent = `${efficiency}%`;
-                    }
-                    
-                    console.log('📊 Stats display updated from Firebase:', stats);
-                    
-                } catch (error) {
-                    console.error('Error updating stats display:', error);
-                    // Don't show error notification for stats - it's not critical
-                }
-            }
-            
-            // Load recent activities dari Firebase Firestore
-            async function loadRecentActivities() {
-                try {
-                    const activities = await getUserActivities(5); // Ambil 5 aktivitas terbaru
-                    const activitiesContainer = document.getElementById('recent-activities');
-                    
-                    if (!activitiesContainer) {
-                        console.log('Recent activities container not found');
-                        return;
-                    }
-                    
-                    // Clear existing activities
-                    activitiesContainer.innerHTML = '';
-                    
-                    if (activities.length === 0) {
-                        activitiesContainer.innerHTML = `
-                            <div class="text-center py-8 text-gray-500">
-                                <div class="text-4xl mb-2">📝</div>
-                                <p>Belum ada aktivitas yang dicatat</p>
-                                <p class="text-sm">Mulai catat aktivitas lingkungan Anda!</p>
-                            </div>
-                        `;
-                        return;
-                    }
-                    
-                    // Add activities to UI
-                    activities.forEach(activity => {
-                        addToRecentActivities(activity);
-                    });
-                    
-                } catch (error) {
-                    console.error('Error loading recent activities:', error);
-                    // Show friendly message instead of error
-                    const activitiesContainer = document.getElementById('recent-activities');
-                    if (activitiesContainer) {
-                        activitiesContainer.innerHTML = `
-                            <div class="text-center py-8 text-gray-500">
-                                <div class="text-4xl mb-2">📝</div>
-                                <p>Belum ada aktivitas yang dicatat</p>
-                                <p class="text-sm">Mulai catat aktivitas lingkungan Anda!</p>
-                            </div>
-                        `;
-                    }
-                }
-            }
             
             // Show success notification
             function showSuccessNotification(message) {
@@ -941,57 +1216,6 @@
                         notification.remove();
                     }
                 }, 5000);
-            }
-            
-            // Add to recent activities (updated untuk Firebase data)
-            function addToRecentActivities(activityData) {
-                const activitiesContainer = document.getElementById('recent-activities');
-                const activityElement = document.createElement('div');
-                
-                const icons = {
-                    'waste': '🗑️',
-                    'energy': '⚡',
-                    'water': '💧',
-                    'carbon': '🌍',
-                    'recycling': '♻️'
-                };
-                
-                const icon = icons[activityData.activityType] || '📊';
-                
-                // Format timestamp
-                const timestamp = activityData.timestamp?.toDate ? 
-                    activityData.timestamp.toDate() : 
-                    new Date(activityData.timestamp || activityData.createdAt);
-                
-                const timeAgo = getTimeAgo(timestamp);
-                
-                activityElement.className = 'flex items-center justify-between p-4 bg-green-50 rounded-xl';
-                activityElement.innerHTML = `
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold">${icon}</div>
-                        <div>
-                            <h3 class="font-semibold text-gray-800">${activityData.materialType.charAt(0).toUpperCase() + activityData.materialType.slice(1)} ${activityData.action.charAt(0).toUpperCase() + activityData.action.slice(1)}</h3>
-                            <p class="text-sm text-gray-600">${activityData.amount} ${activityData.unit} • Rp ${activityData.economicValue.toLocaleString()}</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-sm font-semibold text-green-600">+${activityData.ecoScore} Eco-Score</p>
-                        <p class="text-xs text-gray-500">${timeAgo}</p>
-                    </div>
-                `;
-                
-                activitiesContainer.insertBefore(activityElement, activitiesContainer.firstChild);
-            }
-            
-            // Helper function untuk format waktu
-            function getTimeAgo(date) {
-                const now = new Date();
-                const diffInSeconds = Math.floor((now - date) / 1000);
-                
-                if (diffInSeconds < 60) return 'Baru saja';
-                if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} menit lalu`;
-                if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} jam lalu`;
-                return `${Math.floor(diffInSeconds / 86400)} hari lalu`;
             }
             
             // Page initialization is now handled in the authentication callback above
