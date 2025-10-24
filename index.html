@@ -3,147 +3,668 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Greenomics - Redirecting...</title>
-    <meta name="theme-color" content="#10b981">
-    <meta name="description" content="Platform Digital Green Accounting untuk UMKM">
+    <title>Greenomics - Platform AI Green Accounting untuk UMKM</title>
+    <meta name="description" content="Greenomics membantu UMKM menerapkan green accounting dengan AI Assistant yang cerdas dan mudah digunakan">
     
-    <!-- Content Security Policy -->
-    <meta http-equiv="Content-Security-Policy" content="
-        default-src 'self';
-        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://www.gstatic.com https://generativelanguage.googleapis.com https://apis.google.com;
-        style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com;
-        font-src 'self' https://fonts.gstatic.com;
-        img-src 'self' data: https: blob:;
-        connect-src 'self' https://firestore.googleapis.com https://firebase.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://generativelanguage.googleapis.com;
-        frame-src 'self' https://accounts.google.com https://*.firebaseapp.com https://*.google.com;
-        worker-src 'self' blob:;
-        manifest-src 'self';
-    ">
-
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="./assets/icons/tittle.png">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%);
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #10b981;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
+        :root {
+            --primary-green: #2d5a27;
+            --light-green: #4a7c59;
+            --accent-green: #6b8e23;
+            --soft-green: #e8f5e8;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --dark-gray: #2c3e50;
+            --text-gray: #6c757d;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
         
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--dark-gray);
+            background-color: var(--white);
         }
         
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
+        /* Header */
+        .header {
+            background: var(--white);
+            color: var(--primary-green);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(45, 90, 39, 0.15);
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-img {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .nav-menu a {
+            color: var(--primary-green);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-menu a:hover {
+            color: var(--accent-green);
+        }
+        
+        .nav-app-button {
+            background: var(--primary-green) !important;
+            color: var(--white) !important;
+            padding: 0.5rem 1rem !important;
+            border-radius: 25px !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .nav-app-button:hover {
+            background: var(--light-green) !important;
+            color: var(--white) !important;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--soft-green) 0%, var(--white) 100%);
+            padding: 8rem 0 4rem;
+            text-align: center;
+        }
+        
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-gray);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+        
+        .cta-button.primary {
+            background: var(--primary-green);
+            color: var(--white);
+        }
+        
+        .cta-button.primary:hover {
+            background: var(--light-green);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .cta-button.secondary {
+            background: transparent;
+            color: var(--primary-green);
+            border: 2px solid var(--primary-green);
+        }
+        
+        .cta-button.secondary:hover {
+            background: var(--primary-green);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 4rem 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .section {
+            margin-bottom: 5rem;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--primary-green);
+            margin-bottom: 3rem;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--text-gray);
+            margin-bottom: 3rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .feature-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--accent-green);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-green);
+            margin-bottom: 1rem;
+        }
+        
+        .feature-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--primary-green);
+            margin-bottom: 1rem;
+        }
+        
+        .feature-description {
+            color: var(--text-gray);
+            margin-bottom: 1rem;
+        }
+        
+        .feature-example {
+            background: var(--soft-green);
+            padding: 1rem;
+            border-radius: 8px;
+            font-style: italic;
+            color: var(--primary-green);
+            font-size: 0.9rem;
+        }
+        
+        /* About Section */
+        .about-section {
+            background: var(--light-gray);
+            padding: 4rem 0;
+        }
+        
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+        
+        .about-text h2 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: var(--primary-green);
+            margin-bottom: 1.5rem;
+        }
+        
+        .about-text p {
+            color: var(--text-gray);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-green);
+        }
+        
+        .stat-label {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--primary-green);
+            color: var(--white);
+            padding: 3rem 0 1rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--accent-green);
+        }
+        
+        .footer-section p,
+        .footer-section a {
+            color: var(--white);
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        .footer-section a:hover {
+            color: var(--accent-green);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--light-green);
+            color: var(--accent-green);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .cta-button {
+                width: 100%;
+                max-width: 300px;
+                text-align: center;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .about-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center">
-    <div class="text-center fade-in">
-        <!-- Logo -->
-        <div class="mb-8">
-            <div class="flex justify-center mb-4">
-                <img src="./assets/icons/tittle.png" alt="Greenomics" class="w-16 h-16">
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <img src="./assets/icons/tittle.png" alt="Greenomics" class="logo-img">
+                Greenomics
             </div>
-            <h1 class="text-3xl font-bold text-gray-800 mb-2">Greenomics</h1>
-            <p class="text-gray-600">Platform Digital Green Accounting untuk UMKM</p>
-            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">Beranda</a></li>
+                <li><a href="#features">Fitur</a></li>
+                <li><a href="#about">Tentang</a></li>
+                <li><a href="#contact">Kontak</a></li>
+                <li><a href="load.html" class="nav-app-button"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+            </ul>
+        </nav>
+    </header>
 
-        <!-- Loading Spinner -->
-        <div class="flex justify-center mb-6">
-            <div class="spinner"></div>
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <h1 class="fade-in-up">Platform AI Green Accounting untuk UMKM</h1>
+            <p class="hero-subtitle fade-in-up">
+                Membantu UMKM menerapkan green accounting dengan AI Assistant yang cerdas, 
+                mudah digunakan, dan memberikan insight berharga untuk bisnis yang berkelanjutan.
+            </p>
+            <div class="hero-buttons fade-in-up">
+                <a href="login.html" class="cta-button primary">Mulai Sekarang</a>
+                <a href="#features" class="cta-button secondary">Pelajari Lebih Lanjut</a>
+            </div>
         </div>
+    </section>
 
-        <!-- Status Message -->
-        <div class="text-gray-700">
-            <p class="text-lg font-medium mb-2">Memeriksa status autentikasi...</p>
-            <p class="text-sm text-gray-500">Mengarahkan ke halaman yang sesuai</p>
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Features Section -->
+        <section id="features" class="section">
+            <div class="container">
+                <h2 class="section-title">Peran dan Tujuan AI Assistant di Greenomics</h2>
+                <p class="section-subtitle">
+                    Platform kami dirancang untuk menciptakan ekosistem green accounting yang komprehensif 
+                    dengan bantuan teknologi AI yang canggih dan mudah dipahami.
+                </p>
+                
+                <div class="features-grid">
+                    <!-- Feature 1: Edukator Green Accounting -->
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h3 class="feature-title">1. Edukator Green Accounting</h3>
+                        <p class="feature-description">
+                            Melalui Fitur Chat Essay Assistant, membantu UMKM memahami konsep green accounting 
+                            dengan bahasa sederhana dan menjawab kesulitan serta kendala yang mereka hadapi.
+                        </p>
+                        <div class="feature-example">
+                            <strong>Contoh:</strong> Menjawab pertanyaan seputar green accounting, 
+                            biaya lingkungan, atau penghitungan dampak karbon dengan penjelasan yang mudah dipahami.
+                        </div>
+                    </div>
+
+                    <!-- Feature 2: Konsultan Akuntansi Digital -->
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <h3 class="feature-title">2. Konsultan Akuntansi Digital</h3>
+                        <p class="feature-description">
+                            Membantu UMKM mencatat, menganalisis, dan memahami laporan keuangan hijau. 
+                            Membantu input data sederhana seperti pengeluaran bahan bakar, limbah, dan listrik.
+                        </p>
+                        <div class="feature-example">
+                            <strong>Contoh:</strong> "Tagihan listrik kamu naik 15% bulan ini, 
+                            coba gunakan alat hemat energi." Membuat summary report otomatis yang 
+                            menggabungkan data keuangan dan data lingkungan.
+                        </div>
+                    </div>
+
+                    <!-- Feature 3: Fasilitator Gamifikasi -->
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <h3 class="feature-title">3. Fasilitator Gamifikasi</h3>
+                        <p class="feature-description">
+                            Membuat pengguna betah, semangat, dan termotivasi untuk terus update laporan. 
+                            Menilai progres pengguna dengan sistem "Green Score" dari 0–100.
+                        </p>
+                        <div class="feature-example">
+                            <strong>Contoh:</strong> "Hebat! Kamu berhasil mengurangi 10% limbah bulan ini 🌱." 
+                            Memberikan notifikasi motivasi dan achievement untuk mendorong konsistensi.
+                        </div>
+                    </div>
+
+                    <!-- Feature 4: Jembatan Produsen-Konsumen -->
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <h3 class="feature-title">4. Jembatan Produsen dan Konsumen Hijau</h3>
+                        <p class="feature-description">
+                            Menciptakan ekosistem pasar hijau dua arah. AI bisa menjawab pertanyaan konsumen 
+                            dan menjelaskan bagaimana produk UMKM menerapkan green accounting.
+                        </p>
+                        <div class="feature-example">
+                            <strong>Contoh:</strong> "Produk mana yang paling ramah lingkungan di Malang?" 
+                            Mempromosikan UMKM yang punya nilai green impact lebih tinggi dengan fitur 
+                            "Highlight UMKM Hijau".
+                        </div>
+                    </div>
+
+                    <!-- Feature 5: Pendukung Kebijakan -->
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="feature-title">5. Pendukung Kebijakan & Analisis Data</h3>
+                        <p class="feature-description">
+                            Menghasilkan insight data dari aktivitas UMKM untuk riset atau rekomendasi kebijakan 
+                            dengan mengolah data anonim dari pengguna.
+                        </p>
+                        <div class="feature-example">
+                            <strong>Contoh:</strong> "80% UMKM belum mencatat biaya pengelolaan limbah – 
+                            perlu pelatihan tambahan." Memberikan dashboard statistik untuk pemangku kebijakan.
+                        </div>
+                    </div>
+                </div>
             </div>
+        </section>
 
-        <!-- Manual Links (fallback) -->
-        <div class="mt-8 space-y-2">
-            <p class="text-sm text-gray-500">Jika tidak otomatis redirect:</p>
-            <div class="flex justify-center space-x-4">
-                <a href="login.html" class="text-green-600 hover:text-green-700 underline text-sm">Login</a>
-                <a href="dashboard.html" class="text-blue-600 hover:text-blue-700 underline text-sm">Dashboard</a>
+        <!-- About Section -->
+        <section id="about" class="about-section">
+            <div class="container">
+                <div class="about-content">
+                    <div class="about-text">
+                        <h2>Mengapa Memilih Greenomics?</h2>
+                        <p>
+                            Greenomics adalah platform revolusioner yang menggabungkan teknologi AI dengan 
+                            prinsip green accounting untuk membantu UMKM berkembang secara berkelanjutan.
+                        </p>
+                        <p>
+                            Kami memahami bahwa menerapkan green accounting bisa terasa rumit, 
+                            itulah mengapa kami mengembangkan AI Assistant yang dapat membantu 
+                            setiap langkah proses dengan cara yang mudah dipahami.
+                        </p>
+                        <p>
+                            Dengan Greenomics, UMKM tidak hanya dapat mengelola keuangan mereka 
+                            dengan lebih baik, tetapi juga berkontribusi pada kelestarian lingkungan 
+                            dan mendapatkan keunggulan kompetitif di pasar hijau.
+                        </p>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-number">100+</div>
+                            <div class="stat-label">UMKM Terdaftar</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">95%</div>
+                            <div class="stat-label">Tingkat Kepuasan</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">50%</div>
+                            <div class="stat-label">Pengurangan Biaya</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">24/7</div>
+                            <div class="stat-label">AI Support</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer id="contact" class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Greenomics</h3>
+                    <p>Platform AI Green Accounting untuk UMKM yang berkelanjutan dan mudah digunakan.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Fitur Utama</h3>
+                    <a href="#features">Edukator Green Accounting</a>
+                    <a href="#features">Konsultan Digital</a>
+                    <a href="#features">Gamifikasi</a>
+                    <a href="#features">Analisis Data</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Kontak</h3>
+                    <p><i class="fas fa-envelope"></i> info@greenomics.com</p>
+                    <p><i class="fas fa-phone"></i> +62 123 456 7890</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Malang, Indonesia</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Ikuti Kami</h3>
+                    <a href="#"><i class="fab fa-facebook"></i> Facebook</a>
+                    <a href="#"><i class="fab fa-twitter"></i> Twitter</a>
+                    <a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                    <a href="#"><i class="fab fa-instagram"></i> Instagram</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Greenomics. All Rights Reserved.</p>
             </div>
         </div>
-    </div>
-    
-    <script type="module">
-        // Import Firebase
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-        
-        // Firebase config
-        const firebaseConfig = {
-            apiKey: "AIzaSyD43R9_h0qZc5TFTrBn_Zt76Il3jDKP7kw",
-            authDomain: "greenomics-id.firebaseapp.com",
-            projectId: "greenomics-id",
-            storageBucket: "greenomics-id.firebasestorage.app",
-            messagingSenderId: "5727343643",
-            appId: "1:5727343643:web:0b84a6197ee989aa5dd4be"
+    </footer>
+
+    <!-- JavaScript for smooth scrolling and animations -->
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
         };
-        
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
 
-        // Update status message
-        function updateStatus(message) {
-            const statusElement = document.querySelector('.text-lg.font-medium');
-            if (statusElement) {
-                statusElement.textContent = message;
-            }
-        }
-        
-        // Check authentication and redirect
-        onAuthStateChanged(auth, (user) => {
-                if (user) {
-                console.log('✅ User authenticated, redirecting to dashboard...');
-                updateStatus('User terautentikasi, mengarahkan ke dashboard...');
-                
-                // Redirect to dashboard after short delay
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 1000);
-                } else {
-                console.log('❌ No user, redirecting to login...');
-                updateStatus('Belum login, mengarahkan ke halaman login...');
-                
-                // Redirect to login after short delay
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 1000);
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in-up');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all feature cards
+        document.querySelectorAll('.feature-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Add header shadow effect on scroll
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('.header');
+            if (window.scrollY > 100) {
+                header.style.boxShadow = '0 4px 20px rgba(45, 90, 39, 0.25)';
+            } else {
+                header.style.boxShadow = '0 2px 10px rgba(45, 90, 39, 0.15)';
             }
         });
-        
-        // Fallback redirect after 3 seconds if auth check fails
-            setTimeout(() => {
-            console.log('⏰ Fallback redirect to login...');
-            window.location.href = 'login.html';
-            }, 3000);
-        
-        console.log('🚀 Authentication check initialized');
     </script>
 </body>
 </html>

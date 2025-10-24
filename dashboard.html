@@ -127,11 +127,14 @@
 
             <!-- UMKM Profile Section -->
             <div class="bg-white rounded-2xl p-4 shadow-md flex items-center space-x-3">
-                <div id="user-avatar" class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-xl text-green-600 font-bold">🏢</div>
+                <div id="user-avatar" class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-xl text-green-600 font-bold overflow-hidden">
+                    <img id="user-photo" src="" alt="User Avatar" class="w-full h-full object-cover rounded-full hidden">
+                    <span id="user-initial">🏢</span>
+                </div>
                 <div class="flex-1">
                     <h3 id="user-name" class="text-sm font-semibold text-gray-800">Loading...</h3>
                     <p id="user-profession" class="text-gray-500 text-xs mb-1">UMKM - Loading...</p>
-                    <div class="flex flex-wrap text-xs text-gray-600 gap-2">
+                    <div class="flex flex-col text-xs text-gray-600 gap-1">
                         <span><strong>Email:</strong> <span id="user-email">Loading...</span></span>
                         <span><strong>Bidang:</strong> <span id="user-role">Loading...</span></span>
                     </div>
@@ -296,6 +299,7 @@
         // Import Firebase directly from CDN for reliability
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
         import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+        import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
         
         // Firebase config
         const firebaseConfig = {
@@ -310,6 +314,7 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
         function setActiveNav() {
             const currentPage = window.location.pathname.split('/').pop();
@@ -334,24 +339,52 @@
                 console.log('updateUserProfile called with user:', user);
                 
                 if (user) {
-                    // Use Firebase user directly instead of authInstance
-                    document.getElementById('user-name').textContent = user.displayName || 'User';
-                    document.getElementById('user-email').textContent = user.email || 'user@example.com';
-                    document.getElementById('user-role').textContent = 'user'; // Default role
-
-                    const profession = 'UMKM'; // Default profession
-                    document.getElementById('user-profession').textContent = profession;
-
-                    const avatar = document.getElementById('user-avatar');
-                    if (avatar) {
-                        avatar.textContent = profession === 'UMKM' ? '🏢' : '👤';
+                    // Get user data from Firestore
+                    const userDocRef = doc(db, 'users', user.uid);
+                    const userDoc = await getDoc(userDocRef);
+                    
+                    let userData = {};
+                    if (userDoc.exists()) {
+                        userData = userDoc.data();
+                        console.log('User data from Firestore:', userData);
                     }
 
-                    // Show admin dashboard button if user is admin (check from custom claims or user data)
+                    // Update user information
+                    const displayName = userData.displayName || user.displayName || 'User';
+                    const email = userData.email || user.email || 'user@example.com';
+                    const role = userData.role || userData.bidang || 'user';
+                    const profession = userData.profession || 'UMKM';
+                    const photoURL = userData.photoURL || user.photoURL;
+
+                    document.getElementById('user-name').textContent = displayName;
+                    document.getElementById('user-email').textContent = email;
+                    document.getElementById('user-role').textContent = role;
+                    document.getElementById('user-profession').textContent = profession;
+
+                    // Handle user avatar
+                    const userPhoto = document.getElementById('user-photo');
+                    const userInitial = document.getElementById('user-initial');
+                    
+                    if (photoURL) {
+                        // Show photo if available
+                        userPhoto.src = photoURL;
+                        userPhoto.classList.remove('hidden');
+                        userInitial.classList.add('hidden');
+                    } else {
+                        // Show initial/emoji if no photo
+                        userPhoto.classList.add('hidden');
+                        userInitial.classList.remove('hidden');
+                        userInitial.textContent = profession === 'UMKM' ? '🏢' : '👤';
+                    }
+
+                    // Show admin dashboard button if user is admin
                     const adminDashboardBtn = document.getElementById('admin-dashboard-btn');
                     if (adminDashboardBtn) {
-                        // For now, hide admin button - can be enabled later with proper admin setup
-                        adminDashboardBtn.classList.add('hidden');
+                        if (role === 'admin') {
+                            adminDashboardBtn.classList.remove('hidden');
+                        } else {
+                            adminDashboardBtn.classList.add('hidden');
+                        }
                     }
                 } else {
                     console.log('No user, redirecting to login');
@@ -361,6 +394,13 @@
 
             } catch (error) {
                 console.error('Error updating user profile:', error);
+                // Fallback to basic user data if Firestore fails
+                if (user) {
+                    document.getElementById('user-name').textContent = user.displayName || 'User';
+                    document.getElementById('user-email').textContent = user.email || 'user@example.com';
+                    document.getElementById('user-role').textContent = 'user';
+                    document.getElementById('user-profession').textContent = 'UMKM';
+                }
             }
         }
 
