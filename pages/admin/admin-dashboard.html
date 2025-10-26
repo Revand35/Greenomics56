@@ -140,143 +140,302 @@
             </div>
 
             <div class="bg-white rounded-lg shadow-md p-3 sm:p-4">
-                <h3 class="text-sm sm:text-base font-semibold text-gray-800 mb-3">Dampak Lingkungan per Sektor</h3>
-                <div style="height: 250px; position: relative;">
-                    <canvas id="environmental-impact-chart"></canvas>
+                <h3 class="text-sm sm:text-base font-semibold text-gray-800 mb-3">Laporan Input Data</h3>
+                <div class="space-y-3">
+                    <!-- Latest Activity Card -->
+                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-3 border border-green-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-leaf text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-800">Aktivitas Terbaru</p>
+                                    <p class="text-xs text-gray-600">10 menit lalu</p>
+                                </div>
+                            </div>
+                            <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">+12</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 mt-3">
+                            <div class="text-center">
+                                <p class="text-2xl font-bold text-green-600">45</p>
+                                <p class="text-xs text-gray-600">Total Input</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-2xl font-bold text-blue-600">28</p>
+                                <p class="text-xs text-gray-600">Bulan Ini</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-2xl font-bold text-purple-600">17</p>
+                                <p class="text-xs text-gray-600">Minggu Ini</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Chart Summary -->
+                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-3 border border-blue-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-chart-bar text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-800">Statistik Data</p>
+                                    <p class="text-xs text-gray-600">Trend bulanan</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mt-3">
+                            <div class="bg-white rounded-lg p-2">
+                                <p class="text-xs text-gray-600 mb-1">Rata-rata per hari</p>
+                                <p class="text-lg font-bold text-blue-600">3.2</p>
+                            </div>
+                            <div class="bg-white rounded-lg p-2">
+                                <p class="text-xs text-gray-600 mb-1">Pertumbuhan</p>
+                                <p class="text-lg font-bold text-green-600">+8%</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Survey Responses -->
+        <!-- Laporan Input Data -->
         <div class="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-3 sm:p-4 mb-6 border border-white/50">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                 <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <i class="fas fa-clipboard-list text-white text-sm sm:text-base"></i>
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-database text-white text-sm sm:text-base"></i>
                     </div>
-                    <h2 class="text-lg sm:text-xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-                        Survey Responses
+                    <h2 class="text-lg sm:text-xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                        Laporan Input Data
                     </h2>
                 </div>
-                <button onclick="exportSurveys()" class="px-3 py-1.5 text-xs sm:text-sm bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-1 justify-center">
+                <button onclick="exportData()" class="px-3 py-1.5 text-xs sm:text-sm bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-1 justify-center">
                     <i class="fas fa-download text-xs"></i><span>Export CSV</span>
                 </button>
             </div>
 
-            <!-- Survey Analytics Charts -->
+            <!-- Data Analytics Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 mb-4">
-                <div class="bg-white rounded-lg shadow-md p-3 sm:p-4">
-                    <h3 class="text-xs sm:text-sm font-semibold text-gray-800 mb-2">Rating Rata-rata</h3>
-                    <div style="height: 200px; position: relative;">
-                        <canvas id="survey-ratings-chart"></canvas>
+                <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg shadow-md p-4 border border-green-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-leaf text-white text-sm"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xs font-semibold text-gray-800">Total Data</h3>
+                                <p class="text-2xl font-bold text-green-600">1,245</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-gray-600">
+                        <i class="fas fa-arrow-up text-green-600"></i>
+                        <span>+12% dari bulan lalu</span>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg shadow-md p-3 sm:p-4">
-                    <h3 class="text-xs sm:text-sm font-semibold text-gray-800 mb-2">Perangkat Pengguna</h3>
-                    <div style="height: 200px; position: relative;">
-                        <canvas id="survey-devices-chart"></canvas>
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg shadow-md p-4 border border-blue-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-users text-white text-sm"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xs font-semibold text-gray-800">Pengguna Aktif</h3>
+                                <p class="text-2xl font-bold text-blue-600">342</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-gray-600">
+                        <i class="fas fa-clock text-blue-600"></i>
+                        <span>Hari ini</span>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg shadow-md p-3 sm:p-4">
-                    <h3 class="text-xs sm:text-sm font-semibold text-gray-800 mb-2">Fitur Favorit</h3>
-                    <div style="height: 200px; position: relative;">
-                        <canvas id="survey-features-chart"></canvas>
+                <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg shadow-md p-4 border border-purple-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-chart-line text-white text-sm"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xs font-semibold text-gray-800">Eco-Score</h3>
+                                <p class="text-2xl font-bold text-purple-600">85</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-gray-600">
+                        <i class="fas fa-star text-purple-600"></i>
+                        <span>Rata-rata</span>
                     </div>
                 </div>
             </div>
 
-            <div id="survey-responses-list" class="space-y-3">
-                <div class="text-center py-8 text-gray-500">
-                    <i class="fas fa-spinner fa-spin text-2xl mb-3"></i>
-                    <p class="text-sm">Memuat survey responses...</p>
+            <!-- Recent Data Table -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs sm:text-sm">
+                        <thead class="bg-gradient-to-r from-green-50 to-emerald-50">
+                            <tr>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700">Tanggal</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700">Nama</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700">Jenis</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700">Jumlah</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700">Eco-Score</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <tr class="hover:bg-green-50 transition-colors">
+                                <td class="px-3 py-2 text-gray-600">15 Jan 2024</td>
+                                <td class="px-3 py-2 font-semibold text-gray-800">John Doe</td>
+                                <td class="px-3 py-2"><span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">Plastik</span></td>
+                                <td class="px-3 py-2 text-gray-600">25 kg</td>
+                                <td class="px-3 py-2"><span class="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">92</span></td>
+                            </tr>
+                            <tr class="hover:bg-green-50 transition-colors">
+                                <td class="px-3 py-2 text-gray-600">15 Jan 2024</td>
+                                <td class="px-3 py-2 font-semibold text-gray-800">Jane Smith</td>
+                                <td class="px-3 py-2"><span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">Kertas</span></td>
+                                <td class="px-3 py-2 text-gray-600">15 kg</td>
+                                <td class="px-3 py-2"><span class="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">88</span></td>
+                            </tr>
+                            <tr class="hover:bg-green-50 transition-colors">
+                                <td class="px-3 py-2 text-gray-600">14 Jan 2024</td>
+                                <td class="px-3 py-2 font-semibold text-gray-800">Bob Johnson</td>
+                                <td class="px-3 py-2"><span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs">Organik</span></td>
+                                <td class="px-3 py-2 text-gray-600">30 kg</td>
+                                <td class="px-3 py-2"><span class="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">95</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
-        <!-- Material Management -->
+        <!-- Green Reports -->
         <div class="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-3 sm:p-4 mb-6 border border-white/50">
             <div class="flex items-center gap-2 mb-4">
-                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-green-500 to-teal-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <i class="fas fa-folder-open text-white text-sm sm:text-base"></i>
+                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-chart-line text-white text-sm sm:text-base"></i>
                 </div>
-                <h2 class="text-lg sm:text-xl font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
-                    Daftar Materi
-                </h2>
-            </div>
-
-            <div id="materi-list" class="space-y-3">
-                <div class="text-center py-6">
-                    <i class="fas fa-spinner fa-spin text-2xl text-blue-500 mb-3"></i>
-                    <p class="text-sm text-gray-600">Memuat materi...</p>
+                <div>
+                    <h2 class="text-lg sm:text-xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                        Green Reports
+                    </h2>
+                    <p class="text-xs text-gray-600">Analisis & Laporan Dampak Lingkungan UMKM</p>
                 </div>
             </div>
-        </div>
 
-        <!-- File Upload Section -->
-        <div class="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-3 sm:p-4 border border-white/50">
-            <div class="flex items-center gap-2 mb-4">
-                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <i class="fas fa-cloud-upload-alt text-white text-sm sm:text-base"></i>
+            <!-- Report Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                <!-- Card 1 -->
+                <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200 hover:shadow-lg transition-all">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-leaf text-white text-lg"></i>
+                        </div>
+                        <span class="px-3 py-1 bg-green-500 text-white rounded-full text-xs font-semibold">Aktif</span>
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-1">UMKM Sari Rasa</h3>
+                    <p class="text-xs text-gray-600 mb-3">Produksi Makanan</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="text-center">
+                            <p class="text-lg font-bold text-green-600">250kg</p>
+                            <p class="text-xs text-gray-600">Limbah</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-lg font-bold text-blue-600">Rp 1.2M</p>
+                            <p class="text-xs text-gray-600">Nilai</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-lg font-bold text-purple-600">85</p>
+                            <p class="text-xs text-gray-600">Score</p>
+                        </div>
+                    </div>
                 </div>
-                <h3 class="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                    Unggah Materi
+
+                <!-- Card 2 -->
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200 hover:shadow-lg transition-all">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-bolt text-white text-lg"></i>
+                        </div>
+                        <span class="px-3 py-1 bg-blue-500 text-white rounded-full text-xs font-semibold">Hemat</span>
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-1">Warung Kopi Santai</h3>
+                    <p class="text-xs text-gray-600 mb-3">Beverage Service</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="text-center">
+                            <p class="text-lg font-bold text-green-600">-15%</p>
+                            <p class="text-xs text-gray-600">Penghematan</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-lg font-bold text-blue-600">Rp 800K</p>
+                            <p class="text-xs text-gray-600">Listrik</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-lg font-bold text-purple-600">92</p>
+                            <p class="text-xs text-gray-600">Score</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-200 hover:shadow-lg transition-all">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-recycle text-white text-lg"></i>
+                        </div>
+                        <span class="px-3 py-1 bg-purple-500 text-white rounded-full text-xs font-semibold">Recycle</span>
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-1">Kerajinan Lokal</h3>
+                    <p class="text-xs text-gray-600 mb-3">Handicraft & Artisan</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="text-center">
+                            <p class="text-lg font-bold text-green-600">120kg</p>
+                            <p class="text-xs text-gray-600">Daur Ulang</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-lg font-bold text-blue-600">Rp 950K</p>
+                            <p class="text-xs text-gray-600">Ekonomi</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-lg font-bold text-purple-600">88</p>
+                            <p class="text-xs text-gray-600">Score</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Statistics -->
+            <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+                <h3 class="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                    <i class="fas fa-chart-bar text-green-600"></i>
+                    Ringkasan Statistik
                 </h3>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
-                <div class="space-y-3">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div>
-                        <label class="block text-xs sm:text-sm font-bold text-gray-700 mb-2">
-                            <i class="fas fa-heading text-blue-500 mr-1 text-xs"></i>Judul Materi
-                        </label>
-                        <input type="text" id="materi-title"
-                               class="w-full px-3 py-2 text-sm rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                               placeholder="Masukkan judul materi...">
+                        <p class="text-xs text-gray-600 mb-1">Total UMKM</p>
+                        <p class="text-2xl font-bold text-green-600">342</p>
                     </div>
-
                     <div>
-                        <label class="block text-xs sm:text-sm font-bold text-gray-700 mb-2">
-                            <i class="fas fa-align-left text-green-500 mr-1 text-xs"></i>Deskripsi
-                        </label>
-                        <textarea id="materi-desc" rows="3"
-                                  class="w-full px-3 py-2 text-sm rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                  placeholder="Berikan deskripsi singkat..."></textarea>
+                        <p class="text-xs text-gray-600 mb-1">Rata-rata Score</p>
+                        <p class="text-2xl font-bold text-blue-600">87</p>
                     </div>
-                </div>
-
-                <div class="space-y-3">
-                    <div class="bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-3 sm:p-4 border-2 border-dashed border-blue-300 text-center">
-                        <div class="mb-3">
-                            <i class="fas fa-file-upload text-3xl sm:text-4xl text-blue-400 mb-2"></i>
-                            <p class="text-sm sm:text-base font-semibold text-gray-700 mb-1">Upload File Materi</p>
-                            <p class="text-xs text-gray-500">Klik untuk memilih file</p>
-                        </div>
-
-                        <label class="cursor-pointer bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white px-4 py-2 text-xs sm:text-sm rounded-lg font-semibold transition-all hover:shadow-lg inline-flex items-center gap-1">
-                            <i class="fas fa-folder-open text-xs"></i>Pilih File
-                            <input type="file" id="file-upload" class="hidden" accept=".pdf,.doc,.docx,.ppt,.pptx" />
-                        </label>
-
-                        <div class="mt-3 p-2 bg-white rounded-lg">
-                            <span id="file-name" class="text-xs text-gray-600 font-medium">Belum ada file yang dipilih</span>
-                        </div>
+                    <div>
+                        <p class="text-xs text-gray-600 mb-1">Total Limbah</p>
+                        <p class="text-2xl font-bold text-purple-600">5.2T</p>
                     </div>
-
-                    <button id="upload-btn" class="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 text-sm sm:text-base rounded-lg font-bold transition-all hover:shadow-lg flex items-center justify-center gap-2">
-                        <i class="fas fa-rocket text-xs"></i> Unggah Materi
-                    </button>
-
-                    <div id="upload-progress" class="hidden">
-                        <div class="bg-gray-200 rounded-full h-3 mb-2 overflow-hidden">
-                            <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-indigo-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
-                        </div>
-                        <p id="progress-text" class="text-center text-xs font-semibold text-gray-700">Mengunggah: 0%</p>
+                    <div>
+                        <p class="text-xs text-gray-600 mb-1">Nilai Ekonomi</p>
+                        <p class="text-2xl font-bold text-orange-600">Rp 2.1B</p>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 
     <!-- Notification -->
@@ -288,7 +447,6 @@
         import { getQuizAnalytics } from '../../assets/js/quiz/quiz-firestore-service.js';
         
         let scoreChart = null;
-        let aspectChart = null;
         let surveyRatingsChart = null;
         let surveyDevicesChart = null;
         let surveyFeaturesChart = null;
@@ -321,39 +479,11 @@
         /* === Materials Management Disabled === */
         // Materials management has been disabled as Supabase is no longer used
 
-        /* === Load Materials Count === */
-        async function loadMaterialsCount() {
-          // Materials count disabled - Supabase no longer used
-          updateStat('totalMaterials', 0);
-        }
-
-        /* === Load Materi === */
-        async function loadMateriList() {
-          const container = document.getElementById('materi-list');
-          container.innerHTML = `
-            <div class="text-center py-8 text-gray-500">
-              <i class="fas fa-info-circle text-4xl mb-4"></i>
-              <p class="font-bold">Materials Management Disabled</p>
-              <p class="text-sm">Supabase integration has been removed. Materials are now managed through Firebase or Local Storage.</p>
-            </div>
-          `;
-        }
-
-        /* === Upload Materi === */
-        document.getElementById('upload-btn').addEventListener('click', async () => {
-          showNotification('❌ Upload disabled - Supabase integration removed');
-        });
 
         /* === Delete Materi === */
         window.deleteMateri = async function(fileName) {
           showNotification('❌ Delete disabled - Supabase integration removed');
         };
-
-        // === File name preview ===
-        document.getElementById('file-upload').addEventListener('change', (e) => {
-          const file = e.target.files[0];
-          document.getElementById('file-name').textContent = file ? file.name : 'Belum ada file yang dipilih';
-        });
 
         /* === Realtime listeners === */
         function setupRealtimeListeners() {
@@ -375,8 +505,7 @@
             displaySurveyResponses(snap);
           });
 
-          // Materials - disabled (Supabase removed)
-          loadMaterialsCount();
+          // Materials disabled (Supabase removed)
         }
         
         /* === Helper update === */
@@ -806,58 +935,6 @@
               });
             }
 
-            const aspectCtx = document.getElementById('environmental-impact-chart')?.getContext('2d');
-            if (!aspectCtx) {
-              console.error('❌ Environmental impact chart canvas not found');
-              return;
-            }
-
-            const sectorLabels = ['Makanan', 'Tekstil', 'Kerajinan', 'Teknologi', 'Jasa'];
-            const impactValues = [85, 72, 68, 91, 76]; // Sample environmental impact scores
-
-            if (aspectChart) {
-              aspectChart.data.labels = sectorLabels;
-              aspectChart.data.datasets[0].data = impactValues;
-              aspectChart.update();
-            } else {
-              aspectChart = new Chart(aspectCtx, {
-                type: 'radar',
-                data: {
-                  labels: sectorLabels,
-                  datasets: [{
-                    label: 'Dampak Lingkungan',
-                    data: impactValues,
-                    backgroundColor: 'rgba(16,185,129,0.2)',
-                    borderColor: '#10b981',
-                    borderWidth: 2,
-                    pointBackgroundColor: '#10b981',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: '#10b981'
-                  }]
-                },
-                options: {
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  animation: false,
-                  scales: {
-                    r: {
-                      suggestedMin: 0,
-                      suggestedMax: 100,
-                      ticks: {
-                        stepSize: 20
-                      }
-                    }
-                  },
-                  plugins: {
-                    legend: {
-                      display: false
-                    }
-                  }
-                }
-              });
-            }
-
             console.log('✅ Charts rendered successfully');
           } catch (error) {
             console.error('❌ Error loading quiz analytics:', error);
@@ -872,6 +949,16 @@
           } catch (error) {
             console.error('❌ Error logging out:', error);
             alert('Gagal logout');
+          }
+        };
+
+        /* === Export Data to CSV === */
+        window.exportData = async function() {
+          try {
+            alert('Fitur export data akan segera tersedia');
+          } catch (error) {
+            console.error('❌ Error exporting data:', error);
+            alert('Gagal export data');
           }
         };
 
@@ -918,7 +1005,6 @@
         /* === Init === */
         document.addEventListener('DOMContentLoaded',()=>{
           setupRealtimeListeners();
-          loadMateriList();
           loadQuizAnalytics();
         });
     </script>

@@ -12,8 +12,22 @@
     <!-- Add jsPDF library for PDF generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .nav-button.active { color: #10b981; }
+        :root {
+            --primary-green: #2d5a27;
+            --light-green: #4a7c59;
+            --accent-green: var(--accent-green);
+            --soft-green: #e8f5e8;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --dark-gray: #2c3e50;
+            --text-gray: #6c757d;
+        }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, var(--soft-green) 0%, var(--light-gray) 100%);
+        }
+        .nav-button.active { color: var(--primary-green); }
         
         /* Loading animation */
         .dot-flashing { 
@@ -21,7 +35,7 @@
             width: 5px; 
             height: 5px; 
             border-radius: 5px; 
-            background-color: #10b981; 
+            background-color: var(--accent-green); 
             animation: dotFlashing 1s infinite linear alternate; 
             animation-delay: .5s; 
             display: inline-block; 
@@ -38,7 +52,7 @@
             width: 5px; 
             height: 5px; 
             border-radius: 5px; 
-            background-color: #10b981; 
+            background-color: var(--accent-green); 
             animation: dotFlashing 1s infinite alternate; 
             animation-delay: 0s; 
         }
@@ -47,13 +61,13 @@
             width: 5px; 
             height: 5px; 
             border-radius: 5px; 
-            background-color: #10b981; 
+            background-color: var(--accent-green); 
             animation: dotFlashing 1s infinite alternate; 
             animation-delay: 1s; 
         }
         @keyframes dotFlashing { 
-            0% { background-color: #10b981; } 
-            50%, 100% { background-color: #d1fae5; } 
+            0% { background-color: var(--primary-green); } 
+            50%, 100% { background-color: var(--soft-green); } 
         }
         
         /* Quick notification animation */
@@ -133,6 +147,12 @@
             right: 1rem;
             z-index: 40;
         }
+        
+        .chat-input-container > div {
+            background: linear-gradient(135deg, #ffffff 0%, var(--light-gray) 100%);
+            box-shadow: 0 4px 20px rgba(45, 90, 39, 0.1);
+            backdrop-filter: blur(10px);
+        }
 
         /* Chat bubble styles - unified */
         .chat-bubble, .message-bubble {
@@ -145,19 +165,32 @@
         }
 
         .chat-bubble.user, .message-bubble.user {
-        background: linear-gradient(to right, #10b981, #059669);
+        background: linear-gradient(135deg, var(--primary-green) 0%, var(--light-green) 50%, var(--accent-green) 100%);
         color: white;
         border-bottom-right-radius: 4px;
         margin-left: auto;
         align-self: flex-end; /* pastikan rata kanan */
+        box-shadow: 0 4px 15px rgba(45, 90, 39, 0.3);
+        transition: all 0.3s ease;
+        }
+        
+        .chat-bubble.user:hover, .message-bubble.user:hover {
+            box-shadow: 0 6px 20px rgba(45, 90, 39, 0.4);
+            transform: translateY(-2px);
         }
 
         .chat-bubble.ai, .message-bubble.ai {
-        background: #ffffff;
+        background: linear-gradient(135deg, #ffffff 0%, var(--light-gray) 100%);
         color: #1f2937;
         border-bottom-left-radius: 4px;
         margin-right: auto;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        }
+        
+        .chat-bubble.ai:hover, .message-bubble.ai:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
         }
 
         .timestamp {
@@ -180,13 +213,13 @@
         /* Better scrollbar for chat */
         .chat-scroll::-webkit-scrollbar { width: 8px; }
         .chat-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
-        .chat-scroll::-webkit-scrollbar-thumb { background: #10b981; border-radius: 4px; }
-        .chat-scroll::-webkit-scrollbar-thumb:hover { background: #059669; }
+        .chat-scroll::-webkit-scrollbar-thumb { background: var(--accent-green); border-radius: 4px; }
+        .chat-scroll::-webkit-scrollbar-thumb:hover { background: var(--light-green); }
         
         /* Firefox scrollbar */
         .chat-scroll {
             scrollbar-width: thin;
-            scrollbar-color: #10b981 #f1f1f1;
+            scrollbar-color: var(--accent-green) #f1f1f1;
         }
         
         /* Scrollable message content */
@@ -275,11 +308,11 @@
         
         @keyframes dotFlashing {
             0% { 
-                background-color: #10b981; 
+                background-color: var(--accent-green); 
                 transform: scale(1);
             }
             50%, 100% { 
-                background-color: #d1fae5; 
+                background-color: var(--soft-green); 
                 transform: scale(1.1);
             }
         }
@@ -295,7 +328,7 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background-color: #10b981;
+            background-color: var(--accent-green);
             animation: typingPulse 1.4s infinite ease-in-out;
         }
         
@@ -331,11 +364,11 @@
         }
     </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-100">
+<body class="min-h-screen" style="background: linear-gradient(135deg, var(--soft-green) 0%, var(--light-gray) 100%);">
 
     <div id="app-container" class="pb-20">
         <div class="flex flex-col h-screen">
-            <div class="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 text-white p-6 rounded-b-3xl shadow-xl flex-shrink-0 z-10">
+            <div class="bg-gradient-to-r from-[#2d5a27] via-[#4a7c59] to-[#6b8e23] text-white p-6 rounded-b-3xl shadow-xl flex-shrink-0 z-10">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
                         <div class="flex-1">
@@ -343,7 +376,7 @@
                                 <img src="../../assets/icons/ai.png" alt="Greenomics" class="w-5 h-5 mr-2">
                                 AI Greenomics Assistant
                             </h1>
-                            <p class="text-green-200 text-sm" id="header-status">Konsultan Green Accounting</p>
+                            <p class="text-white/90 text-sm" id="header-status">Konsultan Green Accounting</p>
                         </div>
                     </div>
                     
@@ -355,7 +388,7 @@
                 <div class="chat-section">
                     <div id="chat-messages" class="flex-grow p-6 pt-8 pb-32 space-y-4 overflow-y-auto chat-scroll">
                         <div class="flex items-start space-x-3">
-                            <div class="w-10 h-10 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center text-white text-lg font-bold flex-shrink-0">
+                            <div class="w-10 h-10 bg-gradient-to-r from-[#6b8e23] to-[#4a7c59] rounded-full flex items-center justify-center text-white text-lg font-bold flex-shrink-0">
                                 <img src="../../assets/icons/ai.png" alt="AI" class="w-6 h-6">
                             </div>
                             <div class="bg-white rounded-2xl rounded-tl-none p-4 shadow-lg max-w-md">
@@ -431,7 +464,7 @@
                                     style="height: 48px;"
                                 ></textarea>
                                 
-                                <button id="send-chat-btn" class="bg-gradient-to-r from-green-500 to-emerald-600 text-white p-3 rounded-full hover:shadow-lg transition-all flex-shrink-0">
+                                <button id="send-chat-btn" class="bg-gradient-to-r from-[#4a7c59] to-[#6b8e23] text-white p-3 rounded-full hover:shadow-lg transition-all flex-shrink-0">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4 20-7Z"/></svg>
                                 </button>
                             </div>
@@ -443,7 +476,7 @@
     </div> 
     <div id="bottom-nav" class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 p-3 z-40 shadow-lg">
         <div class="flex justify-around items-center max-w-lg mx-auto">
-            <a href="../../index.html" class="nav-button flex flex-col items-center space-y-1 text-gray-500 hover:text-green-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span class="text-xs font-medium">Dashboard</span></a>
+            <a href="../../dashboard.html" class="nav-button flex flex-col items-center space-y-1 text-gray-500 hover:text-green-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span class="text-xs font-medium">Dashboard</span></a>
             <a href="chat.html" class="nav-button active flex flex-col items-center space-y-1 text-gray-500 hover:text-green-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423z" /></svg><span class="text-xs font-medium">AI Assistant</span></a>
             <a href="./accounting.html" class="nav-button flex flex-col items-center space-y-1 text-gray-500 hover:text-green-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg><span class="text-xs font-medium">Input Data</span></a>
             <a href="./forum.html" class="nav-button flex flex-col items-center space-y-1 text-gray-500 hover:text-green-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg><span class="text-xs font-medium">Reports</span></a>
@@ -533,7 +566,7 @@
             // Color based on type
             const colors = {
                 'info': 'bg-blue-500',
-                'success': 'bg-green-500',
+                'success': 'bg-[#6b8e23]',
                 'error': 'bg-red-500'
             };
             
@@ -635,7 +668,7 @@
         } else {
             messageHTML = `
                 <div id="${messageId}" class="flex items-start mb-4 space-x-2 message-bubble ai">
-                    <div class="w-10 h-10 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <div class="w-10 h-10 bg-gradient-to-r from-[#6b8e23] to-[#4a7c59] rounded-full flex items-center justify-center flex-shrink-0">
                         <img src="../../assets/icons/ai.png" alt="AI" class="w-6 h-6">
                     </div>
                     <div class="bg-white rounded-2xl rounded-tl-none p-4 shadow-lg max-w-2xl">
@@ -1061,7 +1094,7 @@ Silakan tanya apapun tentang data yang baru saja Anda input! 😊`;
     function showAutoNotificationToast(activityData) {
         // Buat toast notification element
         const toast = document.createElement('div');
-        toast.className = 'fixed top-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50 max-w-sm animate-slide-in';
+        toast.className = 'fixed top-4 right-4 bg-[#6b8e23] text-white p-4 rounded-lg shadow-lg z-50 max-w-sm animate-slide-in';
         toast.innerHTML = `
             <div class="flex items-center space-x-3">
                 <div class="text-2xl">🤖</div>

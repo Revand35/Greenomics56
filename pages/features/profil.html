@@ -6,7 +6,7 @@
     <title>Profil - Greenomics</title>
     
     <!-- Meta Tags -->
-    <meta name="theme-color" content="#10b981">
+    <meta name="theme-color" content="#6B8E23">
     <meta name="description" content="Platform Digital Green Accounting untuk UMKM">
     
     <!-- Content Security Policy -->
@@ -26,13 +26,48 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    
     <style>
+        :root {
+            --primary-green: #2d5a27;
+            --light-green: #4a7c59;
+            --accent-green: #6b8e23;
+            --soft-green: #e8f5e8;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --dark-gray: #2c3e50;
+            --text-gray: #6c757d;
+        }
+        
         body { font-family: 'Inter', sans-serif; }
-        .gradient-bg { background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%); }
-        .nav-button.active { color: #10b981; }
+        .gradient-bg { background: linear-gradient(135deg, #6B8E23 0%, #556B2F 50%, #047857 100%); }
+        .nav-button.active { color: #6B8E23; }
+    
+        /* Modern Gradients */
+        .modern-gradient {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--light-green) 50%, var(--accent-green) 100%);
+            box-shadow: 0 4px 15px rgba(45, 90, 39, 0.25);
+            transition: all 0.3s ease;
+        }
+        
+        .modern-gradient:hover {
+            box-shadow: 0 6px 25px rgba(45, 90, 39, 0.35);
+            transform: translateY(-2px);
+        }
+        
+        .card-gradient {
+            background: linear-gradient(135deg, #ffffff 0%, var(--light-gray) 100%);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .card-gradient:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
     </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-100">
+<body class="min-h-screen bg-gradient-to-br from-[#e8f5e8] to-[#f8f9fa]">
     
     <!-- Header -->
     <div class="gradient-bg text-white p-6 rounded-b-3xl shadow-xl">
@@ -102,7 +137,7 @@
     <!-- Bottom Navigation -->
     <div id="bottom-nav" class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 p-3 z-40 shadow-lg">
         <div class="flex justify-around items-center max-w-lg mx-auto">
-            <a href="../../index.html" data-page="home" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
+            <a href="../../dashboard.html" data-page="home" class="nav-button flex flex-col items-center text-gray-500 text-xs font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 </svg>
